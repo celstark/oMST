@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <!--
+  Author: Craig Stark
+
+  Collects demographic information and then advances to the next task in the list
+
+-->
+<head>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
+    https://fonts.gstatic.com http://www.stark-labs.com/exp/jsPsych/mobile_cMST/append_log.php http://www.stark-labs.com/exp/jsPsych/mobile_cMST/write_data_file.php; 
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; media-src *; 
+  img-src 'self' data: content:;">
+
+  <script type="text/javascript" src="jatos.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
+  <script src="js/jspsych_631/jspsych.js"></script>
+  <script src="js/jspsych_631/plugins/jspsych-survey-html-form.js"></script>
+  <link rel="stylesheet" href="css/jspsych.css"></link>
+  <style>
+    .jspsych-display-element {
+      font-size: 200%;
+    }
+    .jspsych-btn {
+      font-size: 125%;
+    }
+  </style>
+</head>
+<body>
+
+</body>
+<script>
+function getID() {
+  // Try to get a reasonable ID code for this person
+  // URL > studySession > workerID
+  var sid=jatos.urlQueryParameters.sid;
+  if (sid == undefined) {
+    sid=jatos.studySessionData['sid'];
+  }
+  if (typeof sid == 'undefined') {
+    if (typeof jatos.workerId !== 'undefined') { // At least try the workerID 
+      sid = jatos.workerId;
+    }
+    else { sid=1234; }
+  }
+  return sid
+}
+jatos.onLoad(function() {
+  var sid=getID()
+  console.log('In demog, sid= ' + sid);
+  let date = new Date(); 
+  jsPsych.data.addProperties({
+       subject: sid,
+       task: 'demographics',
+       date: date.toLocaleDateString(),
+       urlid: jatos.urlQueryParameters.sid,
+  });
+
+  var demogform = {
+    type: 'survey-html-form',
+    preamble: 'The National Institute of Health (NIH) mandates that we collect demographic information from participants and that we collect it <i>in this specific format</i>.',
+    html: '<div style="text-align: left; font-size: 16px; line-height: 110%"> \
+    <p><b>Full name: </b> <input name="fullname" type="text" required /></p> \
+    <p> <b>Date of birth (DD/MM/YYYY):</b> <input name="dob" type="text" required /></p> \
+    <p> <b>Gender: </b>\
+       <br><input type="radio" id="male" name="gender" value="male" style="margin-left: 50px" required > <label for="male"> Male </label> \
+       <br><input type="radio" id="female" name="gender" value="female" style="margin-left: 50px"  > <label for="female"> Female </label> \
+    <p> <b>Ethnicity: </b>\
+       <br><input type="radio" id="hispanic" name="ethnicity" value="hispanic" style="margin-left: 50px" required> <label for="hispanic"> Hispanic or Latino </label>  \
+       <br><input type="radio" id="nonhispanic" name="ethnicity" value="nonhispanic" style="margin-left: 50px"> <label for="nonhispanic"> Not Hispanic or Latino </label> \
+    <p> <b>Race with which you identify most: </b>\
+       <br><input type="radio" id="nativeamerican" name="race" value="nativeamerican" style="margin-left: 50px" required> <label for="nativeamerican"> American Indian or Alaska Native </label> \
+       <br><input type="radio" id="asian" name="race" value="asian" style="margin-left: 50px"> <label for="asian"> Asian </label> \
+       <br><input type="radio" id="black" name="race" value="black" style="margin-left: 50px"> <label for="black"> Black or African American </label> \
+       <br><input type="radio" id="nativehawaiian" name="race" value="nativehawaiian" style="margin-left: 50px"> <label for="nativehawaiian"> Native Hawaiian or Pacific Islander </label> \
+       <br><input type="radio" id="white" name="race" value="white" style="margin-left: 50px"> <label for="white"> White </label> \
+       <br><input type="radio" id="more" name="race" value="more" style="margin-left: 50px"> <label for="more"> More than one race or Other </label> \
+    </div>'
+  }
+  
+  
+
+  jsPsych.init({
+    timeline: [demogform],
+    
+    on_finish: function() {
+      if (0) { jsPsych.data.displayData(); }
+      else {
+        var result = jsPsych.data.get().json();
+        jatos.submitResultData(result, jatos.startNextComponent);
+
+      }
+    }
+  });
+});
+</script>
+
+</html>

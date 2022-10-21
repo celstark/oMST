@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<!-- 11/30/2020: Updated batch session logging to create a single array per subject with a chronological list of each time
+-->
+<head>
+    <link rel="stylesheet" href="css/consent_form.css" />
+    <script type="text/javascript" src="jatos.js"></script>
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <meta charset="UTF-8" />
+    <title>Consent Form</title>
+</head>
+
+<body>
+    <p id="text">
+
+
+
+        <div id="consenttext">
+        <h1 style="text-align: center">IRB Consent Form</h1>
+        UNIVERSITY<br>
+        Study Information Sheet<br>     
+        IRB NUMBER<br>
+        <br>       
+        Lead Researcher<br>
+        Dr. X, Professor<br>
+        Department of Y<br>
+        PHONE / <a href="mailto:cestark@uci.edu">foo@bar.com</a><br>
+        
+        <ul>
+        <li>CONSENT TEXT
+        </li>
+           
+        <li>If you want to participate in this study, click the <b>Agree</b> button to start the survey.</li>
+
+    </ul>
+</div>
+    <div id="buttons">
+        <button id="agreeButton">I agree</button>
+        <button id="cancelButton">Cancel</button>
+    </div>
+    </p>
+    <script type="text/javascript">
+        function getID() {
+            // Try to get a reasonable ID code for this person
+            // URL > studySession > workerID
+            var sid=jatos.urlQueryParameters.sid;
+            if (sid == undefined) {
+                sid=jatos.studySessionData['sid'];
+            }
+            if (typeof sid == 'undefined') {
+                if (typeof jatos.workerId !== 'undefined') { // At least try the workerID 
+                    sid = jatos.workerId;
+                }
+            else { sid=1234; }
+            }
+            return sid
+        }
+        jatos.onLoad(function() {
+            var sid = getID();
+            console.log('In consent, sid= ' + sid);
+
+            let date = new Date(); 
+            let dcode = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + (date.getDate()) + 
+                "-" + date.getHours() + "-" + date.getMinutes();
+            console.log(dcode);
+
+            if (!jatos.batchSession.defined("/" + sid)) {  // Make sure to create this as an array
+                console.log('no record yet, adding one at ' + "/" + sid);
+                jatos.batchSession.add("/" + sid,["ConsentLoad_"+dcode]);
+
+            }
+            else { // Append to array
+                console.log('have the record, appending to ' + "/" + sid)
+                jatos.batchSession.add("/" + sid + "/-","ConsentLoad_"+dcode);
+            }
+            $("#buttons").show();
+        });
+
+        $('#agreeButton').click(function() {
+            var sid = getID();
+            let date = new Date(); 
+            let dcode = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + (date.getDate()) + 
+                "-" + date.getHours() + "-" + date.getMinutes();
+            jatos.batchSession.add("/" + sid + "/-","ConsentAgreed_"+dcode);
+            var result = "Consent given, ID="+sid+" URL ID="+jatos.urlQueryParameters.sid;
+            jatos.submitResultData(result, jatos.startNextComponent);
+        });
+
+        $('#cancelButton').click(function() {
+            var sid = getID();
+            let date = new Date(); 
+            let dcode = date.getFullYear() + "-" + (date.getMonth()+1) + "-" + (date.getDate()) + 
+                "-" + date.getHours() + "-" + date.getMinutes();
+            jatos.batchSession.add("/" + sid + "/-","ConsentNOTAgreed_"+dcode);
+            jatos.abortStudy("Consent not given.");
+        });
+    </script>
+</body>
+
+</html>

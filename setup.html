@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<!--
+  You can easily run the oMST without this file. 
+
+  Typically, JATOS studies just run in order, going through whatever tasks you have setup.
+  This file lets you define an "order" variable that other tasks can respect to queue up 
+  various different tasks or task orders.  You'll see at the end of the experiment code bits
+  about seeing if this variable exists and, if so, to use it to queue up the next task.
+
+  Otherwise, this file can be useful as a splash screen or to pre-define some variables, 
+  such as the kind of response (button vs. keyboard) to use, what set to use, etc.  You'll
+  find that the main experiment code looks in several places (e.g., here, Properties in the
+  experiment or in the Batch from JATOS) to let you flexibly override defaults.
+
+-->
+<head>
+    <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="jatos.js"></script>
+  <link rel="stylesheet" href="css/pure-release-0.6.0/pure-min.css">
+  <link rel="stylesheet" href="css/jspsych.css"></link>
+  <style>
+    .jspsych-display-element {
+      font-size: 200%;
+    }
+    .jspsych-btn {
+      font-size: 125%;
+    }
+  </style>
+</head>
+
+<body>
+  <p style="text-align: center; font-size: 200%; vertical-align: middle;">
+    Welcome to the experiment!  Before we get going with the actual memory task, we'll give you 
+    a brief sample of the task so you can learn what you're supposed to do.
+    <br><br><strong> Do not hit your browser's back button or the experiment will terminate</strong>
+    <br><br>
+	<button id="continueButton"  class="jspsych-btn" style="justify-content: center" disabled>Continue</button>
+</body>
+
+<script type="text/javascript">
+function getID() {
+  // Try to get a reasonable ID code for this person.  You can use the URL with a "sid" parameter or
+  // specify one in the jatos studySessionData. If not, it'll use the JATOS workerId.
+  // URL > studySession > workerID
+  var sid=jatos.urlQueryParameters.sid;
+  if (sid == undefined) {
+    sid=jatos.studySessionData['sid'];
+  }
+  if (typeof sid == 'undefined') {
+    if (typeof jatos.workerId !== 'undefined') { // At least try the workerID
+      sid = jatos.workerId;
+    }
+    else { sid=1234; }
+  }
+  return sid
+}
+jatos.onLoad(function () {
+  // Useful for debugging.  There are a number of options for keeping track of your subject's ID code.
+  // JATOS will create their own, but you may have one come in via a URL parameter if you're using
+  // something like SONA or Qualtrics.  It might not be "sid" -- it's just what I use.
+  //console.log('In setup, URL sid= ' + jatos.urlQueryParameters.sid);
+
+  // We use JATOS' Batch Session to store the number of runs that have been
+  // completed and we use this to divvy up the actual counterbalance condition
+  // It's a simple, but effective enough scheme for this.  Here, we'll use it
+  // to just determine which stimulus set gets used.
+  if (!jatos.batchSession.defined("/nruns")) { // If we don't have this field yet, make it
+    jatos.batchSession.set("nruns", 0);
+  }
+  var nruns = jatos.batchSession.get("nruns");
+  if (typeof nruns === 'undefined') { // Just catch in case of errors
+    var nruns=0;
+  }
+  var cond = nruns % 2;   // We'll give ourselves just conditions here for 2 stimulus sets
+
+  // But, we'll also let you set JATOS' properties to force a particular condition
+  if (jatos.componentJsonInput && typeof jatos.componentJsonInput['force_cond'] !== 'undefined') {
+    cond=jatos.componentJsonInput['force_cond'];
+    console.log('condition forced via JSON component to ' + cond);
+  }
+
+  var order = [];  // This is that order list -- will hold the JATOS numbers of the things you want to run
+  
+  // Useful little tags for the experiment and condition that will go into your log files
+  var exptag='oMST'
+  var condtag='Unk'
+
+  // Setup things for your various counter-balances.  Here, we only have 2 (which set is used)
+  switch (cond) {
+    case 0: // Stimulus set 1
+      order=[4,5];
+      condtag='oMST-1';
+      break;
+    case 1: // Stimulus set 2
+      order=[4,6];
+      condtag='oMST-2';
+      break;
+
+  }
+
+  // Various manual overrides of that
+  let sid=getID();  // Come up with a nice ID number for this person
+  console.log('order: ' + order + '  cond: ' + cond + '  sid: ' + sid);
+  // Go stick relevant information in the studySessionData.  Experiment code reads this for the defaults.
+  // You can use the various force_XXX options shown in the code to override this (e.g., put a force_set in the
+  // JATOS component properties for a task)
+  jatos.studySessionData['sid']=sid;
+  jatos.studySessionData["order"] = order;  // this is that order of tasks shown, not the order of trials in a task
+  jatos.studySessionData["cond"] = cond;
+  jatos.studySessionData["taskindex"] = 0;
+  jatos.studySessionData['exptag'] = exptag;
+  jatos.studySessionData['condtag'] = condtag;
+
+
+  // Now, take any possible things we'd see in the JSON input and convert them to studySessionData so
+  // that the individual tasks have a consistent spot to find them.
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['resp_mode'] !== 'undefined') {
+    jatos.studySessionData['resp_mode']=jatos.studyJsonInput['resp_mode'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['selfpaced'] !== 'undefined') {
+    jatos.studySessionData['selfpaced']=jatos.studyJsonInput['selfpaced'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['pcrand'] !== 'undefined') {
+    jatos.studySessionData['pcrand']=jatos.studyJsonInput['pcrand'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['randomize'] !== 'undefined') {
+    jatos.studySessionData['randomize']=jatos.studyJsonInput['randomize'];
+  }
+  $('#continueButton').prop('disabled', false);
+});
+
+$('#continueButton').click(function () {
+  var nruns = jatos.batchSession.get("nruns");
+  jatos.batchSession.set("nruns", nruns+1);
+  var order=jatos.studySessionData["order"];
+  var d = new Date();
+  jatos.studySessionData['datecode']=d.toLocaleDateString();
+  jatos.startComponentByPos(order[0],jatos.studySessionData);
+});
+
+
+</script>
+
+</html>
