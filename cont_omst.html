@@ -42,6 +42,7 @@
    7/12/22 (CELS): Fixed space-bar start bug
                   Added logging of lbin if it exists in the order file
    10/21/22 (CELS): Updated default to buttons and updated default order file based on Stark et al. "Optmizing ..."
+   11/2/22 (CELS): Setup to allow "baseurl" to specify a web-based location for the images
 
   Optional parameters:
   In the JATOS versions, these come in via jatos.studySessionData while in Cordova, we pass
@@ -70,7 +71,8 @@
   Note - needs order files in 'jsOrder' and needs image files in 'Set #_rs'
   order files are jsOrders/cMST_Imbal2_orders_[set]_[order]_[run].js
 
-
+  Note, if you use the "baseurl" bit to specify a webserver with the images, you'll need to update the Content-Security-Policy below
+  For example, I use:   img-src 'self' https://starklab.bio.uci.edu data: content:;
 -->
 
 <head>
@@ -155,6 +157,8 @@ function leftFillNum(num, width){
 
 
 jatos.onLoad(async function() {
+  //baseurl='https://starklab.bio.uci.edu/mst/'; // How we'll get images, videos, etc.  Set to empty string to use local folders
+  baseurl=''; // How we'll get images, videos, etc.  Set to empty string to use local folders
   var sid=jatos.studySessionData['sid'];
   if (typeof sid === 'undefined') {
     sid=1234;
@@ -210,7 +214,7 @@ jatos.onLoad(async function() {
   console.log('we are set')
   console.log(trial_stim.length)
   for (var i=0; i<trial_stim.length; i++) {  // Make our Set X_rs be SetX_rs
-    trial_stim[i].image=trial_stim[i].image.replace("Set ","Set");
+    trial_stim[i].image=baseurl+trial_stim[i].image.replace("Set ","Set");
   }
   
   console.log(typeof trial_stim);
