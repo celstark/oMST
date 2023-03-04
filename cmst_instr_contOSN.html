@@ -18,6 +18,7 @@ Revised: November 20, 2019 (CELS) for Cordova
    8/24/20 (CELS): Fixed jumping stimuli when using button response mode
    5/31/22 (CELS): Added bit about blank screen in main task
    10/21/22 (CELS): Updated default to buttons 
+   2/28/23 (CELS): Updated to jsPsych7
    
   Optional parameters:
   [sid=##]: Subject ID -- used for data file name (default=1234)
@@ -35,11 +36,11 @@ Revised: November 20, 2019 (CELS) for Cordova
 
   <script type="text/javascript" src="jatos.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
-  <script src="js/jspsych_631/jspsych.js"></script>
-  <script src="js/jspsych_631/plugins/jspsych-html-keyboard-response.js"></script>
-  <script src="js/jspsych_631/plugins/jspsych-html-button-response.js"></script>
-  <script src="js/jspsych_631/plugins/jspsych-categorize-image.js"></script>
-  <script src="js/jspsych-categorize-image-buttons.js"></script>
+  <script src="js/jspsych_731/dist/jspsych.js"></script>
+  <script src="js/jspsych_731/dist/plugin-html-keyboard-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-html-button-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-categorize-image.js"></script>
+  <script src="js/plugin-categorize-image-buttons.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
     .jspsych-display-element {
@@ -51,7 +52,11 @@ Revised: November 20, 2019 (CELS) for Cordova
   </style>
 </head>
 <script>
+
+
+
 jatos.onLoad(function() {
+  const phasename='cmst_instr_contOSN';
   var sid=jatos.studySessionData['sid'];
   if (typeof sid === 'undefined') {
     sid=1234;
@@ -62,167 +67,7 @@ jatos.onLoad(function() {
   }
   //resp_mode='button';
 
-  // START OF CODE THAT SHOULD BE FIXED REGARDLESS OF CORDOVA / JATOS
-  const phasename='cmst_instr_contOSN';
-  jsPsych.data.addProperties({
-    task: phasename,
-    subject: sid,
-  });
-
-  // Default is keyboard here - override if buttons
-  var instr_choice=[' ']; // 32 is space
-  var instr_txt='<i>spacebar</i>';
-  var trial_type='';
-  var trial_txt='<i>Old</i> (<b>v</b>), <i>Similar</i> (<b>b</b>), or <i>New</i> (<b>n</b>)?';
-  var trial_choices=['v','b','n'];
-  var extra_html='';
-  if (resp_mode == 'button') {
-    instr_choice=['OK'];
-    instr_txt='<i>OK</i>';
-    trial_type='-buttons';
-    trial_txt='<i>Old</i>, <i>Similar</i>, or <i>New</i>';
-    trial_choices=['Old','Similar','New'];
-    extra_html='style="margin-top:112px;"';
-  }
-  var intro = {
-    type: 'html-' + resp_mode + '-response',
-    choices: instr_choice,
-    prompt: '<p>Press ' + instr_txt + ' to begin</p>',
-    stimulus: 'You are going to see pictures of everyday items, one at a time. For each one, you will select <b>Old</b> \
-      if you have seen this exact picture before, <b>Similar</b> if it is similar, but not exactly the same as one you saw \
-      before, or <b>New</b> if it is entirely a new picture. \
-      <p>The way to think of <i>Similar</i> is whether it has the same name, but is a different picture in any way. \
-      <p>A few practice trials should make this clear.',
-  }
-  var new1 = {
-    type: 'categorize-image'+trial_type, 
-    stimulus: 'img/foil_1032.jpg',
-    key_answer: 'n' , button_answer: 2,
-    choices:trial_choices ,
-    prompt: (resp_mode == 'button' ? '<p> You have not seen any images yet so you should select <b>New</b> here. </p>' :  '<p>  You have not seen any images yet so you should select <i>New</i> (<b>n</b>) here. </p>'),
-    force_correct_button_press: true,
-    incorrect_text: (resp_mode == 'button' ? "<p> You haven't seen this image yet, so press <b>New</b></p>" : "<p> You haven't seen this image yet, so press <i>New</i> (<b>n</b>)</p>"),
-    correct_text: "<p " + extra_html+ ">Good! You have not seen this image yet, so you correctly selected <b>New</b></p> ",
-      
-  }
-  var new2 = {
-    type: 'categorize-image'+trial_type,
-    stimulus: 'img/foil_1033.jpg',
-    key_answer: 'n' , button_answer: 2,
-    choices:trial_choices ,
-    prompt: (resp_mode == 'button' ? '<p>  You have not seen any images yet so you should select <b>New</b> here. </p>' : '<p>  You have not seen any images yet so you should select <i>New</i> (<b>n</b>) here. </p>'),
-    force_correct_button_press: true,
-    incorrect_text: (resp_mode == 'button' ? "<p> You haven't seen this image yet, so press <b>New</b></p>" : "<p> You haven't seen this image yet, so press <i>New</i> (<b>n</b>)</p>"),
-    correct_text: "<p " + extra_html+ ">Good! You have not seen this image yet, so you correctly selected <b>New</b></p> ",
-      
-  }
-  var new3 = {
-    type: 'categorize-image'+trial_type,
-    stimulus: 'img/pcon026a.jpg',
-    key_answer: 'n' , button_answer: 2,
-    choices:trial_choices ,
-    prompt: (resp_mode == 'button' ? '<p>  You have not seen any images yet so you should select <b>New</b> here. </p>' : '<p>  You have not seen any images yet so you should select <i>New</i> (<b>n</b>) here. </p>'),
-    force_correct_button_press: true,
-    incorrect_text: (resp_mode == 'button' ? "<p> You haven't seen this image yet, so press <b>New</b></p>" : "<p> You haven't seen this image yet, so press <i>New</i> (<b>n</b>)</p>"),
-    correct_text: "<p " + extra_html+ ">Good! You have not seen this image yet, so you correctly selected <b>New</b></p> ",
-      
-  }
-  var repeat1 = {
-    type: 'categorize-image'+trial_type,
-    stimulus: "img/foil_1033.jpg",
-    key_answer: 'v' , button_answer: 0,
-    choices:trial_choices ,
-    prompt: (resp_mode == 'button') ? '<p> You have seen this image, so press <b>Old</b></p>' :
-        '<p>  You have already seen this item before, press <i>Old</i> (<b>v</b>). </p>',
-    force_correct_button_press: true,
-    incorrect_text: (resp_mode == 'button') ? "<p> You have seen this exact image, so press <b>Old</b></p>" :
-    "<p> You have seen this exact image, so press <i>Old/i> (<b>v</b>)</p>",
-    correct_text: "<p " + extra_html+ ">Good! You have seen this exact image, so you correctly selected <b>Old</b></p> ",
-      
-  }
-  var lure1 ={
-    type: 'categorize-image'+trial_type,
-    stimulus: "img/pcon026b.jpg",
-    key_answer: 'b' , button_answer: 1,
-    choices:trial_choices ,
-    prompt: (resp_mode == 'button') ? '<p>This item is similar to one you have seen before, but not exactly the same, so you should select <b>Similar</b> here. </p>' :
-    '<p>This item is similar to one you have seen before, but not exactly the same, so you should select <i>Similar</i> (<b>b</b>) here. </p>',
-    force_correct_button_press: true,
-    incorrect_text: (resp_mode == 'button') ? "<p> You saw one <i>similar to this, but not exactly the same</i>, so press <b>Similar</b></p>" : 
-    "<p> You saw one <i>similar to this, but not exactly the same</i>, so press <i>Similar</i> (<b>b</b>)</p>",
-    correct_text: "<p " + extra_html+ ">Good! You have not seen this <i>exact</i> image, so you correctly selected <b>Similar</b></p> ",
-      
-  }
-  var side_by_side1 = {
-    type: 'html-' + resp_mode + '-response',
-    stimulus: '<p>As you can see, these items are similar, but not exactly the same. For this kind of image, you should select <b>Similar</b> to indicate that you \
-        saw something similar to this but have not seen that exact item before during this session.</p><table style="width:100%"><tr><td><img src="img/pcon026a.jpg"><td><img src="img/pcon026b.jpg"></table> ',
-    choices: instr_choice,
-  }
-  var new4 = {
-    type: 'categorize-image'+trial_type,
-    stimulus: "img/foil_1035.jpg",
-    key_answer: 'n' , button_answer: 2,
-    choices:trial_choices ,
-    prompt: '<p>Your turn now. ' + trial_txt+'</p>',
-    force_correct_button_press: true,
-    incorrect_text: (resp_mode == 'button') ? "<p> You haven't seen this image yet, so press <b>New</b></p>" :
-    "<p> You haven't seen this image yet, so press <i>New</i> (<b>n</b>)</p>",
-    correct_text: "<p " + extra_html+ ">Good! You have not seen this image yet, so you correctly selected <b>New</b></p> "
-  }
-  var new5 = {
-    type: 'categorize-image'+trial_type,
-    stimulus: 'img/pcon028a.jpg',
-    key_answer: 'n' , button_answer: 2,
-    choices:trial_choices ,
-    prompt: '<p>Have you seen this? '+trial_txt+'</p>',
-    force_correct_button_press: true,
-    incorrect_text: (resp_mode == 'button') ? "<p> You haven't seen this image yet, so press <b>New</b></p>" :
-    "<p> You haven't seen this image yet, so press <i>New</i> (<b>n</b>)</p>",
-    correct_text: "<p " + extra_html+ ">Good! You have not seen this image yet, so you correctly selected <b>New</b></p> "
-      
-  }
-  var repeat2 = {
-    type: 'categorize-image'+trial_type,
-    stimulus: "img/foil_1035.jpg",
-    key_answer: 'v', button_answer: 0,
-    choices:trial_choices ,
-    prompt: '<p>Have you seen this? '+trial_txt+'</p>',
-    force_correct_button_press: true,
-    incorrect_text: (resp_mode == 'button') ? "<p> You have seen this exact image, so press <b>Old</b></p>" :
-    "<p> You have seen this exact image, so press <i>Old/i> (<b>v</b>)</p>",
-    correct_text: "<p " + extra_html+ ">Good! You have seen this exact image, so you correctly selected <b>Old</b></p> "
-      
-  }
-  var lure2 = {
-    type: 'categorize-image'+trial_type,
-    stimulus: "img/pcon028b.jpg",
-    key_answer: 'b' , button_answer: 1,
-    choices:trial_choices ,
-    prompt: '<p>Have you seen this? '+trial_txt+'</p>',
-    force_correct_button_press: true,
-    incorrect_text: (resp_mode == 'button') ? "<p> You saw one <i>similar to this, but not exactly the same</i>, so press <b>Similar</b></p>" : 
-    "<p> You saw one <i>similar to this, but not exactly the same</i>, so press <i>Similar</i> (<b>b</b>)</p>",
-    correct_text: "<p " + extra_html+ ">Good! You have not seen this <i>exact</i> image, so you correctly selected <b>Similar</b></p> ",
-      
-  }
-  var side_by_side2 = {
-    type: 'html-' + resp_mode + '-response',
-    stimulus: '<p>As you can see, these items are similar, but not exactly the same. For this kind of image, you would select <b>Similar</b> to indicate that you have not seen that exact item before during this session.</p><table style="width:100%"><tr><td><img src="img/pcon028a.jpg"><td><img src="img/pcon028b.jpg"></table> ',
-    choices: instr_choice,
-  }
-  var outtro = {
-    type: 'html-' + resp_mode + '-response',
-    choices: instr_choice,
-    prompt: '<p>Press ' + instr_txt + ' to begin</p>',
-    stimulus: "That's the idea. Now, we'll do the actual test\
-      <p><i>As you do the actual task, if the picture disappears before you respond, don't worry. Just make your response even if the screen is blank.</i>", 
-  }
-  // END OF CODE THAT SHOULD BE FIXED REGARDLESS OF JATOS / CORDOVA
-  console.log(jsPsych.version)
-  jsPsych.init({
-    timeline: [intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro],
-    on_finish: function() {
+  var jsPsych = initJsPsych({on_finish: function() {
       if (0) { jsPsych.data.displayData(); }
       else {
         var order=jatos.studySessionData["order"];
@@ -249,6 +94,166 @@ jatos.onLoad(function() {
       }
     }
   });
+  
+  jsPsych.data.addProperties({
+    task: phasename,
+    subject: sid,
+  });
+
+  // Default is keyboard here - override if buttons
+  var instr_choice=[' ']; // 32 is space
+  var instr_txt='<i>spacebar</i>';
+  var trial_type='';
+  var trial_txt='<i>Old</i> (<b>v</b>), <i>Similar</i> (<b>b</b>), or <i>New</i> (<b>n</b>)?';
+  var trial_choices=['v','b','n'];
+  var extra_html='';
+  if (resp_mode == 'button') {
+    instr_choice=['OK'];
+    instr_txt='<i>OK</i>';
+    trial_type='-buttons';
+    trial_txt='<i>Old</i>, <i>Similar</i>, or <i>New</i>';
+    trial_choices=['Old','Similar','New'];
+    extra_html='style="margin-top:112px;"';
+    extra_html='';
+  }
+  var intro = {
+    type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
+    choices: instr_choice,
+    prompt: '<p>Press ' + instr_txt + ' to begin</p>',
+    stimulus: 'You are going to see pictures of everyday items, one at a time. For each one, you will select <b>Old</b> \
+      if you have seen this exact picture before, <b>Similar</b> if it is similar, but not exactly the same as one you saw \
+      before, or <b>New</b> if it is entirely a new picture. \
+      <p>The way to think of <i>Similar</i> is whether it has the same name, but is a different picture in any way. \
+      <p>A few practice trials should make this clear.',
+  }
+  var new1 = {
+    type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage), 
+    stimulus: 'img/foil_1032.jpg',
+    key_answer: 'n' , button_answer: 2,
+    choices:trial_choices ,
+    prompt: (resp_mode == 'button' ? '<p> You have not seen any images yet so you should select <b>New</b> here. </p>' :  '<p>  You have not seen any images yet so you should select <i>New</i> (<b>n</b>) here. </p>'),
+    force_correct_button_press: true,
+    incorrect_text: (resp_mode == 'button' ? "<p> You haven't seen this image yet, so press <b>New</b></p>" : "<p> You haven't seen this image yet, so press <i>New</i> (<b>n</b>)</p>"),
+    correct_text: "<p " + extra_html+ ">Good! You have not seen this image yet, so you correctly selected <b>New</b></p> ",
+      
+  }
+  var new2 = {
+    type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: 'img/foil_1033.jpg',
+    key_answer: 'n' , button_answer: 2,
+    choices:trial_choices ,
+    prompt: (resp_mode == 'button' ? '<p>  You have not seen any images yet so you should select <b>New</b> here. </p>' : '<p>  You have not seen any images yet so you should select <i>New</i> (<b>n</b>) here. </p>'),
+    force_correct_button_press: true,
+    incorrect_text: (resp_mode == 'button' ? "<p> You haven't seen this image yet, so press <b>New</b></p>" : "<p> You haven't seen this image yet, so press <i>New</i> (<b>n</b>)</p>"),
+    correct_text: "<p " + extra_html+ ">Good! You have not seen this image yet, so you correctly selected <b>New</b></p> ",
+      
+  }
+  var new3 = {
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: 'img/pcon026a.jpg',
+    key_answer: 'n' , button_answer: 2,
+    choices:trial_choices ,
+    prompt: (resp_mode == 'button' ? '<p>  You have not seen any images yet so you should select <b>New</b> here. </p>' : '<p>  You have not seen any images yet so you should select <i>New</i> (<b>n</b>) here. </p>'),
+    force_correct_button_press: true,
+    incorrect_text: (resp_mode == 'button' ? "<p> You haven't seen this image yet, so press <b>New</b></p>" : "<p> You haven't seen this image yet, so press <i>New</i> (<b>n</b>)</p>"),
+    correct_text: "<p " + extra_html+ ">Good! You have not seen this image yet, so you correctly selected <b>New</b></p> ",
+      
+  }
+  var repeat1 = {
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: "img/foil_1033.jpg",
+    key_answer: 'v' , button_answer: 0,
+    choices:trial_choices ,
+    prompt: (resp_mode == 'button') ? '<p> You have seen this image, so press <b>Old</b></p>' :
+        '<p>  You have already seen this item before, press <i>Old</i> (<b>v</b>). </p>',
+    force_correct_button_press: true,
+    incorrect_text: (resp_mode == 'button') ? "<p> You have seen this exact image, so press <b>Old</b></p>" :
+    "<p> You have seen this exact image, so press <i>Old/i> (<b>v</b>)</p>",
+    correct_text: "<p " + extra_html+ ">Good! You have seen this exact image, so you correctly selected <b>Old</b></p> ",
+      
+  }
+  var lure1 ={
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: "img/pcon026b.jpg",
+    key_answer: 'b' , button_answer: 1,
+    choices:trial_choices ,
+    prompt: (resp_mode == 'button') ? '<p>This item is similar to one you have seen before, but not exactly the same, so you should select <b>Similar</b> here. </p>' :
+    '<p>This item is similar to one you have seen before, but not exactly the same, so you should select <i>Similar</i> (<b>b</b>) here. </p>',
+    force_correct_button_press: true,
+    incorrect_text: (resp_mode == 'button') ? "<p> You saw one <i>similar to this, but not exactly the same</i>. So, the correct response is <b>Similar</b></p>" : 
+    "<p> You saw one <i>similar to this, but not exactly the same</i>, so press <i>Similar</i> (<b>b</b>)</p>",
+    correct_text: "<p " + extra_html+ ">Good! You have not seen this <i>exact</i> image, so you correctly selected <b>Similar</b></p> ",
+      
+  }
+  var side_by_side1 = {
+    type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
+    stimulus: '<p>As you can see, these items are similar, but not exactly the same. For this kind of image, you should select <b>Similar</b> to indicate that you \
+        saw something similar to this but have not seen that exact item before during this session.</p><table style="width:100%"><tr><td><img src="img/pcon026a.jpg"><td><img src="img/pcon026b.jpg"></table> ',
+    choices: instr_choice,
+  }
+  var new4 = {
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: "img/foil_1035.jpg",
+    key_answer: 'n' , button_answer: 2,
+    choices:trial_choices ,
+    prompt: '<p>Your turn now. ' + trial_txt+'</p>',
+    force_correct_button_press: true,
+    incorrect_text: (resp_mode == 'button') ? "<p> You haven't seen this image yet, so press <b>New</b></p>" :
+    "<p> You haven't seen this image yet, so press <i>New</i> (<b>n</b>)</p>",
+    correct_text: "<p " + extra_html+ ">Good! You have not seen this image yet, so you correctly selected <b>New</b></p> "
+  }
+  var new5 = {
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: 'img/pcon028a.jpg',
+    key_answer: 'n' , button_answer: 2,
+    choices:trial_choices ,
+    prompt: '<p>Have you seen this? '+trial_txt+'</p>',
+    force_correct_button_press: true,
+    incorrect_text: (resp_mode == 'button') ? "<p> You haven't seen this image yet, so press <b>New</b></p>" :
+    "<p> You haven't seen this image yet, so press <i>New</i> (<b>n</b>)</p>",
+    correct_text: "<p " + extra_html+ ">Good! You have not seen this image yet, so you correctly selected <b>New</b></p> "
+      
+  }
+  var repeat2 = {
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: "img/foil_1035.jpg",
+    key_answer: 'v', button_answer: 0,
+    choices:trial_choices ,
+    prompt: '<p>Have you seen this? '+trial_txt+'</p>',
+    force_correct_button_press: true,
+    incorrect_text: (resp_mode == 'button') ? "<p> You have seen this exact image, so press <b>Old</b></p>" :
+    "<p> You have seen this exact image, so press <i>Old/i> (<b>v</b>)</p>",
+    correct_text: "<p " + extra_html+ ">Good! You have seen this exact image, so you correctly selected <b>Old</b></p> "
+      
+  }
+  var lure2 = {
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: "img/pcon028b.jpg",
+    key_answer: 'b' , button_answer: 1,
+    choices:trial_choices ,
+    prompt: '<p>Have you seen this? '+trial_txt+'</p>',
+    force_correct_button_press: true,
+    incorrect_text: (resp_mode == 'button') ? "<p> You saw one <i>similar to this, but not exactly the same</i>, so press <b>Similar</b></p>" : 
+    "<p> You saw one <i>similar to this, but not exactly the same</i>, so press <i>Similar</i> (<b>b</b>)</p>",
+    correct_text: "<p " + extra_html+ ">Good! You have not seen this <i>exact</i> image, so you correctly selected <b>Similar</b></p> ",
+      
+  }
+  var side_by_side2 = {
+    type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
+    stimulus: '<p>As you can see, these items are similar, but not exactly the same. For this kind of image, you would select <b>Similar</b> to indicate that you have not seen that exact item before during this session.</p><table style="width:100%"><tr><td><img src="img/pcon028a.jpg"><td><img src="img/pcon028b.jpg"></table> ',
+    choices: instr_choice,
+  }
+  var outtro = {
+    type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
+    choices: instr_choice,
+    prompt: '<p>Press ' + instr_txt + ' to begin</p>',
+    stimulus: "That's the idea. Now, we'll do the actual test\
+      <p><i>As you do the actual task, if the picture disappears before you respond, don't worry. Just make your response even if the screen is blank.</i>", 
+  }
+  var  timeline = [intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro];
+  jsPsych.run(timeline);
+    
+  
 });
 </script>
 

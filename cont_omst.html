@@ -43,6 +43,7 @@
                   Added logging of lbin if it exists in the order file
    10/21/22 (CELS): Updated default to buttons and updated default order file based on Stark et al. "Optmizing ..."
    11/2/22 (CELS): Setup to allow "baseurl" to specify a web-based location for the images
+   2/28/23 (CELS): Shifted to jsPsych 7 and added preloading images
 
   Optional parameters:
   In the JATOS versions, these come in via jatos.studySessionData while in Cordova, we pass
@@ -84,13 +85,15 @@
   <script type="text/javascript" src="jatos.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
   <script src="js/jquery-3.1.1.min.js"></script>
-  <script src="js/jspsych_631/jspsych.js"></script>
-  <script src="js/jspsych_631/plugins/jspsych-html-keyboard-response.js"></script>
-  <script src="js/jspsych_631/plugins/jspsych-image-keyboard-response.js"></script>
-  <script src="js/jspsych_631/plugins/jspsych-html-button-response.js"></script>
-  <script src="js/jspsych_631/plugins/jspsych-image-button-response.js"></script>
-  <script src="js/jspsych_631/plugins/jspsych-video-button-response.js"></script>
-  <script src="js/jspsych_631/plugins/jspsych-video-keyboard-response.js"></script>
+  <script src="js/jspsych_731/dist/jspsych.js"></script>
+  <script src="js/jquery-3.1.1.min.js"></script>
+  <script src="js/jspsych_731/dist/plugin-html-keyboard-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-image-keyboard-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-html-button-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-image-button-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-video-button-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-video-keyboard-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-preload.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
     .jspsych-display-element {
@@ -213,14 +216,45 @@ jatos.onLoad(async function() {
   await waitFor(_ => typeof trial_stim !== 'undefined');
   console.log('we are set')
   console.log(trial_stim.length)
+  const preload_fnames = new Array(trial_stim.length)
   for (var i=0; i<trial_stim.length; i++) {  // Make our Set X_rs be SetX_rs
     trial_stim[i].image=baseurl+trial_stim[i].image.replace("Set ","Set");
+    preload_fnames[i]=trial_stim[i].image;
   }
   
-  console.log(typeof trial_stim);
-
+  
   // START OF CODE THAT SHOULD BE CONSTANT REGARDLESS OF JATOS / CORDOVA
   const phasename='oMSTCont';
+
+  var jsPsych = initJsPsych({on_finish: function() {
+    if (0) { jsPsych.data.displayData(); }
+      else {
+        var order=jatos.studySessionData["order"];
+        jatos.studySessionData["taskindex"] += 1;
+        var expdata = jsPsych.data.get().json();
+        // Submit results to JATOS and queue the end or next task
+        if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) { 
+          // we're done
+          // Check if this came from SONA - should have URL.sid and .sona
+          if (typeof jatos.urlQueryParameters.sid === 'undefined' || typeof jatos.urlQueryParameters.sona === 'undefined' ||
+              typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {
+            jatos.submitResultData(expdata,jatos.endStudy);
+          }
+          else {
+            // This is here for SONA experiments.  You'll want to tweak it for your own online setup, but this gives you the return to them for credit
+            var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
+              '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
+            jatos.endStudyAndRedirect(redirect,expdata);
+          }
+        }
+        else {
+          // submit and start the next
+          jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
+        }
+      }
+    }
+  });
+
   jsPsych.data.addProperties({
     task: phasename,
     subject: sid,
@@ -254,7 +288,7 @@ jatos.onLoad(async function() {
 
 
   var instr1_trial = {  
-    type: 'html-'+resp_mode+'-response',
+    type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     choices: instr_choice,
     prompt: '<p>Press ' + instr_txt + ' to begin this next task</p>',
     margin_horizontal: '40px', margin_vertical: '20px',
@@ -297,11 +331,11 @@ jatos.onLoad(async function() {
     //console.log(i + '  bin: ' + lure_bin)
     tlv.push(obj)
   }
-  console.log(JSON.stringify(tlv))
+  //console.log(JSON.stringify(tlv))
   var test_trials = {
     timeline: [
       {
-      type: 'image-'+resp_mode + '-response',
+      type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
       prompt: '<p>Did you see this before? Is it ' + trial_txt + '?</p>',
       choices: trial_choices,
       stimulus_duration: 2000,
@@ -337,7 +371,7 @@ jatos.onLoad(async function() {
     timeline_variables: tlv
   }
   var debrief_block = {
-    type: 'html-keyboard-response',
+    type: jsPsychHtmlKeyboardResponse,
     trial_duration: 500,
     stimulus: 'Thank you',
     on_finish: function (data) {
@@ -422,38 +456,25 @@ jatos.onLoad(async function() {
   }
 
   // END OF CONSTANT CODE
-
-  
-  jsPsych.init({
-    timeline: [instr1_trial, test_trials, debrief_block],
-    on_finish: function() {
-      if (0) { jsPsych.data.displayData(); }
-      else {
-        var order=jatos.studySessionData["order"];
-        jatos.studySessionData["taskindex"] += 1;
-        var expdata = jsPsych.data.get().json();
-        // Submit results to JATOS and queue the end or next task
-        if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) { 
-          // we're done
-          // Check if this came from SONA - should have URL.sid and .sona
-          if (typeof jatos.urlQueryParameters.sid === 'undefined' || typeof jatos.urlQueryParameters.sona === 'undefined' ||
-              typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {
-            jatos.submitResultData(expdata,jatos.endStudy);
-          }
-          else {
-            // This is here for SONA experiments.  You'll want to tweak it for your own online setup, but this gives you the return to them for credit
-            var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
-              '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
-            jatos.endStudyAndRedirect(redirect,expdata);
-          }
-        }
-        else {
-          // submit and start the next
-          jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
-        }
-      }
+  var preload = {
+    type: jsPsychPreload,
+    images: preload_fnames, // since we use a timeline variable, we can't use the simple "trials"
+    show_progress_bar: true,
+    show_detailed_erros: true,
+    continue_after_error: true,
+    on_error: function(fname) {
+      console.log('FAILED  '+fname)
+    },
+    on_finish: function(data) {
+      console.log('Preload success? ' + data.success)
+      console.log('Failed on ' + data.failed_images.length)
     }
-  });
+  }
+  
+  var timeline = [preload, instr1_trial, test_trials, debrief_block];
+  jsPsych.run(timeline);
+  
+      
 });
 </script>
 

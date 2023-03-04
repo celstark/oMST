@@ -14,8 +14,8 @@
 
   <script type="text/javascript" src="jatos.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
-  <script src="js/jspsych_631/jspsych.js"></script>
-  <script src="js/jspsych_631/plugins/jspsych-survey-html-form.js"></script>
+  <script src="js/jspsych_731/dist/jspsych.js"></script>
+  <script src="js/jspsych_731/dist/plugin-survey-html-form.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
     .jspsych-display-element {
@@ -47,7 +47,19 @@ function getID() {
 }
 jatos.onLoad(function() {
   var sid=getID()
-  console.log('In demog, sid= ' + sid);
+  //console.log('In demog, sid= ' + sid);
+
+  var jsPsych = initJsPsych({
+    on_finish: function() {
+      if (0) { jsPsych.data.displayData(); }
+      else {
+        var result = jsPsych.data.get().json();
+        jatos.submitResultData(result, jatos.startNextComponent);
+
+      }
+    }
+  });
+
   let date = new Date(); 
   jsPsych.data.addProperties({
        subject: sid,
@@ -57,7 +69,7 @@ jatos.onLoad(function() {
   });
 
   var demogform = {
-    type: 'survey-html-form',
+    type: jsPsychSurveyHtmlForm,
     preamble: 'The National Institute of Health (NIH) mandates that we collect demographic information from participants and that we collect it <i>in this specific format</i>.',
     html: '<div style="text-align: left; font-size: 16px; line-height: 110%"> \
     <p><b>Full name: </b> <input name="fullname" type="text" required /></p> \
@@ -78,20 +90,10 @@ jatos.onLoad(function() {
     </div>'
   }
   
+  var timeline = [demogform];
+  jsPsych.run(timeline);
+
   
-
-  jsPsych.init({
-    timeline: [demogform],
-    
-    on_finish: function() {
-      if (0) { jsPsych.data.displayData(); }
-      else {
-        var result = jsPsych.data.get().json();
-        jatos.submitResultData(result, jatos.startNextComponent);
-
-      }
-    }
-  });
 });
 </script>
 
