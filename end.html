@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <!--
+  simple end experiment screen
+ -->
+<head>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
+        https://fonts.gstatic.com http://www.stark-labs.com/exp/jsPsych/mobile_cMST/append_log.php http://www.stark-labs.com/exp/jsPsych/mobile_cMST/write_data_file.php; 
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; media-src *; 
+      img-src 'self' data: content:;">
+  <script type="text/javascript" src="jatos.js"></script>
+  <link rel="stylesheet" href="css/jspsych.css"></link>
+  <style>
+    .jspsych-display-element {
+      font-size: 200%;
+    }
+    .jspsych-btn {
+      font-size: 150%;
+    }
+  </style>
+</head>
+
+<body>
+    <div class="jspsych-display-element">
+        <p><p style="text-align:center;">Thank you for your participation in the experiment. You may close this window if you are not redirected.</p></p>
+    </div>
+
+    <script type="text/javascript">
+
+      jatos.onLoad(function () {
+        var d= new Date();
+
+        if (typeof jatos.urlQueryParameters.sona === 'undefined' ||
+              typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {
+            console.log('not sona');
+            jatos.submitResultData({
+                task: "end-SCAN",
+                msg: "study ended",
+                date: d.toString()
+              },jatos.endStudy);
+          }
+          else {
+            var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
+              '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
+            jatos.endStudyAndRedirect(redirect,{
+                task: "end-SCAN",
+                msg: "SONA study ended",
+                date: d.toString()
+              });
+          }
+
+      });
+
+      </script>
+
+</body>
+
+
+</html>

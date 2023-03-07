@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <!--
+  Author: Craig Stark
+
+  Collects an ID code
+
+  2/8/23 (CELS): Converted to jsPsych7
+
+-->
+<head>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
+    https://fonts.gstatic.com http://www.stark-labs.com/exp/jsPsych/mobile_cMST/append_log.php http://www.stark-labs.com/exp/jsPsych/mobile_cMST/write_data_file.php; 
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; media-src *; 
+  img-src 'self' data: content:;">
+
+  <script type="text/javascript" src="jatos.js"></script>
+  <script type="text/javascript" src="js/index.js"></script>
+  <script src="js/jspsych_731/dist/jspsych.js"></script>
+  <script src="js/jspsych_731/dist/plugin-survey-html-form.js"></script>
+  <link rel="stylesheet" href="js/jspsych_731/dist/jspsych.css"></link>
+  <style>
+    .jspsych-display-element {
+      font-size: 200%;
+    }
+    .jspsych-btn {
+      font-size: 125%;
+    }
+  </style>
+</head>
+<body>
+
+</body>
+<script>
+
+jatos.onLoad(function() {
+  var jsPsych = initJsPsych({
+    on_finish: function() {
+      if (0) { jsPsych.data.displayData(); }
+      else {
+        var result = jsPsych.data.get().json();
+        var order=jatos.studySessionData["order"];
+        jatos.studySessionData["taskindex"] += 1;
+        var expdata = jsPsych.data.get().json();
+        //jatos.submitResultData(result, jatos.startNextComponent);
+        if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) { 
+          // we're done
+          // Check if this came from SONA - should have URL.sid and .sona
+          if (typeof jatos.urlQueryParameters.sid === 'undefined' || typeof jatos.urlQueryParameters.sona === 'undefined' ||
+            typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {
+            jatos.submitResultData(expdata,jatos.endStudy);
+          }
+          else {
+            var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
+            '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
+            jatos.endStudyAndRedirect(redirect,expdata);
+          }
+        }
+        else {
+          // submit and start the next
+          jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
+        }
+      }
+    }
+  });
+
+  //var sid=getID()
+  //console.log('In id, sid= ' + sid);
+  let date = new Date(); 
+  jsPsych.data.addProperties({
+       //subject: sid,
+       task: 'getid',
+       date: date.toLocaleDateString()
+       //urlid: jatos.urlQueryParameters.sid,
+  });
+
+  var idform = {
+    type: jsPsychSurveyHtmlForm,
+    preamble: 'Enter your ID code',
+    html: '<div style="text-align: left; font-size: 16px; line-height: 110%"> \
+    <p><b>ID: </b> <input name="idcode" type="text" required /></p> \
+    </div>',
+    on_finish: function(data) {
+      console.log(data.response)
+      var sid=data.response['idcode'];
+      console.log(sid);
+      jatos.studySessionData['sid']=sid;
+    }
+
+  }
+  
+
+  var timeline=[idform];
+  jsPsych.run(timeline);
+
+});
+</script>
+
+</html>
