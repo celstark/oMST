@@ -55,7 +55,7 @@ let all_prompts= {
       "b_instr_choice": ['OK'],
       "k_trial_text": '<i>Viejo</i> (<b>v</b>), <i>Simila</i> (<b>b</b>), or <i>Nuevo</i> (<b>n</b>)?',
       "k_trial_choices": ['v','b','n'],
-      "b_trial_text": '<i>Viejo</i>, <i>Similar</i>, or <i>Nuevo</i>'
+      "b_trial_text": '<i>Viejo</i>, <i>Similar</i>, or <i>Nuevo</i>',
       "b_trial_choices": ['Viejo','Similar','Nuevo'],
   
       "k_prompt0": 'Presione <i>la barra espaciadora</i> para comenzar',
@@ -63,8 +63,8 @@ let all_prompts= {
       "text0": 'Verá imágenes de artículos cotidianos, uno en uno. Para cada imágen, seleccionará <b>Viejo</b> si usted ha visto esta imágen exacta antes, <b>Similar</b> si es similar, pero no es exactamente idéntica a la imágen que vió \
         antes, o <b>Nuevo</b> si es una nueva imágen totalmente. <p> La manera de pensar en <i>Similar</i> es si el artículo tiene el mismo nombre, pero es una imágen differente de algún modo. <p> Unas pruebas de práctica deberían aclarar esto.',
       
-      "k_prompt_new": 'Todavía no ha visto esta imágen, así que debería seleccionar <b>Nuevo</b> aquí.', // I think these are switched
-      "b_prompt_new": 'Todavía no ha visto esta imágen, así que debería seleccionar <i>Nuevo</i> (<b>n</b>) aquí.', //I think these are switched
+      "b_prompt_new": 'Todavía no ha visto esta imágen, así que debería seleccionar <b>Nuevo</b> aquí.', // I think these are switched
+      "k_prompt_new": 'Todavía no ha visto esta imágen, así que debería seleccionar <i>Nuevo</i> (<b>n</b>) aquí.', //I think these are switched
       "k_inc_new": "Todavía no ha visto esta imágen, así que presione <i>Nuevo</i> (<b>n</b>)",
       "b_inc_new": "Todavía no ha visto esta imágen, así que presione <b>Nuevo</b>",
       "cor_new": "Bueno! Todavía no ha visto esta imágen, así que ha seleccionado correctamente <b>Nuevo</b>",
