@@ -231,6 +231,61 @@ jatos.onLoad(async function() {
     '<table style = "width:100%"> <tr> <td> <img src = "img/pprac2a.jpg" height=400 width=400> </td> <td> <img src = "img/pprac2b.jpg" height=400 width=400> </td> </tr> </table>'
   }
   var timeline = [preload, instr1_trial, demo1_trial, instr2_trial, demo2_trial, instr3_trial];
+
+  // Main phase
+  var test_trials = {
+    timeline: [
+      {
+        type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
+        choices: (resp_mode == 'button' ? ['Same','Different'] : "NO_KEYS"),
+        button_html: '<button class="jspsych-btn dimtext">%choice%</button>',
+        trial_duration: 2000,
+        response_ends_trial: false,
+        stimulus: jsPsych.timelineVariable('img1')
+      },
+      {
+        type: jsPsychAnimation,
+        stimuli: noise_sequence,
+        sequence_reps: 2,
+        frame_time: 200,
+        prompt: '<p>Wait..'
+      },
+      {
+        type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
+        choices: (resp_mode == 'button' ? ['Same','Different'] : ['S','D']),
+        stimulus_duration: 2000,
+        trial_duration: null,
+        response_ends_trial: true,
+        stimulus: jsPsych.timelineVariable('img2')
+      },
+    ],
+    timeline_variables: [
+      { img1: 'img/pcon001a.jpg', img2: 'img/pcon001b.jpg', cresp: 'd'},
+      { img1: 'img/pcon002a.jpg', img2: 'img/pcon002b.jpg', cresp: 's'},
+      { img1: 'img/pcon003a.jpg', img2: 'img/pcon003b.jpg', cresp: 's'},
+      { img1: 'img/pcon004a.jpg', img2: 'img/pcon004b.jpg', cresp: 'd'},
+      { img1: 'img/pcon005a.jpg', img2: 'img/pcon005b.jpg', cresp: 'd'},
+      { img1: 'img/pcon006a.jpg', img2: 'img/pcon006b.jpg', cresp: 'd'},
+      { img1: 'img/pcon007a.jpg', img2: 'img/pcon007b.jpg', cresp: 'd'},
+      { img1: 'img/pcon008a.jpg', img2: 'img/pcon008b.jpg', cresp: 'd'},
+      { img1: 'img/pcon009a.jpg', img2: 'img/pcon009b.jpg', cresp: 'd'},
+      { img1: 'img/pcon010a.jpg', img2: 'img/pcon010b.jpg', cresp: 'd'},
+      { img1: 'img/pcon011a.jpg', img2: 'img/pcon011b.jpg', cresp: 'd'},
+      { img1: 'img/pcon012a.jpg', img2: 'img/pcon012b.jpg', cresp: 's'},
+      { img1: 'img/pcon013a.jpg', img2: 'img/pcon013b.jpg', cresp: 's'},
+      { img1: 'img/pcon014a.jpg', img2: 'img/pcon014b.jpg', cresp: 'd'},
+      { img1: 'img/pcon015a.jpg', img2: 'img/pcon015b.jpg', cresp: 'd'},
+      { img1: 'img/pcon016a.jpg', img2: 'img/pcon016b.jpg', cresp: 'd'},
+      { img1: 'img/pcon017a.jpg', img2: 'img/pcon017b.jpg', cresp: 'd'},
+      { img1: 'img/pcon018a.jpg', img2: 'img/pcon018b.jpg', cresp: 'd'},
+      { img1: 'img/pcon019a.jpg', img2: 'img/pcon019b.jpg', cresp: 'd'},
+      { img1: 'img/pcon020a.jpg', img2: 'img/pcon020b.jpg', cresp: 'd'}
+     
+    ]
+  }
+
+
+ 
   jsPsych.run(timeline);
   
       
