@@ -204,9 +204,11 @@ jatos.onLoad(async function() {
         stimulus: 'Get ready...',
       },
       {
-        type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
-        choices: (resp_mode == 'button' ? ['Same','Different'] : "NO_KEYS"),
-        button_html: '<button class="jspsych-btn dimtext">%choice%</button>',
+        //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
+        //choices: (resp_mode == 'button' ? ['Same','Different'] : "NO_KEYS"),
+        //button_html: '<button class="jspsych-btn dimtext">%choice%</button>',
+        type: jsPsychImageKeyboardResponse,
+        choices: "NO_KEYS",
         trial_duration: 2000,
         response_ends_trial: false,
         stimulus: jsPsych.timelineVariable('img1')
@@ -249,9 +251,11 @@ jatos.onLoad(async function() {
         stimulus: 'Get ready...',
       },
       {
-        type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
-        choices: (resp_mode == 'button' ? ['Same','Different'] : "NO_KEYS"),
-        button_html: '<button class="jspsych-btn dimtext">%choice%</button>',
+        //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
+        //choices: (resp_mode == 'button' ? ['Same','Different'] : "NO_KEYS"),
+        //button_html: '<button class="jspsych-btn dimtext">%choice%</button>',
+        type: jsPsychImageKeyboardResponse,
+        choices: "NO_KEYS",
         trial_duration: 2000,
         response_ends_trial: false,
         stimulus: jsPsych.timelineVariable('img1')
@@ -296,9 +300,11 @@ jatos.onLoad(async function() {
         stimulus: 'Get ready...',
       },
       {
-        type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
-        choices: (resp_mode == 'button' ? ['Same','Different'] : "NO_KEYS"),
-        button_html: '<button class="jspsych-btn dimtext">%choice%</button>',
+        //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
+        //choices: (resp_mode == 'button' ? ['Same','Different'] : "NO_KEYS"),
+        //button_html: '<button class="jspsych-btn dimtext">%choice%</button>',
+        type: jsPsychImageKeyboardResponse,
+        choices: "NO_KEYS",
         trial_duration: 2000,
         response_ends_trial: false,
         stimulus: jsPsych.timelineVariable('img1')
@@ -363,9 +369,9 @@ jatos.onLoad(async function() {
       { img1: 'img/pcon023a.jpg', img2: 'img/pcon023b.jpg', cresp: 'd'},
       { img1: 'img/pcon024a.jpg', img2: 'img/pcon024b.jpg', cresp: 'd'},
       { img1: 'img/pcon025a.jpg', img2: 'img/pcon025b.jpg', cresp: 'd'},
-      { img1: 'img/pcon026a.jpg', img2: 'img/pcon026b.jpg', cresp: 'd'},
+      //{ img1: 'img/pcon026a.jpg', img2: 'img/pcon026b.jpg', cresp: 'd'},
       { img1: 'img/pcon027a.jpg', img2: 'img/pcon027a.jpg', cresp: 's'},     
-      { img1: 'img/pcon028a.jpg', img2: 'img/pcon028a.jpg', cresp: 's'},
+      //{ img1: 'img/pcon028a.jpg', img2: 'img/pcon028a.jpg', cresp: 's'},
     ],
     randomize_order: randomize
   }
