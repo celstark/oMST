@@ -70,7 +70,10 @@ jatos.onLoad(async function() {
   }
   var resp_mode='button';
   if (jatos.studySessionData['resp_mode'] == 'keyboard') {
-    resp_mode='keyboard';
+    resp_mode='key';
+  }
+  else if (jatos.studySessionData['resp_mode'] == 'key') {
+    resp_mode='key';
   }
 
   var lang='eng';
@@ -79,31 +82,32 @@ jatos.onLoad(async function() {
     lang=jatos.studySessionData['lang'];
   }
   // Load language file
-  var langfile = 'lang/lang_'+phasename+'.js';
-  console.log('loading ' + langfile)
-  $.getScript(langfile,function( data, textStatus, jqxhr) {
-    //console.log( data ); // Data returned
-    console.log( textStatus ); // Success
-    console.log( jqxhr.status ); // 200
-    console.debug(langfile + ' loaded...ish');
-  });
-  console.log('did the language load... running await')
-  await waitFor(_ => typeof all_prompts !== 'undefined');
-  let prompts=all_prompts[lang];
-  console.log('  we are set to use ' + prompts['lang'])
+  // var langfile = 'lang/lang_'+phasename+'.js';
+  // console.log('loading ' + langfile)
+  // $.getScript(langfile,function( data, textStatus, jqxhr) {
+  //   //console.log( data ); // Data returned
+  //   console.log( textStatus ); // Success
+  //   console.log( jqxhr.status ); // 200
+  //   console.debug(langfile + ' loaded...ish');
+  // });
+  // console.log('did the language load... running await')
+  // await waitFor(_ => typeof all_prompts !== 'undefined');
+  // let prompts=all_prompts[lang];
+  // console.log('  we are set to use ' + prompts['lang'])
 
   // load honeycomb version of lang file
   console.log('loading json lang')
-  var engjson='lang/omst_en.json';
+  var langfile='lang/omst_en.json';
   var json_prompts=null;
-  $.getJSON(engjson,function( data ) {
+  $.getJSON(langfile,function( data ) {
     //console.log( data ); // Data returned
     json_prompts=data;
-    console.debug(engjson + ' loaded...ish');
+    console.debug(langfile + ' loaded...ish');
   });
   //console.log(json_prompts['consent'])
   await waitFor(_ => json_prompts !== null);
   console.log(json_prompts['task']['name'])
+  let prompts=json_prompts['instructions']
 
 
   //await (await fetch('lang/omst_en.json')).json();
@@ -166,120 +170,120 @@ jatos.onLoad(async function() {
   //console.log(prompts['k_trial_choices'][0], prompts['k_trial_choices'][1], prompts['k_trial_choices'][2])
   var intro = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
-    choices: prompts[resp_stem+'instr_choice'],
-    prompt: "<p>" + prompts[resp_stem+'prompt0'] + "</p>",
-    stimulus: prompts['text0'],
+    choices: [prompts[resp_mode]['instr_choice']],
+    prompt: "<p>" +prompts[resp_mode]['prompt0'] + "</p>",
+    stimulus: prompts['txt0'],
   }
   var new1 = {
     type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage), 
     stimulus: 'img/foil_1032.jpg',
-    key_answer: prompts['k_trial_choices'][2] , button_answer: 2,
-    choices:trial_choices ,
-    prompt: "<p>" + prompts[resp_stem+'prompt_new'] + "</p>",
+    key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
     force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_stem+'inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts[resp_stem+'cor_new'] + "</p>"
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>"
   }
   var new2 = {
     type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: 'img/foil_1033.jpg',
-    key_answer: prompts['k_trial_choices'][2] , button_answer: 2,
-    choices:trial_choices ,
-    prompt: "<p>" + prompts[resp_stem+'prompt_new'] + "</p>",
+    key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
     force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_stem+'inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts[resp_stem+'cor_new'] + "</p>",
+    incorrect_text: "<p>" +prompts[resp_mode]['inc_new'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
       
   }
   var new3 = {
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: 'img/pcon026a.jpg',
-    key_answer: prompts['k_trial_choices'][2], button_answer: 2,
-    choices:trial_choices ,
-    prompt: "<p>" + prompts[resp_stem+'prompt_new'] + "</p>",
+    key_answer: prompts['key']['trial_choices'][2], button_answer: 2,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
     force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_stem+'inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts[resp_stem+'cor_new'] + "</p>",
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
       
   }
   var repeat1 = {
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: "img/foil_1033.jpg",
-    key_answer: prompts['k_trial_choices'][0] , button_answer: 0,
-    choices:trial_choices ,
-    prompt: "<p>" + prompts[resp_stem+'prompt_rep'] + "</p>",
+    key_answer: prompts['key']['trial_choices'][0] , button_answer: 0,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: "<p>" + prompts[resp_mode]['prompt_rep'] + "</p>",
     force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_stem+'inc_rep'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts[resp_stem+'cor_rep'] + "</p>",
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_rep'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_rep'] + "</p>",
   }
   var lure1 ={
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: "img/pcon026b.jpg",
-    key_answer: prompts['k_trial_choices'][1] , button_answer: 1,
-    choices:trial_choices ,
-    prompt:"<p>" + prompts[resp_stem+'prompt_lure'] + "</p>",
+    key_answer: prompts['key']['trial_choices'][1] , button_answer: 1,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt:"<p>" + prompts[resp_mode]['prompt_lure'] + "</p>",
     force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_stem+'inc_lure'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts[resp_stem+'cor_lure'] + "</p>",
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_lure'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_lure'] + "</p>",
   }
 
   var side_by_side1 = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     stimulus: '<p>' + prompts['side_by_side'] + '</p><table style="width:100%"><tr><td><img src="img/pcon026a.jpg"><td><img src="img/pcon026b.jpg"></table> ',
-    choices: prompts[resp_stem+'instr_choice'],
+    choices: [prompts[resp_mode]['instr_choice']],
   }
   var new4 = {
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: "img/foil_1035.jpg",
-    key_answer: prompts['k_trial_choices'][2] , button_answer: 2,
-    choices:trial_choices ,
-    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_stem+'trial_txt'] +'</p>',
+    key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
     force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_stem+'inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts[resp_stem+'cor_new'] + "</p>",
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
   }
   var new5 = {
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: 'img/pcon028a.jpg',
-    key_answer: prompts['k_trial_choices'][2] , button_answer: 2,
-    choices:trial_choices ,
-    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_stem+'trial_txt'] +'</p>',
+    key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
     force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_stem+'inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts[resp_stem+'cor_new'] + "</p>",
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
       
   }
   var repeat2 = {
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: "img/foil_1035.jpg",
-    key_answer: prompts['k_trial_choices'][0], button_answer: 0,
-    choices:trial_choices ,
-    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_stem+'trial_txt'] +'</p>',
+    key_answer: prompts['key']['trial_choices'][0], button_answer: 0,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
     force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_stem+'inc_rep'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts[resp_stem+'cor_rep'] + "</p>",
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_rep'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_rep'] + "</p>",
       
   }
   var lure2 = {
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: "img/pcon028b.jpg",
-    key_answer: prompts['k_trial_choices'][1] , button_answer: 1,
-    choices:trial_choices ,
-    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_stem+'trial_txt'] +'</p>',
+    key_answer: prompts['key']['trial_choices'][1] , button_answer: 1,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
     force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_stem+'inc_lure'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts[resp_stem+'cor_lure'] + "</p>",
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_lure'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_lure'] + "</p>",
       
   }
   var side_by_side2 = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     stimulus: '<p>' + prompts['side_by_side'] + '</p><table style="width:100%"><tr><td><img src="img/pcon028a.jpg"><td><img src="img/pcon028b.jpg"></table> ',
-    choices: prompts[resp_stem+'instr_choice'],
+    choices: [prompts[resp_mode]['instr_choice']],
   }
   var outtro = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
-    choices: instr_choice,
-    prompt: prompts[resp_stem+'prompt0'],
+    choices: [prompts[resp_mode]['instr_choice']],
+    prompt: prompts[resp_mode]['prompt0'],
     stimulus: prompts['end'], 
   }
   var  timeline = [intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro];
