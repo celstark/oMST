@@ -92,6 +92,24 @@ jatos.onLoad(async function() {
   let prompts=all_prompts[lang];
   console.log('  we are set to use ' + prompts['lang'])
 
+  // load honeycomb version of lang file
+  console.log('loading json lang')
+  var engjson='lang/omst_en.json';
+  var json_prompts=null;
+  $.getJSON(engjson,function( data ) {
+    //console.log( data ); // Data returned
+    json_prompts=data;
+    console.debug(engjson + ' loaded...ish');
+  });
+  //console.log(json_prompts['consent'])
+  await waitFor(_ => json_prompts !== null);
+  console.log(json_prompts['task']['name'])
+
+
+  //await (await fetch('lang/omst_en.json')).json();
+  //const jsonLang=require('lang/omst_en.json');
+  //console.log(jsonLang);
+
   var jsPsych = initJsPsych({on_finish: function() {
       if (0) { jsPsych.data.displayData(); }
       else {
@@ -124,6 +142,7 @@ jatos.onLoad(async function() {
     task: phasename,
     subject: sid,
   });
+  var trial_choices= prompts['k_trial_choices'];  // DELETE THIS
 
   // Default is keyboard here - override if buttons
   var instr_choice=[' ']; // 32 is space
@@ -261,7 +280,7 @@ jatos.onLoad(async function() {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     choices: instr_choice,
     prompt: prompts[resp_stem+'prompt0'],
-    stimulus: pormpts['end'], 
+    stimulus: prompts['end'], 
   }
   var  timeline = [intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro];
   jsPsych.run(timeline);
