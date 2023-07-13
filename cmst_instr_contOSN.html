@@ -146,21 +146,19 @@ jatos.onLoad(async function() {
     task: phasename,
     subject: sid,
   });
-  var trial_choices= prompts['k_trial_choices'];  // DELETE THIS
+  //var trial_choices= prompts['k_trial_choices'];  // DELETE THIS
 
   // Default is keyboard here - override if buttons
-  var instr_choice=[' ']; // 32 is space
+  //var instr_choice=[' ']; // 32 is space
   //var instr_txt='<i>spacebar</i>'; //
-  var trial_type='';
-  var resp_stem='k_'
+  //var trial_type='';
   //var trial_txt=prompts['k_trial_text']; //
   //var trial_choices=['v','b','n']; //
   var extra_html='';
   if (resp_mode == 'button') {
     //instr_choice=['OK']; //
     //instr_txt='<i>OK</i>'; //
-    trial_type='-buttons';
-    resp_stem='b_'
+    //trial_type='-buttons';
     //trial_txt='<i>Old</i>, <i>Similar</i>, or <i>New</i>'; //
     //trial_choices=['Old','Similar','New']; //
     extra_html='style="margin-top:112px;"';
