@@ -5,10 +5,11 @@
  -->
 <head>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
-        https://fonts.gstatic.com http://www.stark-labs.com/exp/jsPsych/mobile_cMST/append_log.php http://www.stark-labs.com/exp/jsPsych/mobile_cMST/write_data_file.php; 
+        https://fonts.gstatic.com ; 
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; media-src *; 
       img-src 'self' data: content:;">
   <script type="text/javascript" src="jatos.js"></script>
+  <script src="js/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
     .jspsych-display-element {
@@ -21,38 +22,64 @@
 </head>
 
 <body>
-    <div class="jspsych-display-element">
-        <p><p style="text-align:center;">Thank you for your participation in the experiment. You may close this window if you are not redirected.</p></p>
-    </div>
 
-    <script type="text/javascript">
+  <script type="text/javascript">
+    function waitFor(conditionFunction) {
+      const poll = resolve => {
+      if(conditionFunction()) resolve();
+        else setTimeout(_ => poll(resolve), 400);
+      }
+      return new Promise(poll)
+    }
 
-      jatos.onLoad(function () {
-        var d= new Date();
-
-        if (typeof jatos.urlQueryParameters.sona === 'undefined' ||
-              typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {
-            console.log('not sona');
-            jatos.submitResultData({
-                task: "end-SCAN",
-                msg: "study ended",
-                date: d.toString()
-              },jatos.endStudy);
-          }
-          else {
-            var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
-              '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
-            jatos.endStudyAndRedirect(redirect,{
-                task: "end-SCAN",
-                msg: "SONA study ended",
-                date: d.toString()
-              });
-          }
-
+    jatos.onLoad(async function () {
+      var d= new Date();
+      var lang='eng';
+      if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+        lang=jatos.studySessionData['lang'];
+      }
+      // load honeycomb version of lang file
+      console.log('loading json lang')
+      var langfile='lang/omst_en.json';
+      var json_prompts=null;
+      $.getJSON(langfile,function( data ) {
+        json_prompts=data;
+        console.debug(langfile + ' loaded...ish');
       });
+      await waitFor(_ => json_prompts !== null);
+      console.log(json_prompts['task']['name'])
+      let prompts=json_prompts['end']
+ 
+      // Baisc HTML thank you text
+      p=document.createElement("p");
+      p.innerHTML='<div class="jspsych-display-element"> <p><p style="text-align:center;">' + 
+        prompts['ty'] + '</p></p> </div>';
+      document.body.appendChild(p)
 
-      </script>
+      if (typeof jatos.urlQueryParameters.sona === 'undefined' ||
+            typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {
+          console.log('not sona');
+          jatos.submitResultData({
+              task: "end-SCAN",
+              msg: "study ended",
+              date: d.toString()
+            },jatos.endStudy);
+        }
+        else {
+          var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
+            '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
+          jatos.endStudyAndRedirect(redirect,{
+              task: "end-SCAN",
+              msg: "SONA study ended",
+              date: d.toString()
+            });
+        }
 
+    });
+
+  
+    </script>
+  
 </body>
 
 
