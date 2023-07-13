@@ -169,7 +169,10 @@ jatos.onLoad(async function() {
   }
   var resp_mode='button';
   if (jatos.studySessionData['resp_mode'] == 'keyboard') {
-    resp_mode='keyboard';
+    resp_mode='key';
+  }
+  else if (jatos.studySessionData['resp_mode'] == 'key') {
+    resp_mode='key';
   }
   var stim_set='1';
   if (typeof jatos.studySessionData['set_omst'] !== 'undefined') {
@@ -223,7 +226,23 @@ jatos.onLoad(async function() {
     preload_fnames[i]=trial_stim[i].image;
   }
   
-  
+  var lang='eng';
+  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+    lang=jatos.studySessionData['lang'];
+  }
+  // load honeycomb version of lang file
+  console.log('loading json lang')
+  var langfile='lang/omst_en.json';
+  var json_prompts=null;
+  $.getJSON(langfile,function( data ) {
+    json_prompts=data;
+    console.debug(langfile + ' loaded...ish');
+  });
+  await waitFor(_ => json_prompts !== null);
+  console.log(json_prompts['task']['name'])
+  let prompts=json_prompts['cont']
+
+
   // START OF CODE THAT SHOULD BE CONSTANT REGARDLESS OF JATOS / CORDOVA
   const phasename='oMSTCont';
 
@@ -266,35 +285,46 @@ jatos.onLoad(async function() {
 
 
   // Setup prompts and response options based on keyboard/button and 2/3 choices
-  var instr_choice=[' ']; // 32 is space
-  var instr_txt='<i>spacebar</i>';
-  var trial_txt='Old (<b>v</b>), Similar (<b>b</b>), or New? (<b>n</b>)';
-  var trial_choices=['v','b','n'];
-  if (twochoice == 1) {
-    trial_txt='Old (<b>v</b>) or New? (<b>n</b>)';
-    trial_choices=['v','n'];
-  }
-  if (resp_mode == 'button') {
-    instr_choice=['OK'];
-    instr_txt='<i>OK</i>';
-    if (twochoice == 1) {
-      trial_txt='<i>Old</i> or <i>New</i>';
-      trial_choices=['Old','New'];
-    }
-    else {
-      trial_txt='<i>Old</i>, <i>Similar</i>, or <i>New</i>';
-      trial_choices=['Old','Similar','New'];
-    }
-  }
+  // var instr_choice=[' ']; // 32 is space
+  // var instr_txt='<i>spacebar</i>';
+  // var trial_txt='Old (<b>v</b>), Similar (<b>b</b>), or New? (<b>n</b>)';
+  // var trial_choices=['v','b','n'];
 
+  if (twochoice == 1) {
+    var trial_choices=[ prompts[resp_mode]['twochoice']['old'], prompts[resp_mode]['twochoice']['new'] ]; 
+  }
+  else {
+    console.log(prompts[resp_mode])
+    console.log(prompts[resp_mode]['threechoice']['trial_choices'])
+    var trial_choices= [prompts[resp_mode]['threechoice']['trial_choices']['old'], 
+      prompts[resp_mode]['threechoice']['trial_choices']['sim'], 
+      prompts[resp_mode]['threechoice']['trial_choices']['new'] ];
+  }
+  //   trial_txt='Old (<b>v</b>) or New? (<b>n</b>)';
+  //   trial_choices=['v','n'];
+  // }
+  // if (resp_mode == 'button') {
+  //   instr_choice=['OK'];
+  //   instr_txt='<i>OK</i>';
+  //   if (twochoice == 1) {
+  //     trial_txt='<i>Old</i> or <i>New</i>';
+  //     trial_choices=['Old','New'];
+  //   }
+  //   else {
+  //     trial_txt='<i>Old</i>, <i>Similar</i>, or <i>New</i>';
+  //     trial_choices=['Old','Similar','New'];
+  //   }
+  // }
+  let choicekey='threechoice';
+  if (twochoice == 1) { choicekey="twochoice" }
 
   var instr1_trial = {  
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
-    choices: instr_choice,
-    prompt: '<p>Press ' + instr_txt + ' to begin this next task</p>',
+    choices: [prompts[resp_mode]['instr_choice']],
+    prompt: "<p>" +prompts[resp_mode]['instr_prompt'] + "</p>",
     margin_horizontal: '40px', margin_vertical: '20px',
 //        button_html: '<button style="font-size: 150%" class="jspsych-btn">%choice%</button>',
-    stimulus: '<p>Continuous ' + trial_txt + ' task</p>'
+    stimulus: "<p>" +prompts[resp_mode][choicekey]['instr_stim'] + "</p>",
   }
   
   // Build up my actual trial timeline
@@ -337,7 +367,7 @@ jatos.onLoad(async function() {
     timeline: [
       {
       type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
-      prompt: '<p>Did you see this before? Is it ' + trial_txt + '?</p>',
+      prompt: "<p>" +prompts[resp_mode][choicekey]['trial_prompt'] + "</p>",
       choices: trial_choices,
       stimulus_duration: 2000,
       trial_duration: (selfpaced==1 ? null : 2500),
@@ -374,7 +404,7 @@ jatos.onLoad(async function() {
   var debrief_block = {
     type: jsPsychHtmlKeyboardResponse,
     trial_duration: 500,
-    stimulus: 'Thank you',
+    stimulus: prompt['ty'],
     on_finish: function (data) {
       let validtrials=jsPsych.data.get().filterCustom(function(trial) {
         return trial.resp !== null; 

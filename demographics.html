@@ -16,6 +16,7 @@
   <script type="text/javascript" src="js/index.js"></script>
   <script src="js/jspsych_731/dist/jspsych.js"></script>
   <script src="js/jspsych_731/dist/plugin-survey-html-form.js"></script>
+  <script src="js/jquery-3.1.1.min.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
     .jspsych-display-element {
@@ -45,9 +46,32 @@ function getID() {
   }
   return sid
 }
-jatos.onLoad(function() {
+function waitFor(conditionFunction) {
+  const poll = resolve => {
+  if(conditionFunction()) resolve();
+    else setTimeout(_ => poll(resolve), 400);
+  }
+  return new Promise(poll)
+}
+
+jatos.onLoad(async function() {
   var sid=getID()
   //console.log('In demog, sid= ' + sid);
+  var lang='eng';
+  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+    lang=jatos.studySessionData['lang'];
+  }
+  // load honeycomb version of lang file
+  console.log('loading json lang')
+  var langfile='lang/omst_en.json';
+  var json_prompts=null;
+  $.getJSON(langfile,function( data ) {
+    json_prompts=data;
+    console.debug(langfile + ' loaded...ish');
+  });
+  await waitFor(_ => json_prompts !== null);
+  console.log(json_prompts['task']['name'])
+  let prompts=json_prompts['demog']
 
   var jsPsych = initJsPsych({
     on_finish: function() {
@@ -70,24 +94,24 @@ jatos.onLoad(function() {
 
   var demogform = {
     type: jsPsychSurveyHtmlForm,
-    preamble: 'The National Institute of Health (NIH) mandates that we collect demographic information from participants and that we collect it <i>in this specific format</i>.',
-    html: '<div style="text-align: left; font-size: 16px; line-height: 110%"> \
-    <p><b>Full name: </b> <input name="fullname" type="text" required /></p> \
-    <p> <b>Date of birth (DD/MM/YYYY):</b> <input name="dob" type="text" required /></p> \
-    <p> <b>Gender: </b>\
-       <br><input type="radio" id="male" name="gender" value="male" style="margin-left: 50px" required > <label for="male"> Male </label> \
-       <br><input type="radio" id="female" name="gender" value="female" style="margin-left: 50px"  > <label for="female"> Female </label> \
-    <p> <b>Ethnicity: </b>\
-       <br><input type="radio" id="hispanic" name="ethnicity" value="hispanic" style="margin-left: 50px" required> <label for="hispanic"> Hispanic or Latino </label>  \
-       <br><input type="radio" id="nonhispanic" name="ethnicity" value="nonhispanic" style="margin-left: 50px"> <label for="nonhispanic"> Not Hispanic or Latino </label> \
-    <p> <b>Race with which you identify most: </b>\
-       <br><input type="radio" id="nativeamerican" name="race" value="nativeamerican" style="margin-left: 50px" required> <label for="nativeamerican"> American Indian or Alaska Native </label> \
-       <br><input type="radio" id="asian" name="race" value="asian" style="margin-left: 50px"> <label for="asian"> Asian </label> \
-       <br><input type="radio" id="black" name="race" value="black" style="margin-left: 50px"> <label for="black"> Black or African American </label> \
-       <br><input type="radio" id="nativehawaiian" name="race" value="nativehawaiian" style="margin-left: 50px"> <label for="nativehawaiian"> Native Hawaiian or Pacific Islander </label> \
-       <br><input type="radio" id="white" name="race" value="white" style="margin-left: 50px"> <label for="white"> White </label> \
-       <br><input type="radio" id="more" name="race" value="more" style="margin-left: 50px"> <label for="more"> More than one race or Other </label> \
-    </div>'
+    preamble: prompts['preamble'],
+    html:'<div style="text-align: left; font-size: 16px; line-height: 110%"> <p>' +
+      '<p><b>' + prompts['name'] + '</b> <input name="fullname" type="text" required /></p>' +
+      '<p><b>' + prompts['dob'] + '</b> <input name="dob" type="text" required /></p>' +
+      '<p><b>' + prompts['gender']['prompt'] + ' </b>'+
+      '<br><input type="radio" id="male" name="gender" value="male" style="margin-left: 50px" required > <label for="male">'+prompts['gender']['m']+'</label> '+
+      '<br><input type="radio" id="female" name="gender" value="female" style="margin-left: 50px"  > <label for="female">'+prompts['gender']['f']+'</label> '+
+      '<p><b>'+ prompts['ethnicity']['prompt'] +' </b>' +
+      '<br><input type="radio" id="hispanic" name="ethnicity" value="hispanic" style="margin-left: 50px" required> <label for="hispanic">'+prompts['ethnicity']['h']+'</label>' +
+      '<br><input type="radio" id="nonhispanic" name="ethnicity" value="nonhispanic" style="margin-left: 50px"> <label for="nonhispanic">'+prompts['ethnicity']['nh']+'</label>' +
+      '<p><b>' + prompts['race']['prompt'] + '</b>' + 
+      '<br><input type="radio" id="nativeamerican" name="race" value="nativeamerican" style="margin-left: 50px" required> <label for="nativeamerican">'+prompts['race']['ai']+'</label>' +
+      '<br><input type="radio" id="asian" name="race" value="asian" style="margin-left: 50px"> <label for="asian">'+prompts['race']['a']+'</label> ' +
+      '<br><input type="radio" id="black" name="race" value="black" style="margin-left: 50px"> <label for="black">'+prompts['race']['b']+'</label> ' +
+      '<br><input type="radio" id="nativehawaiian" name="race" value="nativehawaiian" style="margin-left: 50px"> <label for="nativehawaiian">'+prompts['race']['nh']+'</label> ' +
+      '<br><input type="radio" id="white" name="race" value="white" style="margin-left: 50px"> <label for="white">'+prompts['race']['w']+'</label> ' +
+      '<br><input type="radio" id="more" name="race" value="more" style="margin-left: 50px"> <label for="more">'+prompts['race']['m']+'</label> ' +
+      '</div>'
   }
   
   var timeline = [demogform];
