@@ -103,7 +103,8 @@
             "prompt_rep": "You have seen this image, so press <b>Old</b>",
             "inc_rep": "You have seen this exact image, so press <b>Old</b>",
             "prompt_lure": "This item is similar to one you have seen before, but not exactly the same, so you should select <b>Similar</b> here",
-            "inc_lure": "You saw one <i>similar to this, but not exactly the same</i>. So, the correct response is <b>Similar</b>"
+            "inc_lure": "You saw one <i>similar to this, but not exactly the same</i>. So, the correct response is <b>Similar</b>",
+            "continue": "<p>(Press <i>OK</i> to continue)"
         }
     },
 
