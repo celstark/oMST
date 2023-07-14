@@ -121,6 +121,13 @@ jatos.onLoad(async function() {
   if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
+    lang=jatos.studyJsonInput['lang']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
+    lang=jatos.batchJsonInput['lang']
+  }
+  
   if (jatos.studySessionData['resp_mode'] == 'keyboard') {
     resp_mode='keyboard';
   }

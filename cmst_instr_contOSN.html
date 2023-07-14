@@ -81,6 +81,13 @@ jatos.onLoad(async function() {
   if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
+    lang=jatos.studyJsonInput['lang']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
+    lang=jatos.batchJsonInput['lang']
+  }
+
   // Load language file
   // var langfile = 'lang/lang_'+phasename+'.js';
   // console.log('loading ' + langfile)
@@ -96,7 +103,7 @@ jatos.onLoad(async function() {
   // console.log('  we are set to use ' + prompts['lang'])
 
   // load honeycomb version of lang file
-  console.log('loading json lang')
+  console.log('loading json lang: ',lang)
   var langfile='lang/omst_'+lang+'.json';
   var json_prompts=null;
   $.getJSON(langfile,function( data ) {
