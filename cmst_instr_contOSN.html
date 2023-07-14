@@ -76,7 +76,7 @@ jatos.onLoad(async function() {
     resp_mode='key';
   }
 
-  var lang='eng';
+  var lang='en';
   //lang='kor';
   if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
@@ -97,7 +97,7 @@ jatos.onLoad(async function() {
 
   // load honeycomb version of lang file
   console.log('loading json lang')
-  var langfile='lang/omst_en.json';
+  var langfile='lang/omst_'+lang+'.json';
   var json_prompts=null;
   $.getJSON(langfile,function( data ) {
     //console.log( data ); // Data returned
