@@ -86,14 +86,14 @@ end: "That's the idea. Now, we'll do the actual test <p><i>As you do the actual 
 
 KEY:
 trial_txt: "<i>Old</i> (<b>v</b>), <i>Similar</i> (<b>b</b>), or <i>New</i> (<b>n</b>)?",
-prompt0: "Press <i>spacebar</i> to begin</p>",
-prompt_new: "You have not seen this image yet so you should select <i>New</i> (<b>n</b>) here <p>",
-inc_new: "You haven't seen this image yet, so press <i>New</i> (<b>n</b>)</p>",
-prompt_rep: "You have already seen this item before, press <i>Old</i> (<b>v</b>)</p>",
-inc_rep: "You have seen this exact image, so press <i>Old</i> (<b>v</b>)</p>",
+prompt0: "Press <i>spacebar</i> to begin",
+prompt_new: "You have not seen this image yet so you should select <i>New</i> (<b>n</b>) here",
+inc_new: "You haven't seen this image yet, so press <i>New</i> (<b>n</b>)",
+prompt_rep: "You have already seen this item before, press <i>Old</i> (<b>v</b>)",
+inc_rep: "You have seen this exact image, so press <i>Old</i> (<b>v</b>)",
 prompt_lure: "This item is similar to one you have seen before, but not exactly the same, so you should select <i>Similar</i> (<b>b</b>) here",
 inc_lure: "You saw one <i>similar to this, but not exactly the same</i>, so press <i>Similar</i> (<b>b</b>)",
-continue: "<p>(Press <i>spacebar</i> to continue)</p>"
+continue: "(Press <i>spacebar</i> to continue)"
 
 BUTTON:
 instr_choice: "OK",
@@ -103,7 +103,7 @@ trial_choices: {
                 sim: "Similar",
                 new: "New"
             }      
-continue: "<p>(Press <i>OK</i> to continue)</p>"
+continue: "(Press <i>OK</i> to continue)"
 prompt0: "Press <i>OK</i> to begin",
 prompt_new: "You have not seen this image yet so you should select <b>New</b> here",
 inc_new: "You haven't seen this image yet, so press <b>New</b>",
