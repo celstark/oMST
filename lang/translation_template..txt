@@ -159,12 +159,12 @@ ty: "Thank you for your participation in the experiment. You may close this wind
 ----------------------- TASK 6 ----------------------
 ----------------------- PCON ------------------------
 
-instr1_stim: "<p>In this task, you will see two objects appear on the screen, one after the other, with a bit \ of "static" for a few seconds between them. Your job is to determine if the two images are <i>exactly the same</i> \ or not.</p>"
-instr2_stim: "<p>Here are those images again. You should have said <b>Same</b> for that one as they were the same images.</p>"
-instr3_stim: "<p>Here are those images again. You should have said <b>Different</b> for that one as they were not exactly the same.</p>"
+instr1_stim: "In this task, you will see two objects appear on the screen, one after the other, with a bit of "static" for a few seconds between them. Your job is to determine if the two images are <i>exactly the same</i> or not."
+instr2_stim: "Here are those images again. You should have said <b>Same</b> for that one as they were the same images."
+instr3_stim: "Here are those images again. You should have said <b>Different</b> for that one as they were not exactly the same."
 
 ready: "Get ready...",
-wait: "<p>Wait..",
+wait: "Wait..",
 ty: "Thank You"
 
 KEY:
