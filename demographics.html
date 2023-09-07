@@ -4,7 +4,9 @@
   Author: Craig Stark
 
   Collects demographic information and then advances to the next task in the list
-
+  8/30/23 (CELS): Added getID() to come up with a good sid
+  9/7/23 (CELS): Fixing order / trialindex
+  
 -->
 <head>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
@@ -54,8 +56,27 @@ jatos.onLoad(function() {
       if (0) { jsPsych.data.displayData(); }
       else {
         var result = jsPsych.data.get().json();
-        jatos.submitResultData(result, jatos.startNextComponent);
-
+        var order=jatos.studySessionData["order"];
+        jatos.studySessionData["taskindex"] += 1;
+        var expdata = jsPsych.data.get().json();
+        //jatos.submitResultData(result, jatos.startNextComponent);
+        if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) { 
+          // we're done
+          // Check if this came from SONA - should have URL.sid and .sona
+          if (typeof jatos.urlQueryParameters.sid === 'undefined' || typeof jatos.urlQueryParameters.sona === 'undefined' ||
+            typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {
+            jatos.submitResultData(expdata,jatos.endStudy);
+          }
+          else {
+            var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
+            '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
+            jatos.endStudyAndRedirect(redirect,expdata);
+          }
+        }
+        else {
+          // submit and start the next
+          jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
+        }
       }
     }
   });

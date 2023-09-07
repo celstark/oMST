@@ -5,6 +5,8 @@
   Author: Craig Stark
   Forked from cont_omst.html and pcon_gs_v2.html and pcon_instr_gs.html on 6/22/23
   
+  8/16/23 (CELS): Fixed for versions without setup.html to progress to next phase
+  8/30/23 (CELS): Added getID() to come up with a good sid
 
   Optional parameters:
   In the JATOS versions, these come in via jatos.studySessionData but we also can pass
@@ -101,13 +103,28 @@ function invNormcdf(p) { // https://stackoverflow.com/questions/8816729/javascri
   return retVal;
 }
 
+function getID() {
+  // Try to get a reasonable ID code for this person.  You can use the URL with a "sid" parameter or
+  // specify one in the jatos studySessionData. If not, it'll use the JATOS workerId.
+  // URL > studySession > workerID
+  var sid=jatos.urlQueryParameters.sid;
+  if (sid == undefined) {
+    sid=jatos.studySessionData['sid'];
+  }
+  if (typeof sid == 'undefined') {
+    if (typeof jatos.workerId !== 'undefined') { // At least try the workerID
+      sid = jatos.workerId;
+    }
+    else { sid=1234; }
+  }
+  return sid
+}
+
 jatos.onLoad(async function() {
   //baseurl='https://starklab.bio.uci.edu/mst/'; // How we'll get images, videos, etc.  Set to empty string to use local folders
   baseurl=''; // How we'll get images, videos, etc.  Set to empty string to use local folders
-  var sid=jatos.studySessionData['sid'];
-  if (typeof sid === 'undefined') {
-    sid=1234;
-  }
+  var sid=getID();
+
   var resp_mode='button';
   if (jatos.studySessionData['resp_mode'] == 'keyboard') {
     resp_mode='keyboard';
@@ -136,6 +153,14 @@ jatos.onLoad(async function() {
         var order=jatos.studySessionData["order"];
         jatos.studySessionData["taskindex"] += 1;
         var expdata = jsPsych.data.get().json();
+        if (typeof order === 'undefined') {
+          // We don't have an 'order' setup, so assume it's 1-N
+          console.log('faking an order')
+          order=Array(jatos.componentList.length).fill().map((e,i)=>i+1);
+          jatos.studySessionData["taskindex"]=jatos.componentPos;
+          //console.log(order);
+          //console.log(jatos.studySessionData["taskindex"]);
+        }
         // Submit results to JATOS and queue the end or next task
         if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) { 
           // we're done
