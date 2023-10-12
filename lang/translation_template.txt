@@ -9,7 +9,8 @@ These are for when the task uses keyboard or mouse-clicks to on-screen buttons f
 responses. The text for these is usually quite similar.
 
 If you're short on time or want to start somewhere, Task 4 (instructions) and Task 5
-(oMST) are the top priority. 
+(oMST) are the top priority. Then Task 6 (Pcon) and Task 3 (demographics).
+     ****************** SKIP THE CONSENT *********************
 
 
 ----------------------- TASK 1 ----------------------
@@ -20,7 +21,8 @@ end: "This experiment has ended."
 
 ----------------------- TASK 2 ----------------------
 ----------------------- CONSENT ---------------------
-
+-------------------- SKIP THIS PART -----------------
+---------------- NO REALLY ... SKIP THIS ------------
 CONSENT:
 title: "IRB Consent Form",
 
