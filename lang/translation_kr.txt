@@ -1,0 +1,191 @@
+Thank you for helping us translate the MST into other languages.  Below, you will see
+several blocks of text. What we need translated are always in quotes. You'll also see
+some HTML codes in here.  Anything inside <b> ... </b> for example will be in bold.
+The <i> means italics, <li> makes a list item, <p> adds a break between paragraphs, etc.
+So, try to keep those in there. Don't worry about the unquoted bit before the colon or 
+anything else that's not in quotes. Those are codes for us to know where things get 
+inserted into the experiment. Also, you will note sections for "KEY" and "BUTTONS".
+These are for when the task uses keyboard or mouse-clicks to on-screen buttons for the
+responses. The text for these is usaully quite similar.
+
+If you're short on time or want to start somewhere, Task 4 (instructions) and Task 5
+(oMST) are the top priority. 
+
+
+----------------------- TASK 1 ----------------------
+---------------------- WELCOME ----------------------
+
+TASK:
+end: "This experiment has ended."
+
+----------------------- TASK 2 ----------------------
+----------------------- CONSENT ---------------------
+
+CONSENT:
+title: "IRB Consent Form",
+
+STUDY:
+sis: "Study Information Sheet <br>"
+
+RESEARCHER:
+title: "Lead Researcher <br>"
+text: "<li>We are asking you to take part in a study conducted by researchers at the University of California, Irvine. Participating in this study is optional. </li> <li>If you choose to be in the study, you will complete an online memory experiment involving pictures of everyday objects. You may also participate in a survey that will help us learn more about how eating habits, physical activity, mood, sleep patterns, and stress may influence memory performance. The session will take about 30 minutes to complete. </li> <li>You can skip questions that you do not want to answer or stop the survey at any time. We will keep your answers confidential and will not share your personal information with anyone outside the research team. </li> <li>This research is only for participants over the age of 18; if you under the age of 18, please do not complete this survey.</li> <li>Some questions may cause embarrassment or anxiety. If you do not wish to answer a question, you can skip it and go to the next questions. If you do not wish to participate, you can stop.</li> <li>As with most research, there is a chance that confidentiality could be compromised. We take precautions to minimize this risk, including coding your data with a number instead of your name and storing it on a password protected database. </li> <li>You will receive extra course credit for an eligible course through the UCI Social Sciences human subjects’ pool.  You will receive a ½ unit of course credit for each ½ hour of participation in this study.  Total amount of credit you may earn for this study is 1 unit of credit.  The course instructor offering extra course credit for participation in research must provide alternatives to earn extra course credit. The alternative assignment must require equal or less time and effort for the amount of extra credit that can be earned through participation in research.</li> <li>If you have any comments, concerns, or questions regarding the conduct of this research please contact the researchers listed at the top of this form.</li> <li>If you have questions or concerns about your rights as a research participant, you can contact the UCI Institutional Review Board by phone, (949) 824-0665, by e-mail at IRB@research.uci.edu or at 141 Innovation, Suite 250, Irvine, CA 92697. </li> <br><b>What is an IRB?</b>  An Institutional Review Board (IRB) is a committee made up of scientists and non-scientists.  The IRB’s role is to protect the rights and welfare of human subjects involved in research.  The IRB also assures that the research complies with applicable regulations, laws, and institutional policies. </li> "
+prompt: "<li>If you want to participate in this study, click the <b>Agree<b> button to start the survey. </li>"
+
+BUTTONS:
+agree: "I agree"
+cancel: "Cancel"
+___
+
+RESP: 
+prompt: "Please select if you prefer to use your device's keyboard or if you prefer to use your mouse to click buttons on your screen",
+
+CHOICES:
+keyboard: "Keyboard",
+buttons: "Buttons"
+ 
+---
+----------------------- TASK 3 ----------------------
+-------------------- DEMOGRAPHCS ---------------------
+
+DEMOG:
+preamble: "The National Institute of Health (NIH) mandates that we collect demographic information from participants and that we collect it <i>in this specific format</i>.",
+name: "Full name:",
+dob: "Date of birth (DD/MM/YYYY):",
+
+GENDER:
+prompt: "Gender:",
+m: "Male",
+f: "Female"
+
+ETHNICITY: 
+prompt: "Ethnicity:",
+h: "Hispanic or Latino",
+nh: "Not Hispanic or Latino"
+
+RACE:
+prompt: "Race with which you identify most:",
+ai: "American Indian or Alaska Native",
+a: "Asian",
+b: "Black or African American",
+nh: "Native Hawaiian or Pacific Islander",
+w: "White",
+m: "More than one race or Other"
+
+---
+----------------------- TASK 4 ----------------------
+-------------------- INSTRUCTIONS ---------------------
+INSTRUCTIONS:
+txt0: "당신은 한 번에 하나씩 일상용품의 사진을 볼것입니다. 각각 사진을 본후 선택해주세요. 만약 당신이 이전의 사진과 똑같은 사진을 보았다면, <b>이전 사진</b>을 선택하세요. 만약 사진이 이전에 본것과 비슷하지만 똑같이 일치하지 않으면 <b>비슷한 사진</b>을 선택하세요. 만약 완전히 새로운 사진을 보면 <b>새로운 사진</b>을 선택하세요 . <p> <i>비슷한 사진</i>은 같은 이름으로 구별되지만, 한가지 이상 다른점이 있습니다. <p>몇번의 연습이 이해를 도울것입니다.",
+cor_new: "잘했습니다! 당신은 이사진을 본적이 없어서 맞게 <b>새로운 사진</b>을 선택했습니다.",
+cor_rep: "잘했습니다! 당신은 이전에 이미 똑같은 사진을 보았음으로, 맞게 <b>이전 사진</b>을 선택했습니다.",
+cor_lure: "잘했습니다! 당신은 <i>똑같은</i> 사진을 본적이 없으므로, 맞게 <b>비슷한 사진</b>을 선택했습니다.",
+prompt_test: "이제 당신 차례입니다. 이사진을 본적이 있습니까?",
+side_by_side: "보는것 처럼, 이사진들은 비슷하지만 완전이 똑같지는 않습니다. 이런경우의 사진들은 <b>비슷한 사진</b>을 선택해주세요. 왜냐하면, <b>비슷한 사진</b> 선택은 이번 시험에서 닮았지만 똑같이 않은 이미지를  보았다 라는것을 표시하는 것입니다.",
+end: "바로 그것입니다. 이제 진짜 시험을 시작하겠습니다. <p><i>시험을 볼때에 대답하기전에 사진이 사라져도, 걱정하지 마세요. 단지 답변을 선택 해주세요.</i>",
+
+KEY:
+trial_txt: "<i>이전 사진</i> (<b>v</b>), <i>비슷한 사진</i> (<b>b</b>), or <i>새로운 사진</i> (<b>n</b>)?",
+prompt0: "시작 하시려면 <i>스페이스 바</i>를 눌러주세요",
+prompt_new: "당신은 이사진을 본적이 없으므로 여기에서 <i>새로운 사진</i>을 선택하세요.(<b>n</b>)",
+inc_new: "이사진을 본적이 없으므로 여기에서 <i>새로운 사진</i>을 선택하세요. (<b>n</b>)",
+prompt_rep: "당신은 이사진을 이전에 이미 보았습니다. 그러므로 <i>이전 사진</i>을 선택하세요 (<b>v</b>).",
+inc_rep: "당신은 이전에 이미 똑같은 사진을 보았음으로 <i>이전 사진/i>을 선택하세요 (<b>v</b>)",
+prompt_lure: "이사진은 당신이 이전에 보았던 사진과 비슷하지만 완전히 똑같이 않습니다. 그러므로 <i>비슷한 사진</i> (<b>b</b>)을 선택하세요.",
+inc_lure: "당신은 전에 <i>비슷한 사진을 보았습니다. 그러나 똑같은 사진이 아닙니다</i>. 그러므로 <i>비슷한 사진</i>을 선택하세요. (<b>b</b>)",
+continue: "<p>(Press <i>spacebar</i> to continue)</p>"
+
+BUTTON:
+instr_choice: "OK",
+trial_txt: "<i>이전 사진</i>, <i>비슷한 사진</i>, or <i>새로운 사진</i>?", 
+trial_choices: {
+                old: "이전 사진",
+                sim: "비슷한 사진",
+                new: "새로운 사진"
+            }               
+continue: "<p>(Press <i>OK</i> to continue)</p>"
+prompt0: "시작 하시려면 <i>OK</i> 눌러주세요",
+prompt_new: "당신은 이사진을 본적이 없으므로 여기에서 <b>새로운 사진</b>을 선택하세요.",
+inc_new: "이사진을 본적이 없으므로 여기에서 <b>새로운 사진</b>을 선택하세요.",
+prompt_rep: "당신은 이사진을 이전에 이미 보았습니다. 그러므로 <b>이전 사진</b>을 선택하세요",
+inc_rep: "당신은 이전에 이미 똑같은 사진을 보았음으로 <b>이전 사진</b>을 선택하세요",
+prompt_lure: "이사진은 당신이 이전에 보았던 사진과 비슷하지만 완전히 똑같이 않습니다. 그러므로 <b>>비슷한 사진<</b>을 선택하세요.",
+inc_lure: "당신은 전에 <i>비슷한 사진을 보았습니다. 그러나 똑같은 사진이 아닙니다</i>. 그러므로 정확한 대답은 <b>비슷한 사진</b>입니다"
+
+
+----------------------- TASK 5 ----------------------
+----------------------- oMST ------------------------
+
+CONTINUOUS:
+
+KEY:
+instr_prompt: "Press <i>spacebar</i> to begin this next task",
+
+THREECHOICE:
+instr_stim: " Continuous Old (<b>v</b>), Similar (<b>b</b>), or New (<b>n</b>) task ",
+trial_prompt: " Did you see this before? Is it Old (<b>v</b>), Similar (<b>b</b>), or New (<b>n</b>)? ",
+
+TWOCHOICE:
+instr_stim: " Continuous Old (<b>v</b>) or New (<b>n</b>) task ",
+trial_prompt: " Did you see this before? Is it Old (<b>v</b>) or New (<b>n</b>)? ",
+
+BUTTON:
+instr_choice: "OK",
+instr_prompt: "Press <i>OK</i> to begin this next task",
+
+THREECHOICE:
+instr_stim: " Continuous <i>Old</i>, <i>Similar</i>, or <i>New</i> task ",
+trial_prompt: " Did you see this before? Is it <i>Old</i>, <i>Similar</i>, or <i>New</i>? ",
+CHOICES:
+old: "Old",
+sim: "Similar",
+new: "New"
+
+TWOCHOICE:
+instr_stim: " Continuous <i>Old</i> or <i>New</i> task ",
+trial_prompt: " Did you see this before? Is it <i>Old</i> or <i>New</i>? ",
+CHOICES:
+old: "Old"
+new: "New"
+
+ty: "Thank You"
+
+---
+
+END:
+nc: "Consent not given. The experiment has ended.",
+ty: "Thank you for your participation in the experiment. You may close this window if you are not redirected"
+
+----------------------- TASK 6 ----------------------
+----------------------- PCON ------------------------
+
+instr1_stim: "In this task, you will see two objects appear on the screen, one after the other, with a bit of "static" for a few seconds between them. Your job is to determine if the two images are <i>exactly the same</i> or not."
+instr2_stim: "Here are those images again. You should have said <b>Same</b> for that one as they were the same images."
+instr3_stim: "Here are those images again. You should have said <b>Different</b> for that one as they were not exactly the same."
+
+ready: "Get ready...",
+wait: "Wait..",
+ty: "Thank You"
+
+KEY:
+instr1_prompt: "Press <i>spacebar</i> to see a sample",
+instr2_prompt: "Press <i>spacebar</i> to continue",
+instr3_prompt: "Ready to begin the test? Press <i>spacebar</i> to start"
+trial_txt: "<b>S</b>ame or <b>D</b>ifferent?"
+
+CHOICES:
+same: "S"
+dif: "D"
+
+BUTTON: 
+instr_choice: "OK"
+instr1_prompt: "Press <i>OK</i> to see a sample",
+instr2_prompt: "Press <i>OK</i> to continue",
+instr3_prompt: "Ready to begin the test? Press <i>OK</i> to start"
+trial_txt: "<i>Same</i> or <i>Different</i>?"
+
+CHOICES:
+same: "Same",
+dif: "Different"
+
+    

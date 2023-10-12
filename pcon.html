@@ -7,6 +7,7 @@
   
   8/16/23 (CELS): Fixed for versions without setup.html to progress to next phase
   8/30/23 (CELS): Added getID() to come up with a good sid
+  10/23/23 (CELS): Multi-lang support using Honeycomb style language file
 
   Optional parameters:
   In the JATOS versions, these come in via jatos.studySessionData but we also can pass
@@ -127,6 +128,25 @@ jatos.onLoad(async function() {
 
   var resp_mode='button';
   if (jatos.studySessionData['resp_mode'] == 'keyboard') {
+    resp_mode='key';
+  }
+  else if (jatos.studySessionData['resp_mode'] == 'key') {
+    resp_mode='key';
+  }
+
+  var lang='en';
+  //lang='kor';
+  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+    lang=jatos.studySessionData['lang'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
+    lang=jatos.studyJsonInput['lang']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
+    lang=jatos.batchJsonInput['lang']
+  }
+  
+  if (jatos.studySessionData['resp_mode'] == 'keyboard') {
     resp_mode='keyboard';
   }
   var randomize=false;
@@ -134,18 +154,19 @@ jatos.onLoad(async function() {
     randomize = true;
   }
 
-
-
-
-//   const preload_fnames = new Array(trial_stim.length)
-//   for (var i=0; i<trial_stim.length; i++) {  // Make our Set X_rs be SetX_rs
-//     trial_stim[i].image=baseurl+trial_stim[i].image.replace("Set ","Set");
-//     preload_fnames[i]=trial_stim[i].image;
-//   }
-  
-  
-  // START OF CODE THAT SHOULD BE CONSTANT REGARDLESS OF JATOS / CORDOVA
-  const phasename='pcon';
+  // load honeycomb version of lang file
+  console.log('loading json lang')
+  var langfile='lang/omst_'+lang+'.json';
+  var json_prompts=null;
+  $.getJSON(langfile,function( data ) {
+    //console.log( data ); // Data returned
+    json_prompts=data;
+    console.debug(langfile + ' loaded...ish');
+  });
+  //console.log(json_prompts['consent'])
+  await waitFor(_ => json_prompts !== null);
+  console.log(json_prompts['task']['name'])
+  let prompts=json_prompts['pcon'] // Load in this phase's section
 
   var jsPsych = initJsPsych({on_finish: function() {
     if (0) { jsPsych.data.displayData(); }
@@ -192,14 +213,14 @@ jatos.onLoad(async function() {
 
 
   // Setup prompts and response options based on keyboard/button and 2/3 choices
-  var instr_choice=[' ']; // 32 is space
-  var instr_txt='<i>spacebar</i>';
-  var trial_txt='<b>S</b>ame or <b>D</b>ifferent';
-  if (resp_mode == 'button') {
-      instr_choice=['OK'];
-      instr_txt='<i>OK</i>'
-      trial_txt='<i>Same</i> or <i>Different</i>'
-  }
+  // var instr_choice=[' ']; // 32 is space
+  // var instr_txt='<i>spacebar</i>';
+  // var trial_txt='<b>S</b>ame or <b>D</b>ifferent';
+  // if (resp_mode == 'button') {
+  //     instr_choice=['OK'];
+  //     instr_txt='<i>OK</i>'
+  //     trial_txt='<i>Same</i> or <i>Different</i>'
+  // }
 
   var noise_sequence = ['img/noise_1.png', 'img/noise_2.png','img/noise_3.png','img/noise_4.png','img/noise_5.png']; 
 
@@ -211,12 +232,10 @@ jatos.onLoad(async function() {
   // Instruction phase
   var instr1_trial = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
-    choices: instr_choice,
-    prompt: '<p>Press ' + instr_txt + ' to see a sample</p>',
+    choices: [prompts[resp_mode]['instr_choice']],
+    prompt: '<p>' + prompts[resp_mode]['instr1_prompt'] + '</p>',
     margin_horizontal: '40px', margin_vertical: '0px',
-    stimulus: '<p>In this task, you will see two objects appear on the screen, one after the other, with a bit \
-    of "static" for a few seconds between them. Your job is to determine if the two images are <i>exactly the same</i> \
-    or not.</p>'
+    stimulus: '<p>' + prompts['instr1_stim'] + '</p>',
   }
 
   var demo1_trial = {
@@ -226,7 +245,7 @@ jatos.onLoad(async function() {
         choices:  "NO_KEYS",
         trial_duration: 1000,
         response_ends_trial: false,
-        stimulus: 'Get ready...',
+        stimulus: prompts['ready'],
       },
       {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
@@ -243,11 +262,11 @@ jatos.onLoad(async function() {
         stimuli: noise_sequence,
         sequence_reps: 2,
         frame_time: 200,
-        prompt: '<p>Wait..'
+        prompt: '<p>' + prompts['wait']
       },
       {
         type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
-        choices: (resp_mode == 'button' ? ['Same','Different'] : ['S','D']),
+        choices: [ prompts[resp_mode]['trial_choices']['same'], prompts[resp_mode]['trial_choices']['dif'] ],
         //stimulus_duration: 2000,
         trial_duration: null,
         response_ends_trial: true,
@@ -260,10 +279,10 @@ jatos.onLoad(async function() {
   }
   var instr2_trial = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
-    choices: instr_choice,
-    prompt:'<p>Press '+ instr_txt + ' to continue</p>',
+    choices: [prompts[resp_mode]['instr_choice']],
+    prompt: '<p>' + prompts[resp_mode]['instr2_prompt'] + '</p>',
     margin_horizontal: '40px', margin_vertical: '0px',
-    stimulus: '<p>Here are those images again. You should have said <b>Same</b> for that one as they were the same images.</p>' + 
+    stimulus: '<p>' + prompts['instr2_stim'] + '</p>' + 
     '<table style = "width:100%"> <tr> <td> <img src = "img/pprac1a.jpg" height=400 width=400> </td> <td> <img src = "img/pprac1a.jpg" height=400 width=400></td></tr></table> '
   }
   var demo2_trial = {
@@ -273,7 +292,7 @@ jatos.onLoad(async function() {
         choices:  "NO_KEYS",
         trial_duration: 500,
         response_ends_trial: false,
-        stimulus: 'Get ready...',
+        stimulus: prompts['ready'],
       },
       {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
@@ -290,11 +309,11 @@ jatos.onLoad(async function() {
         stimuli: noise_sequence,
         sequence_reps: 2,
         frame_time: 200,
-        prompt: '<p>Wait..'
+        prompt: '<p>' + prompts['wait']
       },
       {
         type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
-        choices: (resp_mode == 'button' ? ['Same','Different'] : ['S','D']),
+        choices: [ prompts[resp_mode]['trial_choices']['same'], prompts[resp_mode]['trial_choices']['dif'] ],
         //stimulus_duration: 2000,
         trial_duration: null,
         response_ends_trial: true,
@@ -307,11 +326,11 @@ jatos.onLoad(async function() {
   }
   var instr3_trial = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
-    choices: instr_choice,
-    prompt:'<p class="redtext">Ready to begin the test?<p><b>Press '+ instr_txt + ' to start</p>',
+    choices: [prompts[resp_mode]['instr_choice']],
+    prompt: '<p class="redtext">' + prompts[resp_mode]['instr3_prompt'] + '</p>',
     margin_horizontal: '40px', margin_vertical: '0px',
-    stimulus:'<p>Here are those images again. You should have said <b>Different</b> for that one as they were not exactly the same.</p>' + 
-    '<table style = "width:100%"> <tr> <td> <img src = "img/pprac2a.jpg" height=400 width=400> </td> <td> <img src = "img/pprac2b.jpg" height=400 width=400> </td> </tr> </table>'
+    stimulus: '<p>' + prompts['instr3_stim'] + '</p>' +
+       '<table style = "width:100%"> <tr> <td> <img src = "img/pprac2a.jpg" height=400 width=400> </td> <td> <img src = "img/pprac2b.jpg" height=400 width=400> </td> </tr> </table>'
   }
   
   // Main phase
@@ -322,7 +341,7 @@ jatos.onLoad(async function() {
         choices:  "NO_KEYS",
         trial_duration: 500,
         response_ends_trial: false,
-        stimulus: 'Get ready...',
+        stimulus: prompts['ready'],
       },
       {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
@@ -339,11 +358,11 @@ jatos.onLoad(async function() {
         stimuli: noise_sequence,
         sequence_reps: 2,
         frame_time: 200,
-        prompt: '<p>Wait..'
+        prompt: '<p>' + prompts['wait']
       },
       {
         type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
-        choices: (resp_mode == 'button' ? ['Same','Different'] : ['S','D']),
+        choices: [ prompts[resp_mode]['trial_choices']['same'], prompts[resp_mode]['trial_choices']['dif'] ],
         stimulus_duration: 2000,
         trial_duration: null,
         response_ends_trial: true,
@@ -404,7 +423,7 @@ jatos.onLoad(async function() {
   var summary_block = {
     type: jsPsychHtmlKeyboardResponse,
     trial_duration: 500,
-    stimulus: 'Thank you',
+    stimulus: prompts['ty'],
     response_ends_trial: false,
     on_finish: function (data) {
       let validtrials=jsPsych.data.get().filterCustom(function(trial) {
