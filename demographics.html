@@ -5,7 +5,11 @@
 
   Collects demographic information and then advances to the next task in the list
 
-  10/23/23 (CELS): Multi-lang support using Honeycomb style language file
+  8/30/23 (CELS): Added getID() to come up with a good sid
+  9/7/23 (CELS): Fixing order / trialindex
+  10/12/23 (CELS): Add browser info logging
+  10/23/23 (CELS): Multi-lang support using Honeycomb style language file  
+
 -->
 <head>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
@@ -18,6 +22,7 @@
   <script src="js/jspsych_731/dist/jspsych.js"></script>
   <script src="js/jspsych_731/dist/plugin-survey-html-form.js"></script>
   <script src="js/jquery-3.1.1.min.js"></script>
+  <script src="js/jspsych_731/dist/plugin-browser-check.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
     .jspsych-display-element {
@@ -47,6 +52,7 @@ function getID() {
   }
   return sid
 }
+
 function waitFor(conditionFunction) {
   const poll = resolve => {
   if(conditionFunction()) resolve();
@@ -56,7 +62,7 @@ function waitFor(conditionFunction) {
 }
 
 jatos.onLoad(async function() {
-  var sid=getID()
+  var sid=getID();
   //console.log('In demog, sid= ' + sid);
   var lang='en';
   if (typeof jatos.studySessionData['lang'] !== 'undefined') {
@@ -85,8 +91,27 @@ jatos.onLoad(async function() {
       if (0) { jsPsych.data.displayData(); }
       else {
         var result = jsPsych.data.get().json();
-        jatos.submitResultData(result, jatos.startNextComponent);
-
+        var order=jatos.studySessionData["order"];
+        jatos.studySessionData["taskindex"] += 1;
+        var expdata = jsPsych.data.get().json();
+        //jatos.submitResultData(result, jatos.startNextComponent);
+        if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) { 
+          // we're done
+          // Check if this came from SONA - should have URL.sid and .sona
+          if (typeof jatos.urlQueryParameters.sid === 'undefined' || typeof jatos.urlQueryParameters.sona === 'undefined' ||
+            typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {
+            jatos.submitResultData(expdata,jatos.endStudy);
+          }
+          else {
+            var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
+            '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
+            jatos.endStudyAndRedirect(redirect,expdata);
+          }
+        }
+        else {
+          // submit and start the next
+          jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
+        }
       }
     }
   });
@@ -98,6 +123,10 @@ jatos.onLoad(async function() {
        date: date.toLocaleDateString(),
        urlid: jatos.urlQueryParameters.sid,
   });
+
+  var browserinfo = {
+    type: jsPsychBrowserCheck
+  };
 
   var demogform = {
     type: jsPsychSurveyHtmlForm,
@@ -121,7 +150,7 @@ jatos.onLoad(async function() {
       '</div>'
   }
   
-  var timeline = [demogform];
+  var timeline = [browserinfo, demogform];
   jsPsych.run(timeline);
 
   

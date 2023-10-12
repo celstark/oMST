@@ -45,7 +45,15 @@
    11/2/22 (CELS): Setup to allow "baseurl" to specify a web-based location for the images
    2/28/23 (CELS): Shifted to jsPsych 7 and added preloading images
    3/7/23: (CELS): Changed the stim-set variable to set_omst
-  10/23/23 (CELS): Multi-lang support using Honeycomb style language file
+
+   8/16/23 (CELS): Fixed for versions without setup.html to progress to next phase
+   8/30/23 (CELS): Added getID() to come up with a good sid
+   9/10/23 (CELS): Shifted the orderprefix to the new cMST_Imbal2x3_orders and to jsons. These ditch
+                   the notion of "run" and replace them with a real sub-set as we get 3 subsets per set.
+                   Allows both "set" and "set_omst" to define the main set.
+   9/27/23 (CELS): Logging browser info
+   10/12/23 (CELS): Previous two pulled in from IP_OL exp
+   10/23/23 (CELS): Multi-lang support using Honeycomb style language file
 
   Optional parameters:
   In the JATOS versions, these come in via jatos.studySessionData while in Cordova, we pass
@@ -56,9 +64,9 @@
   [sid=##]: Subject ID -- used for data file name (default=1234)
   [resp_mode=X]: Response mode -- set to 'keyboard' to use keyboard, anything else to use buttons (default=buttons)
   [set=#]: Stimulus set -- 1-6 (1=default) -- used in loading the order file
+  [subset=XX]: Which particular subset? (1-3, 1=default) -- Like the old 1a/1b, this gives 3 subsets per set for 18 total tests
   [set_omst=#]: Same as above, but even over-rides the above.  Useful if using the cMST and MST in the same experiment
   [trialorder=XX]: Which base order file? (1-4, 1=default)  -- controls ordering of conditions in a run
-  [run=XX]: Which particular run? (1-1, 1=default) -- controls which actual stimuli in that set are plugged into the order
   [twochoice=X]: 0=OSN, 1=ON response choices (0=default)
   [selfpaced=X]: Should we allow infinite time with blank screen to make the response? (default =1)
 
@@ -72,7 +80,7 @@
   [force_orderprefix=X]: Force a particular stimulus order.
 
   Note - needs order files in 'jsOrder' and needs image files in 'Set #_rs'
-  order files are jsOrders/cMST_Imbal2_orders_[set]_[order]_[run].js
+  order files are jsOrders/cMST_Imbal2x3_orders_[set]_[order]_[subset].js
 
   Note, if you use the "baseurl" bit to specify a webserver with the images, you'll need to update the Content-Security-Policy below
   For example, I use:   img-src 'self' https://starklab.bio.uci.edu data: content:;
@@ -82,7 +90,7 @@
  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
         https://fonts.gstatic.com ; 
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; media-src *; 
-      img-src 'self' data: content:;">
+      img-src 'self' https://starklab.bio.uci.edu data: content:;">
       
   <script type="text/javascript" src="jatos.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
@@ -96,6 +104,7 @@
   <script src="js/jspsych_731/dist/plugin-video-button-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-video-keyboard-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-preload.js"></script>
+  <script src="js/jspsych_731/dist/plugin-browser-check.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
     .jspsych-display-element {
@@ -160,15 +169,29 @@ function leftFillNum(num, width){
   .padStart(width,0)
 }
 
+function getID() {
+  // Try to get a reasonable ID code for this person.  You can use the URL with a "sid" parameter or
+  // specify one in the jatos studySessionData. If not, it'll use the JATOS workerId.
+  // URL > studySession > workerID
+  var sid=jatos.urlQueryParameters.sid;
+  if (sid == undefined) {
+    sid=jatos.studySessionData['sid'];
+  }
+  if (typeof sid == 'undefined') {
+    if (typeof jatos.workerId !== 'undefined') { // At least try the workerID
+      sid = jatos.workerId;
+    }
+    else { sid=1234; }
+  }
+  return sid
+}
 
 jatos.onLoad(async function() {
-  //baseurl='https://starklab.bio.uci.edu/mst/'; // How we'll get images, videos, etc.  Set to empty string to use local folders
-  baseurl=''; // How we'll get images, videos, etc.  Set to empty string to use local folders
-  var sid=jatos.studySessionData['sid'];
-  if (typeof sid === 'undefined') {
-    sid=1234;
-  }
-  var resp_mode='button';
+  baseurl='https://starklab.bio.uci.edu/mst/'; // How we'll get images, videos, etc.  Set to empty string to use local folders
+  //baseurl=''; // How we'll get images, videos, etc.  Set to empty string to use local folders
+  var sid=getID();
+
+    var resp_mode='button';
   if (jatos.studySessionData['resp_mode'] == 'keyboard') {
     resp_mode='key';
   }
@@ -176,7 +199,10 @@ jatos.onLoad(async function() {
     resp_mode='key';
   }
   var stim_set='1';
-  if (typeof jatos.studySessionData['set_omst'] !== 'undefined') {
+  if (typeof jatos.studySessionData['set'] !== 'undefined') {  // Try here first
+    stim_set = jatos.studySessionData['set']
+  }
+  if (typeof jatos.studySessionData['set_omst'] !== 'undefined') { //Try here 2nd / override
     stim_set = jatos.studySessionData['set_omst']
   }
   if (jatos.componentJsonInput && typeof jatos.componentJsonInput['force_set'] !== 'undefined') {
@@ -187,9 +213,13 @@ jatos.onLoad(async function() {
   if (typeof jatos.studySessionData['trialorder'] !== 'undefined') {
     trialorder=jatos.studySessionData['trialorder'];
   }
-  var run='1';
-  if (typeof jatos.studySessionData['run'] !== 'undefined') {
-    run=jatos.studySessionData['run'];
+  var subset='1';
+  if (typeof jatos.studySessionData['subset'] !== 'undefined') {
+    subset=jatos.studySessionData['subset'];
+  }
+  if (jatos.componentJsonInput && typeof jatos.componentJsonInput['force_subset'] !== 'undefined') {
+    subset=jatos.componentJsonInput['force_subset'];
+    console.log('subset forced via JSON component to ' + subset);
   }
   var twochoice=0;
   if (typeof jatos.studySessionData['twochoice'] !== 'undefined') {
@@ -203,22 +233,20 @@ jatos.onLoad(async function() {
   if (typeof jatos.studySessionData['selfpaced'] !== 'undefined') {
     selfpaced = jatos.studySessionData['selfpaced']
   }
-  var orderprefix = 'jsOrders/cMST_Imbal2_orders_';
+  var orderprefix = 'jsOrders/cMST_Imbal2x3_orders_';
   if (jatos.componentJsonInput && typeof jatos.componentJsonInput['force_orderprefix'] !== 'undefined') {
     orderprefix=jatos.componentJsonInput['force_orderprefix'];
     console.log('Order prefix forced via JSON component to ' + orderprefix);
   }
-  var orderfile = orderprefix+stim_set+'_'+trialorder+'_'+run+'.js';
+  var orderfile = orderprefix+stim_set+'_'+trialorder+'_'+subset+'.json';
 
-  console.log('loading ' + orderfile)
-  $.getScript(orderfile,function( data, textStatus, jqxhr) {
-    //console.log( data ); // Data returned
-    console.log( textStatus ); // Success
-    console.log( jqxhr.status ); // 200
+  console.log('loading json order: '  + orderfile)
+  var trial_stim=null;
+  $.getJSON(orderfile,function( data ) {
+    trial_stim=data;
     console.debug(orderfile + ' loaded...ish');
   });
-  console.log('did the load... running await')
-  await waitFor(_ => typeof trial_stim !== 'undefined');
+  await waitFor(_ => trial_stim !== null);
   console.log('we are set')
   console.log(trial_stim.length)
   const preload_fnames = new Array(trial_stim.length)
@@ -259,6 +287,14 @@ jatos.onLoad(async function() {
         var order=jatos.studySessionData["order"];
         jatos.studySessionData["taskindex"] += 1;
         var expdata = jsPsych.data.get().json();
+        if (typeof order === 'undefined') {
+          // We don't have an 'order' setup, so assume it's 1-N
+          console.log('faking an order')
+          order=Array(jatos.componentList.length).fill().map((e,i)=>i+1);
+          jatos.studySessionData["taskindex"]=jatos.componentPos;
+          //console.log(order);
+          //console.log(jatos.studySessionData["taskindex"]);
+        }
         // Submit results to JATOS and queue the end or next task
         if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) { 
           // we're done
@@ -508,8 +544,11 @@ jatos.onLoad(async function() {
       console.log('Failed on ' + data.failed_images.length)
     }
   }
+var browserinfo = {
+    type: jsPsychBrowserCheck
+  };
   
-  var timeline = [preload, instr1_trial, test_trials, debrief_block];
+  var timeline = [browserinfo, preload, instr1_trial, test_trials, debrief_block];
   jsPsych.run(timeline);
   
       

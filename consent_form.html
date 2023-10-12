@@ -83,6 +83,7 @@
                 "-" + date.getHours() + "-" + date.getMinutes();
             jatos.batchSession.add("/" + sid + "/-","ConsentAgreed_"+dcode);
             var result = "Consent given, ID="+sid+" URL ID="+jatos.urlQueryParameters.sid;
+            if (typeof jatos.studySessionData["taskindex"] !== 'undefined') { jatos.studySessionData["taskindex"] += 1; }
             jatos.submitResultData(result, jatos.startNextComponent);
         });
 

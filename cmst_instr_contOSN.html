@@ -19,9 +19,11 @@ Revised: November 20, 2019 (CELS) for Cordova
    5/31/22 (CELS): Added bit about blank screen in main task
    10/21/22 (CELS): Updated default to buttons 
    2/28/23 (CELS): Updated to jsPsych7
-   
+   8/16/23 (CELS): Fixed for versions without setup.html to progress to next phase
+   8/30/23 (CELS): Added getID() to come up with a good sid 
    10/23/23 (CELS): Multi-lang support using Honeycomb style language file
-  Optional parameters:
+  
+ Optional parameters:
   [sid=##]: Subject ID -- used for data file name (default=1234)
   [resp=X]: Response mode -- set to 'keyboard' to use keys, anything else to use buttons (default=button)
   [rand=#]: Should which stimuli are shown as repeats vs. lures be randomized? (default=0)
@@ -55,6 +57,7 @@ Revised: November 20, 2019 (CELS) for Cordova
 </head>
 <script>
 
+
 function waitFor(conditionFunction) {
   const poll = resolve => {
   if(conditionFunction()) resolve();
@@ -63,12 +66,26 @@ function waitFor(conditionFunction) {
   return new Promise(poll)
 }
 
+function getID() {
+  // Try to get a reasonable ID code for this person.  You can use the URL with a "sid" parameter or
+  // specify one in the jatos studySessionData. If not, it'll use the JATOS workerId.
+  // URL > studySession > workerID
+  var sid=jatos.urlQueryParameters.sid;
+  if (sid == undefined) {
+    sid=jatos.studySessionData['sid'];
+  }
+  if (typeof sid == 'undefined') {
+    if (typeof jatos.workerId !== 'undefined') { // At least try the workerID
+      sid = jatos.workerId;
+    }
+    else { sid=1234; }
+  }
+  return sid
+}
+
 jatos.onLoad(async function() {
   const phasename='cmst_instr_contOSN';
-  var sid=jatos.studySessionData['sid'];
-  if (typeof sid === 'undefined') {
-    sid=1234;
-  }
+  var sid=getID();
   var resp_mode='button';
   if (jatos.studySessionData['resp_mode'] == 'keyboard') {
     resp_mode='key';
@@ -87,6 +104,7 @@ jatos.onLoad(async function() {
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
   }
+
   // load honeycomb version of lang file
   console.log('loading json lang: ',lang)
   var langfile='lang/omst_'+lang+'.json';
@@ -99,12 +117,19 @@ jatos.onLoad(async function() {
   console.log(json_prompts['task']['name'])
   let prompts=json_prompts['instructions']; // Load in this phase's section
 
-
   var jsPsych = initJsPsych({on_finish: function() {
       if (0) { jsPsych.data.displayData(); }
       else {
         var order=jatos.studySessionData["order"];
         jatos.studySessionData["taskindex"] += 1;
+        if (typeof order === 'undefined') {
+          // We don't have an 'order' setup, so assume it's 1-N
+          console.log('faking an order')
+          order=Array(jatos.componentList.length).fill().map((e,i)=>i+1);
+          jatos.studySessionData["taskindex"]=jatos.componentPos;
+          //console.log(order);
+          //console.log(jatos.studySessionData["taskindex"]);
+        }
         var expdata = jsPsych.data.get().json();
         // Submit results to JATOS and queue the end or next task
         if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) { 
