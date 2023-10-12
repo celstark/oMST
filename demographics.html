@@ -5,6 +5,7 @@
 
   Collects demographic information and then advances to the next task in the list
 
+  10/23/23 (CELS): Multi-lang support using Honeycomb style language file
 -->
 <head>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
@@ -67,7 +68,6 @@ jatos.onLoad(async function() {
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
   }
-  
   // load honeycomb version of lang file
   console.log('loading json lang')
   var langfile='lang/omst_'+lang+'.json';
@@ -78,7 +78,7 @@ jatos.onLoad(async function() {
   });
   await waitFor(_ => json_prompts !== null);
   console.log(json_prompts['task']['name'])
-  let prompts=json_prompts['demog']
+  let prompts=json_prompts['demog']  // Load in this phase's section
 
   var jsPsych = initJsPsych({
     on_finish: function() {

@@ -45,6 +45,7 @@
    11/2/22 (CELS): Setup to allow "baseurl" to specify a web-based location for the images
    2/28/23 (CELS): Shifted to jsPsych 7 and added preloading images
    3/7/23: (CELS): Changed the stim-set variable to set_omst
+  10/23/23 (CELS): Multi-lang support using Honeycomb style language file
 
   Optional parameters:
   In the JATOS versions, these come in via jatos.studySessionData while in Cordova, we pass
@@ -246,7 +247,7 @@ jatos.onLoad(async function() {
   });
   await waitFor(_ => json_prompts !== null);
   console.log(json_prompts['task']['name'])
-  let prompts=json_prompts['cont']
+  let prompts=json_prompts['cont'] // Load in this phase's section
 
 
   // START OF CODE THAT SHOULD BE CONSTANT REGARDLESS OF JATOS / CORDOVA

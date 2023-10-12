@@ -20,6 +20,7 @@ Revised: November 20, 2019 (CELS) for Cordova
    10/21/22 (CELS): Updated default to buttons 
    2/28/23 (CELS): Updated to jsPsych7
    
+   10/23/23 (CELS): Multi-lang support using Honeycomb style language file
   Optional parameters:
   [sid=##]: Subject ID -- used for data file name (default=1234)
   [resp=X]: Response mode -- set to 'keyboard' to use keys, anything else to use buttons (default=button)
@@ -77,7 +78,6 @@ jatos.onLoad(async function() {
   }
 
   var lang='en';
-  //lang='kor';
   if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
@@ -87,39 +87,18 @@ jatos.onLoad(async function() {
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
   }
-
-  // Load language file
-  // var langfile = 'lang/lang_'+phasename+'.js';
-  // console.log('loading ' + langfile)
-  // $.getScript(langfile,function( data, textStatus, jqxhr) {
-  //   //console.log( data ); // Data returned
-  //   console.log( textStatus ); // Success
-  //   console.log( jqxhr.status ); // 200
-  //   console.debug(langfile + ' loaded...ish');
-  // });
-  // console.log('did the language load... running await')
-  // await waitFor(_ => typeof all_prompts !== 'undefined');
-  // let prompts=all_prompts[lang];
-  // console.log('  we are set to use ' + prompts['lang'])
-
   // load honeycomb version of lang file
   console.log('loading json lang: ',lang)
   var langfile='lang/omst_'+lang+'.json';
   var json_prompts=null;
   $.getJSON(langfile,function( data ) {
-    //console.log( data ); // Data returned
     json_prompts=data;
     console.debug(langfile + ' loaded...ish');
   });
-  //console.log(json_prompts['consent'])
   await waitFor(_ => json_prompts !== null);
   console.log(json_prompts['task']['name'])
-  let prompts=json_prompts['instructions']
+  let prompts=json_prompts['instructions']; // Load in this phase's section
 
-
-  //await (await fetch('lang/omst_en.json')).json();
-  //const jsonLang=require('lang/omst_en.json');
-  //console.log(jsonLang);
 
   var jsPsych = initJsPsych({on_finish: function() {
       if (0) { jsPsych.data.displayData(); }

@@ -2,6 +2,8 @@
 <html>
   <!--
   simple end experiment screen
+
+  10/23/23 (CELS): Multi-lang support using Honeycomb style language file
  -->
 <head>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
@@ -54,7 +56,7 @@
       });
       await waitFor(_ => json_prompts !== null);
       console.log(json_prompts['task']['name'])
-      let prompts=json_prompts['end']
+      let prompts=json_prompts['end']; // Load hin this phase's section
  
       // Baisc HTML thank you text
       p=document.createElement("p");
