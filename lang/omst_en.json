@@ -159,7 +159,7 @@
         "instr2_stim": "Here are those images again. You should have said <b>Same</b> for that one as they were the same images.",
         "instr3_stim": "Here are those images again. You should have said <b>Different</b> for that one as they were not exactly the same.",
         "ready": "Get ready...",
-        "wait": "Wait..",
+        "wait": "Wait...",
         "ty": "Thank You",
         "key": {
             "instr_choice": " ",
