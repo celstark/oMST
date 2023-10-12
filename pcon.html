@@ -168,6 +168,8 @@ jatos.onLoad(async function() {
   console.log(json_prompts['task']['name'])
   let prompts=json_prompts['pcon'] // Load in this phase's section
 
+  const phasename='pcon';
+
   var jsPsych = initJsPsych({on_finish: function() {
     if (0) { jsPsych.data.displayData(); }
       else {
