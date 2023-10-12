@@ -6,6 +6,7 @@
   Collects demographic information and then advances to the next task in the list
   8/30/23 (CELS): Added getID() to come up with a good sid
   9/7/23 (CELS): Fixing order / trialindex
+  10/12/23 (CELS): Add browser info logging
   
 -->
 <head>
@@ -18,6 +19,7 @@
   <script type="text/javascript" src="js/index.js"></script>
   <script src="js/jspsych_731/dist/jspsych.js"></script>
   <script src="js/jspsych_731/dist/plugin-survey-html-form.js"></script>
+<script src="js/jspsych_731/dist/plugin-browser-check.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
     .jspsych-display-element {
@@ -48,7 +50,7 @@ function getID() {
   return sid
 }
 jatos.onLoad(function() {
-  var sid=getID()
+  var sid=getID();
   //console.log('In demog, sid= ' + sid);
 
   var jsPsych = initJsPsych({
@@ -89,6 +91,10 @@ jatos.onLoad(function() {
        urlid: jatos.urlQueryParameters.sid,
   });
 
+  var browserinfo = {
+    type: jsPsychBrowserCheck
+  };
+
   var demogform = {
     type: jsPsychSurveyHtmlForm,
     preamble: 'The National Institute of Health (NIH) mandates that we collect demographic information from participants and that we collect it <i>in this specific format</i>.',
@@ -111,7 +117,7 @@ jatos.onLoad(function() {
     </div>'
   }
   
-  var timeline = [demogform];
+  var timeline = [browserinfo, demogform];
   jsPsych.run(timeline);
 
   
