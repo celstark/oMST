@@ -79,10 +79,11 @@ jatos.onLoad(function () {
     console.log('condition forced via JSON component to ' + cond);
   }
 
-  var order=[5,6,7]; // Default order skips consent and demographics and does study/test
+  var order=[5,6]; // Default order skips consent and demographics and does study/test -- will add "end" later
   var include_consent=0;
   var include_demographics=0;
   var include_idcode=0;
+  var include_pcon=0;
 
   // Useful little tags for the experiment and condition that will go into your log files
   var exptag='oMST'
@@ -139,6 +140,9 @@ jatos.onLoad(function () {
   if (typeof jatos.studyJsonInput['include_idcode'] !== 'undefined') {
     include_idcode=jatos.studyJsonInput['include_idcode'];
   }
+  if (typeof jatos.studyJsonInput['include_pcon'] !== 'undefined') {
+    include_pcon=jatos.studyJsonInput['include_pcon'];
+  }
   console.log(jatos.batchJsonInput);
   console.log(jatos.batchProperties.title);
   // Now, let any batch-level bits override those
@@ -163,12 +167,17 @@ jatos.onLoad(function () {
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_idcode'] !== 'undefined' ) { 
     include_idcode=jatos.batchJsonInput['include_idcode'];
   }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_pcon'] !== 'undefined' ) { 
+    include_pcon=jatos.batchJsonInput['include_pcon'];
+  }
   if (typeof jatos.urlQueryParameters.set_mst !== 'undefined') {
     jatos.studySessionData['set_omst'] = jatos.urlQueryParameters.set_omst;
   }
   if (include_demographics) { order.unshift(4); }
   if (include_consent) {order.unshift(3); }
   if (include_idcode) {order.unshift(2); }
+  if (include_pcon) {order.push(7); }
+  order.push(8); // Add the "end", which is #8 currently
   jatos.studySessionData["order"] = order;
   console.log('Worker ID/sid=' + sid + '  URLSID='+urlsid+'  omst set='+jatos.studySessionData["set_omst"] );
   console.log('order: ' + order);
