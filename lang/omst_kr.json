@@ -1,193 +1,180 @@
 {
-    
-    "task": {
-        "name": "Optimized Mnemonic Similarity Task",
-        "parID": "Participant ID",
-        "stuID": "Study ID",
-        "end": "이 실험은 끝이 났습니다."
+  "task": {
+    "name": "Optimized Mnemonic Similarity Task",
+    "end": "이 실험은 끝이 났습니다."
+  },
+  "consent": {
+    "title": "IRB Consent Form",
+    "study": {
+      "uni": "University of California, Irvine <br>",
+      "sis": "Study Information Sheet <br>",
+      "num": "UC Reliance #1857: fMRI Studies of Memory Encoding and Retrieval <br>"
     },
-
-    "consent": {
-        "title": "IRB Consent Form",
-        "study": {
-            "uni": "University of California, Irvine <br>",
-            "sis": "Study Information Sheet <br>",
-            "num": "UC Reliance #1857: fMRI Studies of Memory Encoding and Retrieval <br>"
-        },
-        "researcher": {
-            "title": "Lead Researcher <br>",
-            "name": "Craig Stark, Professor <br>",
-            "dept": "Department of Neurobiology and Behavior <br>",
-            "tele": "949-824-4230 / ",
-            "email": "cestark@uci.edu <br>"
-        },
-        "text": "<li>We are asking you to take part in a study conducted by researchers at the University of California, Irvine. Participating in this study is optional. </li> <li>If you choose to be in the study, you will complete an online memory experiment involving pictures of everyday objects. You may also participate in a survey that will help us learn more about how eating habits, physical activity, mood, sleep patterns, and stress may influence memory performance. The session will take about 30 minutes to complete. </li> <li>You can skip questions that you do not want to answer or stop the survey at any time. We will keep your answers confidential and will not share your personal information with anyone outside the research team. </li> <li>This research is only for participants over the age of 18; if you under the age of 18, please do not complete this survey.</li> <li>Some questions may cause embarrassment or anxiety. If you do not wish to answer a question, you can skip it and go to the next questions. If you do not wish to participate, you can stop.</li> <li>As with most research, there is a chance that confidentiality could be compromised. We take precautions to minimize this risk, including coding your data with a number instead of your name and storing it on a password protected database. </li> <li>You will receive extra course credit for an eligible course through the UCI Social Sciences human subjects' pool.  You will receive a ½ unit of course credit for each ½ hour of participation in this study.  Total amount of credit you may earn for this study is 1 unit of credit.  The course instructor offering extra course credit for participation in research must provide alternatives to earn extra course credit. The alternative assignment must require equal or less time and effort for the amount of extra credit that can be earned through participation in research.</li> <li>If you have any comments, concerns, or questions regarding the conduct of this research please contact the researchers listed at the top of this form.</li> <li>If you have questions or concerns about your rights as a research participant, you can contact the UCI Institutional Review Board by phone, (949) 824-0665, by e-mail at IRB@research.uci.edu or at 141 Innovation, Suite 250, Irvine, CA 92697. </li> <br><b>What is an IRB?</b>  An Institutional Review Board (IRB) is a committee made up of scientists and non-scientists.  The IRB's role is to protect the rights and welfare of human subjects involved in research.  The IRB also assures that the research complies with applicable regulations, laws, and institutional policies. </li> ",
-        "prompt": "<li>If you want to participate in this study, click the <b>Agree<b> button to start the survey. </li>",
-        "buttons": {
-            "agree": "I agree",
-            "cancel": "Cancel"
-        }
+    "researcher": {
+      "title": "Lead Researcher <br>",
+      "name": "Craig Stark, Professor <br>",
+      "dept": "Department of Neurobiology and Behavior <br>",
+      "tele": "949-824-4230 / ",
+      "email": "cestark@uci.edu <br>"
     },
-
-    "resp": {
-        "prompt": "Please select if you prefer to use your device's keyboard or if you prefer to use your mouse to click buttons on your screen",
-        "choices": {
-            "keyboard": "Keyboard",
-            "buttons": "Buttons"
-        }
-    },
-
-    "demog": {
-        "preamble": "국립 보건원은 (National Institute of Health) 우리가 참가자들의 인구통계학적 정보를 수집하도록 요구합니다. 또한, 우리가 참가자들의 인구통계학적 정보를 <i>특정한 형식으로</i> 수집하도록 지시합니다.",
-        "name": "성함:",
-        "dob": "생년월일 (DD/MM/YYYY):",
-        "gender": { 
-            "prompt": "성별:",
-            "m": "남자",
-            "f": "여자"
-        },
-        "ethnicity": {
-            "prompt": "민족성:",
-            "h": "히스패닉 아니면 라틴 아메리카 사람입니다",
-            "nh": "히스패닉 아니면 라틴 아메리카 사람 아닙니다"
-        },
-        "race": {
-            "prompt": "가장 많이 식별하는 인종:",
-            "ai": "아메리칸 인디언 아니면 알래스카 원주민",
-            "a": "아시아 사람",
-            "b": "흑인 아니면 아프리카계 미국인",
-            "nh": "하와이 원주민 아니면 태평양 섬 주민",
-            "w": "백인",
-            "m": "혼혈인 아니면 다름"
-        }
-    },
-
-    "instructions": {
-            "txt0": "당신은 한 번에 하나씩 일상용품의 사진을 보게 될 것입니다. 각 사진을 본 후, 만약 당신이 이전에 본 것과 똑같은 이미지를 보았다면, <b>이전에 본 사진</b>을 선택하세요. 만약 사진 속 이미지가  이전에 본것과 비슷하지만 똑같이 일치하지 않으면 <b>비슷한 사진</b>을 선택하세요. 만약 완전히 새로운 사진을 보면 <b>새로운 사진</b>을 선택하세요. <p> <i>비슷한 사진</i>은 같은 명칭을 가진 물건이라도, 한가지 이상 다른점이 있습니다. <p>몇번 연습하면 이해할 수 있을 것입니다.",
-            "cor_new": "잘했습니다! 당신은 이 이미지를 본적이 없으므로 맞게 <b>새로운 사진</b>을 선택했습니다.",
-            "cor_rep": "잘했습니다! 당신은 이전에 이미 똑같은 이미지가 담긴 사진을 보았음으로, 맞게 <b>이전에 본 사진</b>을 선택했습니다.",
-            "cor_lure": "잘했습니다! 당신은 이와 <i>똑같은</i> 이미지가 담긴 사진을 본적이 없으므로, 맞게 <b>비슷한 사진</b>을 선택했습니다.",
-            "prompt_test": "이제 당신 차례입니다. 이것을 본적이 있습니까?",
-            "side_by_side": "보시다시피, 이 사진 속 물건들은 비슷하지만 완전이 똑같지는 않습니다. 이런 경우  <b>비슷한 사진</b>을 선택해주세요. 왜냐하면, <b>비슷한 사진</b> 은 이번 테스트 세션 중에 이와 비슷한 것을 본 적은 있지만 완전히 똑같지는 않은 이미지를  보았다 라는것을 표시하는 것입니다.",
-            "end": "바로 그것입니다. 이제 실제 테스트를 시작하겠습니다. <p><i> 테스트 중  당신이 답을 하기전에  사진이 사라져도 걱정하지 마십시오. 화면에 아무 것도 안보여도  답변을 선택 하면 됩니다.</i>",
-
-        "key": {
-            "instr_choice": " ",
-            "trial_txt": "<i>이전 사진</i> (<b>v</b>), <i>비슷한 사진</i> (<b>b</b>), or <i>새로운 사진</i> (<b>n</b>)?",
-            "trial_choices": {
-                "old": "v",
-                "sim": "b",
-                "new": "n"
-            },
-            "prompt0": "시작 하시려면 <i>스페이스 바</i>를 눌러주세요",
-            "prompt_new": "당신은 이 이미지를 본적이 없으므로 여기에서 <i>새로운 사진</i>을 선택하세요.(<b>n</b>)",
-            "inc_new": "이 이미지를 본적이 없으므로 <i>새로운 사진</i>을 선택하세요. (<b>n</b>)",
-            "prompt_rep": "당신은 이 이미지를 이전에 이미 보았습니다. 그러므로 <i>이전에 본 사진</i>을 선택하세요 (<b>v</b>).",
-            "inc_rep": "당신은 이전에 이미 똑같은 이미지를 보았음으로 <i>이전에 본 사진/i>을 선택하세요 (<b>v</b>)",
-            "prompt_lure": "이것은 당신이 이전에 보았던 것과 비슷하지만 완전히 똑같지는 않습니다. 그러므로 <i>비슷한 사진</i> (<b>b</b>)을 선택하세요.",
-            "inc_lure": "당신은 전에 이것과 <i>비슷한 이미지를 보았습니다. 그러나 완전히 똑같은 것이 아닙니다</i>. 그러므로 <i>비슷한 사진</i>을 선택하세요. (<b>b</b>)",
-            "continue": "<p>(다음 단계로 넘어가려면 <i>스페이스 바</i>를 눌러주세요)</p>"
-        },
-
-        "button": {
-            "instr_choice": "OK",
-            "trial_txt": "<i>이전에 본 사진</i>, <i>비슷한 사진</i>, or <i>새로운 사진</i>?",
-            "trial_choices": {
-                "old": "이전에 본 사진",
-                "sim": "비슷한 사진",
-                "new": "새로운 사진"
-            },
-            "prompt0": "시작 하시려면 <i>OK</i> 버튼을 눌러주세요",
-            "prompt_new": "당신은 이 이미지를 본적이 없으므로 여기에서 <b>새로운 사진</b>을 선택하세요.",
-            "inc_new": "이 이미지를본적이 없으므로 여기에서 <b>새로운 사진</b>을 선택하세요.",
-            "prompt_rep": "당신은 이 이미지를 이전에 이미 보았습니다. 그러므로 <b>이전에 본 사진</b>을 선택하세요",
-            "inc_rep": "당신은 이전에 이미 똑같은 이 이미지를 보았음으로 <b>이전에 본 사진</b>을 선택하세요",
-            "prompt_lure": "이 이미지는 당신이 이전에 보았던 것과 비슷하지만 완전히 똑같지는 않습니다. 그러므로 <b>>비슷한 사진<</b>을 선택하세요.",
-            "inc_lure": "당신은 전에 이것과 <i>비슷한 이미지를 보았습니다. 그러나 완전히 똑같은 것이 아닙니다</i>. 그러므로 바른 대답은 <b>비슷한 사진</b>입니다",
-            "continue": "<p>(다음 단계로 넘어가려면 <i>OK</i> 버튼을 눌러주세요)</p>"
-        }
-    },
-
-    "cont": {
-        "key": {
-            "instr_choice": " ",
-            "instr_prompt":"다음 작업을 시작하려면 <i>스페이스 바</i>를 눌러주세요",
-            "threechoice": {
-                "instr_stim": "이전에 본 사진 (<b>v</b>), 비슷한 사진 (<b>b</b>), 아니면 새로운 사진 (<b>n</b>) 연속되는 작업",
-                "trial_prompt": "이 이미지를 본적이 있습니까? 이전에 본 사진 (<b>v</b>), 비슷한 사진 (<b>b</b>), 아니면 새로운 사진 (<b>n</b>) 입니까?",
-                "trial_choices": {
-                    "old": "v",
-                    "sim": "b",
-                    "new": "n"
-                }
-            },
-            "twochoice": {
-                "instr_stim": "이전에 본 사진 (<b>v</b>) 아니면 새로운 사진 (<b>n</b>) 연속되는 작업",
-                "trial_prompt": "이 이미지를 본적이 있습니까? 이전에 본 사진 (<b>v</b>) 아니면 새로운 사진 (<b>n</b>) 입니까?",
-                "trial_choices": {
-                    "old": "v",
-                    "new": "n"
-                }
-            }
-        },
-        "button": {
-            "instr_choice": "OK",
-            "instr_prompt": "다음 작업을 시작하려면 <i>OK</i> 버튼을 눌러주세요",
-            "threechoice": {
-                "instr_stim": "이전에 본 사진 (<b>v</b>), 비슷한 사진 (<b>b</b>), 아니면 새로운 사진 (<b>n</b>) 연속되는 작업",
-                "trial_prompt": "이 이미지를 본적이 있습니까? 이전에 본 사진 (<b>v</b>), 비슷한 사진 (<b>b</b>), 아니면 새로운 사진 (<b>n</b>) 입니까?",
-                "trial_choices": {
-                    "old": "이전에 본 사진",
-                    "sim": "비슷한 사진",
-                    "new": "새로운 사진"
-                }
-            },
-            "twochoice": {
-                "instr_stim": "이전에 본 사진 (<b>v</b>) 아니면 새로운 사진 (<b>n</b>) 연속되는 작업",
-                "trial_prompt": "이 이미지를 본적이 있습니까? 이전에 본 사진 (<b>v</b>) 아니면 새로운 사진 (<b>n</b>) 입니까?",
-                "trial_choices": {
-                    "old": "이전에 본 사진",
-                    "new": "새로운 사진"
-                }
-            }
-        },
-        "ty": "감사합니다"
-    },
-
-    "pcon": {
-        "instr1_stim": "이번 작업에서는 화면에 두가지의 이미지가 차례로 나타날것입니다. 그 사이에 몇 초 동안 \"지지직\" 거리는 화면이 나타날겁니다. 당신의 임무는 두 이미지가 <i>정확히 똑같은지</i> 아닌지를 결정하는 것입니다.",
-        "instr2_stim": "또 다시 이미지들을 보여드립니다. 당신은 <b>정확히 똑같아</b> 라고 선택하셔야 했습니다. 왜냐하면, 처음에 본 이미지랑 마지막에 본 이미지는 완전히 똑같앗습니다.",
-        "instr3_stim": "또 다시 이미지들을 보여드립니다. 당신은 <b>같지 않다</b> 라고 선택하셔야 했습니다. 왜냐하면, 처음에 본 이미지랑 마지막에 본 이미지는 완전히 똑같지 않았습니다.",
-        "ready": "준비하세요...",
-        "wait": "기다려 주세요...",
-        "ty": "감사합니다",
-        "key": {
-            "instr_choice": " ",
-            "instr1_prompt":  "예시를 보시려면 <i>스페이스 바</i>를 눌러주세요",
-            "instr2_prompt": "다음 부분으로 넘어가시라면 <i>스페이스 바</i>를 눌러주세요",
-            "instr3_prompt":  "준비되셨나요? 시작 하시려면 <i>스페이스 바</i>를 눌러주세요.",
-            "trial_txt": "<b>같</b>다 아니면 <b>다</b>르다?",
-            "trial_choices": {
-                "same": "같",
-                "dif": "다"     
-            }
-        },
-        "button": {
-            "instr_choice": "OK",
-            "instr1_prompt": "예시를 보시려면 <i>OK</i> 버튼을 눌러주세요",
-            "instr2_prompt": "다음 부분으로 넘어가시라면 <i>OK</i> 버튼을 눌러주세요",
-            "instr3_prompt":"준비되셨나요? 시작 하시려면 <i>OK</i> 버튼을 눌러주세요.",
-            "trial_txt": "<i>같으세요</i> 아니면 <i>다르세요</i>?",
-            "trial_choices": {
-                "same": "같다",
-                "dif": "다르다"     
-            }
-        }
-    },
-
-
-    "end": {
-        "ty": "감사합니다. 시험이 끝났어요"
+    "text": "<li>We are asking you to take part in a study conducted by researchers at the University of California, Irvine. Participating in this study is optional. </li> <li>If you choose to be in the study, you will complete an online memory experiment involving pictures of everyday objects. You may also participate in a survey that will help us learn more about how eating habits, physical activity, mood, sleep patterns, and stress may influence memory performance. The session will take about 30 minutes to complete. </li> <li>You can skip questions that you do not want to answer or stop the survey at any time. We will keep your answers confidential and will not share your personal information with anyone outside the research team. </li> <li>This research is only for participants over the age of 18; if you under the age of 18, please do not complete this survey.</li> <li>Some questions may cause embarrassment or anxiety. If you do not wish to answer a question, you can skip it and go to the next questions. If you do not wish to participate, you can stop.</li> <li>As with most research, there is a chance that confidentiality could be compromised. We take precautions to minimize this risk, including coding your data with a number instead of your name and storing it on a password protected database. </li> <li>You will receive extra course credit for an eligible course through the UCI Social Sciences human subjects’ pool.  You will receive a ½ unit of course credit for each ½ hour of participation in this study.  Total amount of credit you may earn for this study is 1 unit of credit.  The course instructor offering extra course credit for participation in research must provide alternatives to earn extra course credit. The alternative assignment must require equal or less time and effort for the amount of extra credit that can be earned through participation in research.</li> <li>If you have any comments, concerns, or questions regarding the conduct of this research please contact the researchers listed at the top of this form.</li> <li>If you have questions or concerns about your rights as a research participant, you can contact the UCI Institutional Review Board by phone, (949) 824-0665, by e-mail at IRB@research.uci.edu or at 141 Innovation, Suite 250, Irvine, CA 92697. </li> <br><b>What is an IRB?</b>  An Institutional Review Board (IRB) is a committee made up of scientists and non-scientists.  The IRB’s role is to protect the rights and welfare of human subjects involved in research.  The IRB also assures that the research complies with applicable regulations, laws, and institutional policies. </li> ",
+    "prompt": "<li>If you want to participate in this study, click the <b>Agree<b> button to start the survey. </li>",
+    "buttons": {
+      "agree": "I agree",
+      "cancel": "Cancel"
     }
-
+  },
+  "resp": {
+    "prompt": "Please select if you prefer to use your device's keyboard or if you prefer to use your mouse to click buttons on your screen",
+    "choices": {
+      "keyboard": "Keyboard",
+      "buttons": "Buttons"
+    }
+  },
+  "demog": {
+    "preamble": "국립 보건원은 (National Institute of Health) 우리가 참가자들의 인구통계학적 정보를 수집하도록 요구합니다. 또한, 우리가 참가자들의 인구통계학적 정보를 <i>특정한 형식으로</i> 수집하도록 지시합니다.",
+    "name": "성함:",
+    "dob": "생년월일 (MM/DD/YYYY):",
+    "gender": {
+      "prompt": "성별:",
+      "m": "남자",
+      "f": "여자"
+    },
+    "ethnicity": {
+      "prompt": "민족성:",
+      "h": "히스패닉 아니면 라틴 아메리카 사람입니다",
+      "nh": "히스패닉 아니면 라틴 아메리카 사람 아닙니다"
+    },
+    "race": {
+      "prompt": "가장 많이 식별하는 인종:",
+      "ai": "아메리칸 인디언 아니면 알래스카 원주민",
+      "a": "아시아 사람",
+      "b": "흑인 아니면 아프리카계 미국인",
+      "nh": "하와이 원주민 아니면 태평양 섬 주민",
+      "w": "백인",
+      "m": "혼혈인 아니면 다름"
+    }
+  },
+  "pcon": {
+    "instr1_stim": "이번 작업에서는 화면에 두가지의 이미지가 차례로 나타날것입니다. 그 사이에 몇 초 동안 \"지지직\" 거리는 화면이 나타날겁니다. 당신의 임무는 두 이미지가 <i>정확히 똑같은지</i> 아닌지를 결정하는 것입니다.",
+    "instr2_stim": "또 다시 이미지들을 보여드립니다. 당신은 <b>정확히 똑같아</b> 라고 선택하셔야 했습니다. 왜냐하면, 처음에 본 이미지랑 마지막에 본 이미지는 완전히 똑같앗습니다.",
+    "instr3_stim": "또 다시 이미지들을 보여드립니다. 당신은 <b>같지 않다</b> 라고 선택하셔야 했습니다. 왜냐하면, 처음에 본 이미지랑 마지막에 본 이미지는 완전히 똑같지 않았습니다.",
+    "ready": "준비하세요...",
+    "wait": "기다려 주세요...",
+    "ty": "감사합니다",
+    "key": {
+      "instr_choice": " ",
+      "instr1_prompt": "예시를 보시려면 <i>스페이스 바</i>를 눌러주세요",
+      "instr2_prompt": "다음 부분으로 넘어가시라면 <i>스페이스 바</i>를 눌러주세요",
+      "instr3_prompt": "준비되셨나요? 시작 하시려면 <i>스페이스 바</i>를 눌러주세요",
+      "trial_txt": "<b>같</b>다 아니면 <b>다</b>르다?",
+      "trial_choices": {
+        "same": "같",
+        "dif": "다"
+      }
+    },
+    "button": {
+      "instr_choice": "OK",
+      "instr1_prompt": "예시를 보시려면 <i>OK</i> 버튼을 눌러주세요",
+      "instr2_prompt": "다음 부분으로 넘어가시라면 <i>OK</i> 버튼을 눌러주세요",
+      "instr3_prompt": "준비되셨나요? 시작 하시려면 <i>OK</i> 버튼을 눌러주세요",
+      "trial_txt": "<i>같으세요</i> 아니면 <i>다르세요</i>",
+      "trial_choices": {
+        "same": "같다",
+        "dif": "다르다"
+      }
+    }
+  },
+  "instructions": {
+    "txt0": "당신은 한 번에 하나씩 일상용품의 사진을 볼것입니다. 각각 사진을 본후 선택해주세요. 만약 당신이 이전의 사진과 똑같은 사진을 보았다면, <b>이전 사진</b>을 선택하세요. 만약 사진이 이전에 본것과 비슷하지만 똑같이 일치하지 않으면 <b>비슷한 사진</b>을 선택하세요. 만약 완전히 새로운 사진을 보면 <b>새로운 사진</b>을 선택하세요 . <p> <i>비슷한 사진</i>은 같은 이름으로 구별되지만, 한가지 이상 다른점이 있습니다. <p>몇번의 연습이 이해를 도울것입니다.",
+    "cor_new": "잘했습니다! 당신은 이사진을 본적이 없어서 맞게 <b>새로운 사진</b>을 선택했습니다.",
+    "cor_rep": "잘했습니다! 당신은 이전에 이미 똑같은 사진을 보았음으로, 맞게 <b>이전 사진</b>을 선택했습니다.",
+    "cor_lure": "잘했습니다! 당신은 <i>똑같은</i> 사진을 본적이 없으므로, 맞게 <b>비슷한 사진</b>을 선택했습니다.",
+    "prompt_test": "이제 당신 차례입니다. 이사진을 본적이 있습니까?",
+    "side_by_side": "보는것 처럼, 이사진들은 비슷하지만 완전이 똑같지는 않습니다. 이런경우의 사진들은 <b>비슷한 사진</b>을 선택해주세요. 왜냐하면, <b>비슷한 사진</b> 선택은 이번 시험에서 닮았지만 똑같이 않은 이미지를 보았다 라는것을 표시하는 것입니다.",
+    "end": "바로 그것입니다. 이제 진짜 시험을 시작하겠습니다. <p><i>시험을 볼때에 대답하기전에 사진이 사라져도, 걱정하지 마세요. 단지 답변을 선택 해주세요.</i>",
+    "key": {
+      "instr_choice": " ",
+      "trial_txt": "<i>이전 사진</i> (<b>v</b>), <i>비슷한 사진</i> (<b>b</b>), or <i>새로운 사진</i> (<b>n</b>)?",
+      "trial_choices": {
+        "old": "v",
+        "sim": "b",
+        "new": "n"
+      },
+      "prompt0": "시작 하시려면 <i>스페이스 바</i>를 눌러주세요",
+      "prompt_new": "당신은 이사진을 본적이 없으므로 여기에서 <i>새로운 사진</i>을 선택하세요.(<b>n</b>)",
+      "inc_new": "이사진을 본적이 없으므로 여기에서 <i>새로운 사진</i>을 선택하세요. (<b>n</b>)",
+      "prompt_rep": "당신은 이사진을 이전에 이미 보았습니다. 그러므로 <i>이전 사진</i>을 선택하세요 (<b>v</b>)",
+      "inc_rep": "당신은 이전에 이미 똑같은 사진을 보았음으로 <i>이전 사진/i>을 선택하세요 (<b>v</b>)",
+      "prompt_lure": "이사진은 당신이 이전에 보았던 사진과 비슷하지만 완전히 똑같이 않습니다. 그러므로 <i>비슷한 사진</i> (<b>b</b>)을 선택하세요.",
+      "inc_lure": "당신은 전에 <i>비슷한 사진을 보았습니다. 그러나 똑같은 사진이 아닙니다</i>. 그러므로 <i>비슷한 사진</i>을 선택하세요. (<b>b</b>)",
+      "continue": "(Press <i>spacebar</i> to continue)"
+    },
+    "button": {
+      "instr_choice": "OK",
+      "trial_txt": "<i>이전 사진</i>, <i>비슷한 사진</i>, or <i>새로운 사진</i>?",
+      "trial_choices": {
+        "old": "이전 사진",
+        "sim": "비슷한 사진",
+        "new": "새로운 사진"
+      },
+      "prompt0": "시작 하시려면 <i>OK</i> 눌러주세요",
+      "prompt_new": "당신은 이사진을 본적이 없으므로 여기에서 <b>새로운 사진</b>을 선택하세요.",
+      "inc_new": "이사진을 본적이 없으므로 여기에서 <b>새로운 사진</b>을 선택하세요.",
+      "prompt_rep": "당신은 이사진을 이전에 이미 보았습니다. 그러므로 <b>이전 사진</b>을 선택하세요",
+      "inc_rep": "당신은 이전에 이미 똑같은 사진을 보았음으로 <b>이전 사진</b>을 선택하세요",
+      "prompt_lure": "이사진은 당신이 이전에 보았던 사진과 비슷하지만 완전히 똑같이 않습니다. 그러므로 <b>>비슷한 사진<</b>을 선택하세요.",
+      "inc_lure": "당신은 전에 <i>비슷한 사진을 보았습니다. 그러나 똑같은 사진이 아닙니다</i>. 그러므로 정확한 대답은 <b>비슷한 사진</b>입니다"
+    }
+  },
+  "cont": {
+    "key": {
+      "instr_choice": " ",
+      "instr_prompt": "다음 작업을 시작하려면 <i>스페이스 바</i>를 눌러주세요",
+      "threechoice": {
+        "instr_stim": "이전에 본 사진 (<b>v</b>), 비슷한 사진 (<b>b</b>), 아니면 새로운 사진 (<b>n</b>) 연속되는 작업",
+        "trial_prompt": "이 이미지를 본적이 있습니까? 이전에 본 사진 (<b>v</b>), 비슷한 사진 (<b>b</b>), 아니면 새로운 사진 (<b>n</b>) 입니까?",
+        "trial_choices": {
+          "old": "v",
+          "sim": "b",
+          "new": "n"
+        }
+      },
+      "twochoice": {
+        "instr_stim": "이전에 본 사진 (<b>v</b>) 아니면 새로운 사진 (<b>n</b>) 연속되는 작업",
+        "trial_prompt": "이 이미지를 본적이 있습니까? 이전에 본 사진 (<b>v</b>) 아니면 새로운 사진 (<b>n</b>) 입니까?",
+        "trial_choices": {
+          "old": "v",
+          "new": "n"
+        }
+      }
+    },
+    "button": {
+      "instr_choice": "OK",
+      "instr_prompt": "다음 작업을 시작하려면 <i>OK</i> 버튼을 눌러주세요",
+      "threechoice": {
+        "instr_stim": "이전에 본 사진 (<b>v</b>), 비슷한 사진 (<b>b</b>), 아니면 새로운 사진 (<b>n</b>) 연속되는 작업",
+        "trial_prompt": "이 이미지를 본적이 있습니까? 이전에 본 사진 (<b>v</b>), 비슷한 사진 (<b>b</b>), 아니면 새로운 사진 (<b>n</b>) 입니까?",
+        "trial_choices": {
+          "old": "이전에 본 사진",
+          "sim": "비슷한 사진",
+          "new": "새로운 사진"
+        }
+      },
+      "twochoice": {
+        "instr_stim": "이전에 본 사진 (<b>v</b>) 아니면 새로운 사진 (<b>n</b>) 연속되는 작업",
+        "trial_prompt": "이 이미지를 본적이 있습니까? 이전에 본 사진 (<b>v</b>) 아니면 새로운 사진 (<b>n</b>) 입니까?",
+        "trial_choices": {
+          "old": "이전에 본 사진",
+          "new": "새로운 사진"
+        }
+      }
+    },
+    "ty": "감사합니다"
+  },
+  "end": {
+    "nc": "Consent not given. The experiment has ended.",
+    "nc_trans": "연구 참여 동의를 주시지 않아서 이 스터디는 끝났습니다.",
+    "ty": "이 스터디에 참여해 주셔서 감사합니다. 자동으로 다른 URL로 보내지지 않은 경우에는, 이 창을 닫아주시길 바랍니다"
+  }
 }

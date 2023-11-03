@@ -1,193 +1,182 @@
 {
-    
-    "task": {
-        "name": "Optimized Mnemonic Similarity Task",
-        "parID": "Participant ID",
-        "stuID": "Study ID",
-        "end": "This experiment has ended."
+  "task": {
+    "name": "Optimized Mnemonic Similarity Task",
+    "parID": "Participant ID",
+    "stuID": "Study ID",
+    "end": "This experiment has ended."
+  },
+  "consent": {
+    "title": "IRB Consent Form",
+    "study": {
+      "uni": "University of California, Irvine <br>",
+      "sis": "Study Information Sheet <br>",
+      "num": "UC Reliance #1857: fMRI Studies of Memory Encoding and Retrieval <br>"
     },
-
-    "consent": {
-        "title": "IRB Consent Form",
-        "study": {
-            "uni": "University of California, Irvine <br>",
-            "sis": "Study Information Sheet <br>",
-            "num": "UC Reliance #1857: fMRI Studies of Memory Encoding and Retrieval <br>"
-        },
-        "researcher": {
-            "title": "Lead Researcher <br>",
-            "name": "Craig Stark, Professor <br>",
-            "dept": "Department of Neurobiology and Behavior <br>",
-            "tele": "949-824-4230 / ",
-            "email": "cestark@uci.edu <br>"
-        },
-        "text": "<li>We are asking you to take part in a study conducted by researchers at the University of California, Irvine. Participating in this study is optional. </li> <li>If you choose to be in the study, you will complete an online memory experiment involving pictures of everyday objects. You may also participate in a survey that will help us learn more about how eating habits, physical activity, mood, sleep patterns, and stress may influence memory performance. The session will take about 30 minutes to complete. </li> <li>You can skip questions that you do not want to answer or stop the survey at any time. We will keep your answers confidential and will not share your personal information with anyone outside the research team. </li> <li>This research is only for participants over the age of 18; if you under the age of 18, please do not complete this survey.</li> <li>Some questions may cause embarrassment or anxiety. If you do not wish to answer a question, you can skip it and go to the next questions. If you do not wish to participate, you can stop.</li> <li>As with most research, there is a chance that confidentiality could be compromised. We take precautions to minimize this risk, including coding your data with a number instead of your name and storing it on a password protected database. </li> <li>You will receive extra course credit for an eligible course through the UCI Social Sciences human subjects' pool.  You will receive a ½ unit of course credit for each ½ hour of participation in this study.  Total amount of credit you may earn for this study is 1 unit of credit.  The course instructor offering extra course credit for participation in research must provide alternatives to earn extra course credit. The alternative assignment must require equal or less time and effort for the amount of extra credit that can be earned through participation in research.</li> <li>If you have any comments, concerns, or questions regarding the conduct of this research please contact the researchers listed at the top of this form.</li> <li>If you have questions or concerns about your rights as a research participant, you can contact the UCI Institutional Review Board by phone, (949) 824-0665, by e-mail at IRB@research.uci.edu or at 141 Innovation, Suite 250, Irvine, CA 92697. </li> <br><b>What is an IRB?</b>  An Institutional Review Board (IRB) is a committee made up of scientists and non-scientists.  The IRB's role is to protect the rights and welfare of human subjects involved in research.  The IRB also assures that the research complies with applicable regulations, laws, and institutional policies. </li> ",
-        "prompt": "<li>If you want to participate in this study, click the <b>Agree<b> button to start the survey. </li>",
-        "buttons": {
-            "agree": "I agree",
-            "cancel": "Cancel"
-        }
+    "researcher": {
+      "title": "Lead Researcher <br>",
+      "name": "Craig Stark, Professor <br>",
+      "dept": "Department of Neurobiology and Behavior <br>",
+      "tele": "949-824-4230 / ",
+      "email": "cestark@uci.edu <br>"
     },
-
-    "resp": {
-        "prompt": "Please select if you prefer to use your device's keyboard or if you prefer to use your mouse to click buttons on your screen",
-        "choices": {
-            "keyboard": "Keyboard",
-            "buttons": "Buttons"
-        }
-    },
-
-    "demog": {
-        "preamble": "The National Institute of Health (NIH) mandates that we collect demographic information from participants and that we collect it <i>in this specific format</i>.",
-        "name": "Full name:",
-        "dob": "Date of birth (DD/MM/YYYY):",
-        "gender": { 
-            "prompt": "Gender:",
-            "m": "Male",
-            "f": "Female"
-        },
-        "ethnicity": {
-            "prompt": "Ethnicity:",
-            "h": "Hispanic or Latino",
-            "nh": "Not Hispanic or Latino"
-        },
-        "race": {
-            "prompt": "Race with which you identify most:",
-            "ai": "American Indian or Alaska Native",
-            "a": "Asian",
-            "b": "Black or African American",
-            "nh": "Native Hawaiian or Pacific Islander",
-            "w": "White",
-            "m": "More than one race or Other"
-        }
-    },
-
-    "instructions": {
-            "txt0": "You are going to see pictures of everyday items, one at a time. For each one, you will select <b>Old</b> if you have seen this exact picture before, <b>Similar</b> if it is similar, but not exactly the same as one you saw before, or <b>New</b> if it is entirely a new picture. <p>The way to think of <i>Similar</i> is whether it has the same name, but is a different picture in any way.  <p>A few practice trials should make this clear.",
-            "cor_new": "Good! You have not seen this image yet, so you correctly selected <b>New</b>",
-            "cor_rep": "Good! You have seen this exact image, so you correctly selected <b>Old</b>",
-            "cor_lure": "Good! You have not seen this <i>exact</i> image, so you correctly selected <b>Similar</b>",
-            "prompt_test": "Your turn. Have you seen this?",
-            "side_by_side": "As you can see, these items are similar, but not exactly the same. For this kind of image, you should select <b>Similar</b> to indicate that you saw something similar to this but have not seen that exact item before during this session.",
-            "end": "That's the idea. Now, we'll do the actual test <p><i>As you do the actual task, if the picture disappears before you respond, don't worry. Just make your response even if the screen is blank.</i>",
-
-        "key": {
-            "instr_choice": " ",
-            "trial_txt": "<i>Old</i> (<b>v</b>), <i>Similar</i> (<b>b</b>), or <i>New</i> (<b>n</b>)?",
-            "trial_choices": {
-                "old": "v",
-                "sim": "b",
-                "new": "n"
-            },
-            "prompt0": "Press <i>spacebar</i> to begin",
-            "prompt_new": "You have not seen this image yet so you should select <i>New</i> (<b>n</b>) here",
-            "inc_new": "You haven't seen this image yet, so press <i>New</i> (<b>n</b>)",
-            "prompt_rep": "You have already seen this item before, press <i>Old</i> (<b>v</b>)",
-            "inc_rep": "You have seen this exact image, so press <i>Old</i> (<b>v</b>)",
-            "prompt_lure": "This item is similar to one you have seen before, but not exactly the same, so you should select <i>Similar</i> (<b>b</b>) here ",
-            "inc_lure": "You saw one <i>similar to this, but not exactly the same</i>, so press <i>Similar</i> (<b>b</b>) ",
-            "continue": "<p>(Press <i>spacebar</i> to continue)"
-        },
-
-        "button": {
-            "instr_choice": "OK",
-            "trial_txt": "<i>Old</i>, <i>Similar</i>, or <i>New</i>?",
-            "trial_choices": {
-                "old": "Old",
-                "sim": "Similar",
-                "new": "New"
-            },
-            "prompt0": "Press <i>OK</i> to begin </p>",
-            "prompt_new": "You have not seen this image yet so you should select <b>New</b> here",
-            "inc_new": "You haven't seen this image yet, so press <b>New</b>",
-            "prompt_rep": "You have seen this image, so press <b>Old</b>",
-            "inc_rep": "You have seen this exact image, so press <b>Old</b>",
-            "prompt_lure": "This item is similar to one you have seen before, but not exactly the same, so you should select <b>Similar</b> here",
-            "inc_lure": "You saw one <i>similar to this, but not exactly the same</i>. So, the correct response is <b>Similar</b>",
-            "continue": "(Press <i>OK</i> to continue)"
-        }
-    },
-
-    "cont": {
-        "key": {
-            "instr_choice": " ",
-            "instr_prompt": "Press <i>spacebar</i> to begin this next task",
-            "threechoice": {
-                "instr_stim": "Continuous Old (<b>v</b>), Similar (<b>b</b>), or New (<b>n</b>) task",
-                "trial_prompt": "Did you see this before? Is it Old (<b>v</b>), Similar (<b>b</b>), or New (<b>n</b>)?",
-                "trial_choices": {
-                    "old": "v",
-                    "sim": "b",
-                    "new": "n"
-                }
-            },
-            "twochoice": {
-                "instr_stim": "Continuous Old (<b>v</b>) or New (<b>n</b>) task",
-                "trial_prompt": "Did you see this before? Is it Old (<b>v</b>) or New (<b>n</b>)?",
-                "trial_choices": {
-                    "old": "v",
-                    "new": "n"
-                }
-            }
-        },
-        "button": {
-            "instr_choice": "OK",
-            "instr_prompt": "Press <i>OK</i> to begin this next task</p>",
-            "threechoice": {
-                "instr_stim": "Continuous <i>Old</i>, <i>Similar</i>, or <i>New</i> task",
-                "trial_prompt": "Did you see this before? Is it <i>Old</i>, <i>Similar</i>, or <i>New</i>?",
-                "trial_choices": {
-                    "old": "Old",
-                    "sim": "Similar",
-                    "new": "New"
-                }
-            },
-            "twochoice": {
-                "instr_stim": "Continuous <i>Old</i> or <i>New</i> task",
-                "trial_prompt": "Did you see this before? Is it <i>Old</i> or <i>New</i>?",
-                "trial_choices": {
-                    "old": "Old",
-                    "new": "New"
-                }
-            }
-        },
-        "ty": "Thank You"
-    },
-
-    "pcon": {
-        "instr1_stim": "In this task, you will see two objects appear on the screen, one after the other, with a bit  of \"static\" for a few seconds between them. Your job is to determine if the two images are <i>exactly the same</i> or not.",
-        "instr2_stim": "Here are those images again. You should have said <b>Same</b> for that one as they were the same images.",
-        "instr3_stim": "Here are those images again. You should have said <b>Different</b> for that one as they were not exactly the same.",
-        "ready": "Get ready...",
-        "wait": "Wait...",
-        "ty": "Thank You",
-        "key": {
-            "instr_choice": " ",
-            "instr1_prompt": "Press <i>spacebar</i> to see a sample",
-            "instr2_prompt": "Press <i>spacebar</i> to continue",
-            "instr3_prompt": "Ready to begin the test? Press <i>spacebar</i> to start",
-            "trial_txt": "<b>S</b>ame or <b>D</b>ifferent?",
-            "trial_choices": {
-                "same": "S",
-                "dif": "D"     
-            }
-        },
-        "button": {
-            "instr_choice": "OK",
-            "instr1_prompt": "Press <i>OK</i> to see a sample",
-            "instr2_prompt": "Press <i>OK</i> to continue",
-            "instr3_prompt": "Ready to begin the test? Press <i>OK</i> to start",
-            "trial_txt": "<i>Same</i> or <i>Different</i>?",
-            "trial_choices": {
-                "same": "Same",
-                "dif": "Different"     
-            }
-        }
-    },
-
-
-    "end": {
-        "ty": "Thank you for your participation in the experiment. You may close this window if you are not redirected"
+    "text": "<li>We are asking you to take part in a study conducted by researchers at the University of California, Irvine. Participating in this study is optional. </li> <li>If you choose to be in the study, you will complete an online memory experiment involving pictures of everyday objects. You may also participate in a survey that will help us learn more about how eating habits, physical activity, mood, sleep patterns, and stress may influence memory performance. The session will take about 30 minutes to complete. </li> <li>You can skip questions that you do not want to answer or stop the survey at any time. We will keep your answers confidential and will not share your personal information with anyone outside the research team. </li> <li>This research is only for participants over the age of 18; if you under the age of 18, please do not complete this survey.</li> <li>Some questions may cause embarrassment or anxiety. If you do not wish to answer a question, you can skip it and go to the next questions. If you do not wish to participate, you can stop.</li> <li>As with most research, there is a chance that confidentiality could be compromised. We take precautions to minimize this risk, including coding your data with a number instead of your name and storing it on a password protected database. </li> <li>You will receive extra course credit for an eligible course through the UCI Social Sciences human subjects’ pool.  You will receive a ½ unit of course credit for each ½ hour of participation in this study.  Total amount of credit you may earn for this study is 1 unit of credit.  The course instructor offering extra course credit for participation in research must provide alternatives to earn extra course credit. The alternative assignment must require equal or less time and effort for the amount of extra credit that can be earned through participation in research.</li> <li>If you have any comments, concerns, or questions regarding the conduct of this research please contact the researchers listed at the top of this form.</li> <li>If you have questions or concerns about your rights as a research participant, you can contact the UCI Institutional Review Board by phone, (949) 824-0665, by e-mail at IRB@research.uci.edu or at 141 Innovation, Suite 250, Irvine, CA 92697. </li> <br><b>What is an IRB?</b>  An Institutional Review Board (IRB) is a committee made up of scientists and non-scientists.  The IRB’s role is to protect the rights and welfare of human subjects involved in research.  The IRB also assures that the research complies with applicable regulations, laws, and institutional policies. </li> ",
+    "prompt": "<li>If you want to participate in this study, click the <b>Agree<b> button to start the survey. </li>",
+    "buttons": {
+      "agree": "I agree",
+      "cancel": "Cancel"
     }
-
+  },
+  "resp": {
+    "prompt": "Please select if you prefer to use your device's keyboard or if you prefer to use your mouse to click buttons on your screen",
+    "choices": {
+      "keyboard": "Keyboard",
+      "buttons": "Buttons"
+    }
+  },
+  "demog": {
+    "preamble": "The National Institute of Health (NIH) mandates that we collect demographic information from participants and that we collect it <i>in this specific format</i>.",
+    "name": "Full name:",
+    "dob": "Date of birth (MM/DD/YYYY):",
+    "gender": {
+      "prompt": "Gender:",
+      "m": "Male",
+      "f": "Female"
+    },
+    "ethnicity": {
+      "prompt": "Ethnicity:",
+      "h": "Hispanic or Latino",
+      "nh": "Not Hispanic or Latino"
+    },
+    "race": {
+      "prompt": "Race with which you identify most:",
+      "ai": "American Indian or Alaska Native",
+      "a": "Asian",
+      "b": "Black or African American",
+      "nh": "Native Hawaiian or Pacific Islander",
+      "w": "White",
+      "m": "More than one race or Other"
+    }
+  },
+  "pcon": {
+    "instr1_stim": "In this task, you will see two objects appear on the screen, one after the other, with a bit of \"static\" for a few seconds between them. Your job is to determine if the two images are <i>exactly the same</i> or not.",
+    "instr2_stim": "Here are those images again. You should have said <b>Same</b> for that one as they were the same images.",
+    "instr3_stim": "Here are those images again. You should have said <b>Different</b> for that one as they were not exactly the same.",
+    "ready": "Get ready...",
+    "wait": "Wait...",
+    "ty": "Thank You",
+    "key": {
+      "instr_choice": " ",
+      "instr1_prompt": "Press <i>spacebar</i> to see a sample",
+      "instr2_prompt": "Press <i>spacebar</i> to continue",
+      "instr3_prompt": "Ready to begin the test? Press <i>spacebar</i> to start",
+      "trial_txt": "Same (<b>s</b>) or Different (<b>d</b>)?",
+      "trial_choices": {
+        "same": "S",
+        "dif": "D"
+      }
+    },
+    "button": {
+      "instr_choice": "OK",
+      "instr1_prompt": "Press <i>OK</i> to see a sample",
+      "instr2_prompt": "Press <i>OK</i> to continue",
+      "instr3_prompt": "Ready to begin the test? Press <i>OK</i> to start",
+      "trial_txt": "<i>Same</i> or <i>Different</i>?",
+      "trial_choices": {
+        "same": "Same",
+        "dif": "Different"
+      }
+    }
+  },
+  "instructions": {
+    "txt0": "You are going to see pictures of everyday items, one at a time. For each one, you will select <b>Old</b> if you have seen this exact picture before, <b>Similar</b> if it is similar, but not exactly the same as one you saw before, or <b>New</b> if it is entirely a new picture.</p> <p>The way to think of <i>Similar</i> is whether it has the same name, but is a different picture in any way.</p> <p>A few practice trials should make this clear.",
+    "cor_new": "Good! You have not seen this image yet, so you correctly selected <b>New</b>",
+    "cor_rep": "Good! You have seen this exact image, so you correctly selected <b>Old</b>",
+    "cor_lure": "Good! You have not seen this <i>exact</i> image, so you correctly selected <b>Similar</b>",
+    "prompt_test": "Your turn. Have you seen this?",
+    "side_by_side": "As you can see, these items are similar, but not exactly the same. For this kind of image, you should select <b>Similar</b> to indicate that you saw something similar to this but have not seen that exact item before during this session.",
+    "end": "That's the idea. Now, we'll do the actual test.</p> <p><i>As you do the actual task, if the picture disappears before you respond, don't worry. Just make your response even if the screen is blank.</i>",
+    "key": {
+      "instr_choice": " ",
+      "trial_txt": "<i>Old</i> (<b>v</b>), <i>Similar</i> (<b>b</b>), or <i>New</i> (<b>n</b>)?",
+      "trial_choices": {
+        "old": "v",
+        "sim": "b",
+        "new": "n"
+      },
+      "prompt0": "Press <i>spacebar</i> to begin",
+      "prompt_new": "You have not seen this image yet so you should select <i>New</i> (<b>n</b>) here",
+      "inc_new": "You haven't seen this image yet, so press <i>New</i> (<b>n</b>)",
+      "prompt_rep": "You have already seen this item before, press <i>Old</i> (<b>v</b>)",
+      "inc_rep": "You have seen this exact image, so press <i>Old</i> (<b>v</b>)",
+      "prompt_lure": "This item is similar to one you have seen before, but not exactly the same, so you should select <i>Similar</i> (<b>b</b>) here",
+      "inc_lure": "You saw one <i>similar to this, but not exactly the same</i>, so press <i>Similar</i> (<b>b</b>)",
+      "continue": "(Press <i>spacebar</i> to continue)"
+    },
+    "button": {
+      "instr_choice": "OK",
+      "trial_txt": "<i>Old</i>, <i>Similar</i>, or <i>New</i>?",
+      "trial_choices": {
+        "old": "Old",
+        "sim": "Similar",
+        "new": "New"
+      },
+      "prompt0": "Press <i>OK</i> to begin",
+      "prompt_new": "You have not seen this image yet so you should select <b>New</b> here",
+      "inc_new": "You haven't seen this image yet, so press <b>New</b>",
+      "prompt_rep": "You have seen this image, so press <b>Old</b>",
+      "inc_rep": "You have seen this exact image, so press <b>Old</b>",
+      "prompt_lure": "This item is similar to one you have seen before, but not exactly the same, so you should select <b>Similar</b> here",
+      "inc_lure": "You saw one <i>similar to this, but not exactly the same</i>. So, the correct response is <b>Similar</b>",
+      "continue": "(Press <i>OK</i> to continue)"
+    }
+  },
+  "cont": {
+    "key": {
+      "instr_choice": " ",
+      "instr_prompt": "Press <i>spacebar</i> to begin this next task",
+      "threechoice": {
+        "instr_stim": "Continuous Old (<b>v</b>), Similar (<b>b</b>), or New (<b>n</b>) task",
+        "trial_prompt": "Did you see this before? Is it Old (<b>v</b>), Similar (<b>b</b>), or New (<b>n</b>)?",
+        "trial_choices": {
+          "old": "v",
+          "sim": "b",
+          "new": "n"
+        }
+      },
+      "twochoice": {
+        "instr_stim": "Continuous Old (<b>v</b>) or New (<b>n</b>) task",
+        "trial_prompt": "Did you see this before? Is it Old (<b>v</b>) or New (<b>n</b>)?",
+        "trial_choices": {
+          "old": "v",
+          "new": "n"
+        }
+      }
+    },
+    "button": {
+      "instr_choice": "OK",
+      "instr_prompt": "Press <i>OK</i> to begin this next task",
+      "threechoice": {
+        "instr_stim": "Continuous <i>Old</i>, <i>Similar</i>, or <i>New</i> task",
+        "trial_prompt": "Did you see this before? Is it <i>Old</i>, <i>Similar</i>, or <i>New</i>?",
+        "trial_choices": {
+          "old": "Old",
+          "sim": "Similar",
+          "new": "New"
+        }
+      },
+      "twochoice": {
+        "instr_stim": "Continuous <i>Old</i> or <i>New</i> task",
+        "trial_prompt": "Did you see this before? Is it <i>Old</i> or <i>New</i>?",
+        "trial_choices": {
+          "old": "Old",
+          "new": "New"
+        }
+      }
+    },
+    "ty": "Thank You"
+  },
+  "end": {
+    "nc": "Consent not given. The experiment has ended.",
+    "ty": "Thank you for your participation in the experiment. You may close this window if you are not redirected"
+  }
 }
