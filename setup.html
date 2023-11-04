@@ -132,7 +132,7 @@ jatos.onLoad(function () {
   }
   if (typeof jatos.studyJsonInput['include_demographics'] !== 'undefined') {
     include_demographics=jatos.studyJsonInput['include_demographics'];
-    console.log('study json include demog' + include_demographics);
+    //console.log('study json include demog' + include_demographics);
   }
   if (typeof jatos.studyJsonInput['include_consent'] !== 'undefined') {
     include_consent=jatos.studyJsonInput['include_consent'];
@@ -143,10 +143,12 @@ jatos.onLoad(function () {
   if (typeof jatos.studyJsonInput['include_pcon'] !== 'undefined') {
     include_pcon=jatos.studyJsonInput['include_pcon'];
   }
+  if (jatos.studyJsonInput) { console.log('jatos.studyJsonInput: ', jatos.studyJsonInput)}
   console.log(include_consent,include_demographics,include_idcode,include_pcon,order)
-  console.log(jatos.batchJsonInput);
-  console.log(jatos.batchProperties.title);
+  console.log(jatos.studyJsonInput);
+  //console.log(jatos.batchProperties.title);
   // Now, let any batch-level bits override those
+  if (jatos.batchJsonInput) { console.log('jatos.batchJsonInput: ', jatos.batchJsonInput)}
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['resp_mode'] !== 'undefined' ) { 
     jatos.studySessionData['resp_mode']=jatos.batchJsonInput['resp_mode'];
   }
@@ -156,8 +158,6 @@ jatos.onLoad(function () {
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['selfpaced'] !== 'undefined' ) { 
     jatos.studySessionData['selfpaced']=jatos.batchJsonInput['selfpaced'];
   }
-  if (jatos.batchJsonInput) { console.log('jatos.batchJsonInput: ', jatos.batchJsonInput)}
-  
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_demographics'] !== 'undefined' ) { 
     include_demographics=jatos.batchJsonInput['include_demographics'];
     console.log('include_demographics batch' + include_demographics);
@@ -172,7 +172,6 @@ jatos.onLoad(function () {
     include_pcon=jatos.batchJsonInput['include_pcon'];
   }
   console.log(include_consent,include_demographics,include_idcode,include_pcon,order)
-  console.log(jatos.batchJsonInput)
   
   if (typeof jatos.urlQueryParameters.set_mst !== 'undefined') {
     jatos.studySessionData['set_omst'] = jatos.urlQueryParameters.set_omst;
