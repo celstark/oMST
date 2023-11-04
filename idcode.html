@@ -36,31 +36,33 @@
 jatos.onLoad(function() {
   var jsPsych = initJsPsych({
     on_finish: function() {
-      if (0) { jsPsych.data.displayData(); }
-      else {
-        var result = jsPsych.data.get().json();
-        var order=jatos.studySessionData["order"];
-        jatos.studySessionData["taskindex"] += 1;
-        var expdata = jsPsych.data.get().json();
-        //jatos.submitResultData(result, jatos.startNextComponent);
-        if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) { 
-          // we're done
-          // Check if this came from SONA - should have URL.sid and .sona
-          if (typeof jatos.urlQueryParameters.sid === 'undefined' || typeof jatos.urlQueryParameters.sona === 'undefined' ||
-            typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {
-            jatos.submitResultData(expdata,jatos.endStudy);
-          }
-          else {
-            var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
-            '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
-            jatos.endStudyAndRedirect(redirect,expdata);
-          }
+      var result = jsPsych.data.get().json();
+      var order=jatos.studySessionData["order"];
+      jatos.studySessionData["taskindex"] += 1;
+      var expdata = jsPsych.data.get().json();
+      if (typeof order === 'undefined') {
+        // We don't have an 'order' setup, so assume it's 1-N  (e.g., we didn't use the setup.html in this exp)
+        console.log('faking an order')
+        order=Array(jatos.componentList.length).fill().map((e,i)=>i+1);
+        jatos.studySessionData["taskindex"]=jatos.componentPos;
+      }
+      //jatos.submitResultData(result, jatos.startNextComponent);
+      if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) {         // we're done?
+        // Check if this came from SONA - should have URL.sid and .sona
+        if (typeof jatos.urlQueryParameters.sid === 'undefined' || typeof jatos.urlQueryParameters.sona === 'undefined' ||
+          typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {  // not SONA - just finish
+          jatos.submitResultData(expdata,jatos.endStudy);
         }
-        else {
-          // submit and start the next
-          jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
+        else { // SONA - give credit
+          var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
+          '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
+          jatos.endStudyAndRedirect(redirect,expdata);
         }
       }
+      else { // submit data and start the next  
+        jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
+      }
+
     }
   });
 
