@@ -8,7 +8,7 @@ to studied items. It is [available here on GitHub](https://github.com/celstark/M
 
 The goal of a number of studies in 2019-22 and one of the aims of an NIA grant (R01 AG066683-01) was to
 develop a more optimized version of the task that might be more suitable for clinical use.  The results
-of these studies are currently under review (Stark et al., under review), but the outcome of those efforts
+of these studies are published ([Stark et al., 2023](https://www.frontiersin.org/articles/10.3389/fnbeh.2023.1080366/full)), but the outcome of those efforts
 is the oMST presented here.
 
 Briefly, it is an continuous version of the MST using the old/similar/new response prompt and cutting down
