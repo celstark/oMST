@@ -74,6 +74,11 @@ nh: "Native Hawaiian or Pacific Islander",
 w: "White",
 m: "More than one race or Other"
 
+HANDEDNESS:
+prompt: "Handedness:"
+l: "Left"
+r: "Right"
+a: "Ambidextrous"
 ---
 ----------------------- TASK 4 ----------------------
 -------------------- INSTRUCTIONS ---------------------

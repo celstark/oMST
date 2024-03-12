@@ -53,6 +53,12 @@
       "nh": "하와이 원주민 아니면 태평양 섬 주민",
       "w": "백인",
       "m": "혼혈인 아니면 다름"
+    },
+    "handedness": {
+      "prompt": "Handedness:",
+      "l": "Left",
+      "r": "Right",
+      "a": "Ambidextrous"
     }
   },
   "pcon": {

@@ -55,6 +55,12 @@
       "nh": "Native Hawaiian or Pacific Islander",
       "w": "White",
       "m": "More than one race or Other"
+    },
+    "handedness": {
+      "prompt": "Handedness:",
+      "l": "Left",
+      "r": "Right",
+      "a": "Ambidextrous"
     }
   },
   "pcon": {

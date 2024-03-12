@@ -53,6 +53,12 @@
       "nh": "Nativo de Hawai o Isleño del Pacifico",
       "w": "Blanco",
       "m": "Más de una raza o Otra"
+    },
+    "handedness": {
+      "prompt": "Lateralidad:",
+      "l": "Zurdo",
+      "r": "Diestro",
+      "a": "Ambidextro"
     }
   },
   "pcon": {
