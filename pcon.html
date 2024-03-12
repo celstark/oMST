@@ -8,6 +8,8 @@
   8/16/23 (CELS): Fixed for versions without setup.html to progress to next phase
   8/30/23 (CELS): Added getID() to come up with a good sid
   10/23/23 (CELS): Multi-lang support using Honeycomb style language file
+  12/12/23 (CELS): Fixed instruction image1 bug (not showing same image)
+  12/14/23 (CELS): Enforced image pre-loading
 
   Optional parameters:
   In the JATOS versions, these come in via jatos.studySessionData but we also can pass
@@ -227,8 +229,45 @@ jatos.onLoad(async function() {
   var noise_sequence = ['img/noise_1.png', 'img/noise_2.png','img/noise_3.png','img/noise_4.png','img/noise_5.png']; 
 
   var preload = {
-    type: jsPsychPreload,
-    auto_preload: true 
+    type: jsPsychPreload,// since we use a timeline variable, we can't use the auto reliably
+    images: ['img/noise_1.png', 'img/noise_2.png','img/noise_3.png','img/noise_4.png','img/noise_5.png',
+    'img/pprac1a.jpg','img/pprac2a.jpg','img/pprac2b.jpg',
+    'img/pcon001a.jpg','img/pcon001b.jpg', 
+    'img/pcon002a.jpg','img/pcon002a.jpg', 
+    'img/pcon003a.jpg','img/pcon003a.jpg', 
+    'img/pcon004a.jpg','img/pcon004b.jpg', 
+    'img/pcon005a.jpg','img/pcon005a.jpg', 
+    'img/pcon006a.jpg','img/pcon006a.jpg', 
+    'img/pcon007a.jpg','img/pcon007a.jpg', 
+    'img/pcon008a.jpg','img/pcon008b.jpg', 
+    'img/pcon009a.jpg','img/pcon009b.jpg', 
+    'img/pcon010a.jpg','img/pcon010b.jpg', 
+    'img/pcon011a.jpg','img/pcon011a.jpg', 
+    'img/pcon012a.jpg','img/pcon012b.jpg', 
+    'img/pcon013a.jpg','img/pcon013a.jpg', 
+    'img/pcon014a.jpg','img/pcon014b.jpg', 
+    'img/pcon015a.jpg','img/pcon015a.jpg', 
+    'img/pcon016a.jpg','img/pcon016b.jpg', 
+    'img/pcon017a.jpg','img/pcon017a.jpg', 
+    'img/pcon018a.jpg','img/pcon018a.jpg', 
+    'img/pcon019a.jpg','img/pcon019a.jpg', 
+    'img/pcon020a.jpg','img/pcon020b.jpg', 
+    'img/pcon021a.jpg','img/pcon021b.jpg', 
+    'img/pcon022a.jpg','img/pcon022a.jpg', 
+    'img/pcon023a.jpg','img/pcon023b.jpg', 
+    'img/pcon024a.jpg','img/pcon024b.jpg', 
+    'img/pcon025a.jpg','img/pcon025b.jpg', 
+    'img/pcon027a.jpg','img/pcon027a.jpg' ], 
+    show_progress_bar: true,
+    show_detailed_erros: true,
+    continue_after_error: true,
+    on_error: function(fname) {
+      console.log('FAILED  '+fname)
+    },
+    on_finish: function(data) {
+      console.log('Preload success? ' + data.success)
+      console.log('Failed on ' + data.failed_images.length)
+    }
   }
   
   // Instruction phase
@@ -276,7 +315,7 @@ jatos.onLoad(async function() {
       },
     ],
     timeline_variables: [
-      { img1: 'img/pprac1a.jpg', img2: 'img/pprac1b.jpg'}
+      { img1: 'img/pprac1a.jpg', img2: 'img/pprac1a.jpg'}
     ]
   }
   var instr2_trial = {
