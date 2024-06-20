@@ -6,22 +6,22 @@
   "consent": {
     "title": "IRB Consent Form",
     "study": {
-      "uni": "University of California, Irvine <br>",
-      "sis": "Study Information Sheet <br>",
-      "num": "UC Reliance #1857: fMRI Studies of Memory Encoding and Retrieval <br>"
+      "uni": "대학교 캘리포니아, 어바인 <br>",
+      "sis": "연구 정보 시트 <br>",
+      "num": "IRB #1857: 기억 부호화 및 검색에 관한 fMRI 연구 <br>"
     },
     "researcher": {
-      "title": "Lead Researcher <br>",
-      "name": "Craig Stark, Professor <br>",
-      "dept": "Department of Neurobiology and Behavior <br>",
+      "title": "주 연구자 <br>",
+      "name": "크레이그 스타크, 교수 <br>",
+      "dept": "신경생물학 및 행동학부 <br>",
       "tele": "949-824-4230 / ",
       "email": "cestark@uci.edu <br>"
     },
-    "text": "<li>We are asking you to take part in a study conducted by researchers at the University of California, Irvine. Participating in this study is optional. </li> <li>If you choose to be in the study, you will complete an online memory experiment involving pictures of everyday objects. You may also participate in a survey that will help us learn more about how eating habits, physical activity, mood, sleep patterns, and stress may influence memory performance. The session will take about 30 minutes to complete. </li> <li>You can skip questions that you do not want to answer or stop the survey at any time. We will keep your answers confidential and will not share your personal information with anyone outside the research team. </li> <li>This research is only for participants over the age of 18; if you under the age of 18, please do not complete this survey.</li> <li>Some questions may cause embarrassment or anxiety. If you do not wish to answer a question, you can skip it and go to the next questions. If you do not wish to participate, you can stop.</li> <li>As with most research, there is a chance that confidentiality could be compromised. We take precautions to minimize this risk, including coding your data with a number instead of your name and storing it on a password protected database. </li> <li>You will receive extra course credit for an eligible course through the UCI Social Sciences human subjects’ pool.  You will receive a ½ unit of course credit for each ½ hour of participation in this study.  Total amount of credit you may earn for this study is 1 unit of credit.  The course instructor offering extra course credit for participation in research must provide alternatives to earn extra course credit. The alternative assignment must require equal or less time and effort for the amount of extra credit that can be earned through participation in research.</li> <li>If you have any comments, concerns, or questions regarding the conduct of this research please contact the researchers listed at the top of this form.</li> <li>If you have questions or concerns about your rights as a research participant, you can contact the UCI Institutional Review Board by phone, (949) 824-0665, by e-mail at IRB@research.uci.edu or at 141 Innovation, Suite 250, Irvine, CA 92697. </li> <br><b>What is an IRB?</b>  An Institutional Review Board (IRB) is a committee made up of scientists and non-scientists.  The IRB’s role is to protect the rights and welfare of human subjects involved in research.  The IRB also assures that the research complies with applicable regulations, laws, and institutional policies. </li> ",
-    "prompt": "<li>If you want to participate in this study, click the <b>Agree<b> button to start the survey. </li>",
+    "text": "<li>아래 정보를 읽고 이해가 안되는 부분이 있으면 질문 하십시오. 위에 명시된 연구자가 귀하의 질문에 대답해 드릴 것입니다.<li>귀하는 연구 참여를 요청 받고 있습니다. 이 연구에 참여하는 것은 자발적입니다. 귀하는 특정 질문이나 연구 절차를 건너뛰거나 참여하지 않기로 선택할 수 있습니다. 귀하는 언제든지 처벌이나 혜택 상실 없이 연구참 여를 거부하거나 중단할 수 있습니다. 귀하는 언제든지 이 연구 참여를 철회할 수 있습니다. 이 연구에서철회 하기로 결정하면 즉시 연구 팀에 통보해야 합니다.<li>귀하는 캘리포니아 대학 어바인의 연구자들이 진행하는 연구에 참여할 것을 요청받고 있습니다. 이 연구참여 는 선택 사항입니다.<li>18 세 이상이면 이 연구에 참여할 자격이 있습니다.<li>이 연구는 일상에서 흔히 보는 물건의 사진을 보여주는 메모리 실험을 포함합니다. 메모리 실험에 소요되는 시간은 약 15-30 분 정도입니다.<li>귀하를 불편하게 하거나 불안하게 만드는 질문이 있거나, 대답하고 싶지 않은 질문은 언제든지 해당 질문을 건너뛸 수 있습니다. 참여하지 않고 싶다면, 언제든지 중단할 수 있습니다.<li>이 연구에 참여한다고 해서 귀하에게 제공되는 직접적인 혜택은 없습니다.<li>대체 절차는 없습니다. 유일한 대안은 이 연구에 참여하지 않는 것입니다.<li>이 연구 참여로 주어지는 보상은 없습니다.<li>이 연구에 참여하는 데 참여자가 따로 부담해야 하는 비용은 없습니다.<li>수집된 모든 연구 데이터는 Stark 박사 실험실의 암호화된 서버 또는 데이터 드라이브에 안전하게 보관될 것입니다.<li>귀하의 안전과 복지를 보호하기 위해 연구 팀, 허가받은 UCI 직원, 및 규제 당국은 귀하의 연구 기록에 접근할 수 있습니다.<li>연구 팀은 귀하의 개인 정보를 기밀로 유지하기 위해 최선을 다하겠지만, 허가 받지 않은 사람이 귀하의 개인 정보를 볼 가능성이 있습니다. 완벽한 개인 정보 보호를 보장할 수는 없습니다.<li>향후 연구 사용 여부 <p>연구자들은 귀하의 정보를 사용하여 이 연구를 수행할 것입니다. 연구가 완료되면 귀하의 정보를 다른 연구자들과 공유하여, 다른 연구에 사용할 수도 있습니다. 하지만, 다른 연구자들에게 귀하의 이름이나 기타 귀하의 신원이 드러 날 수 있는 개인 식별 가능한 정보는 공유하지 않을 것입니다. 이 비식별화된 정보를 공유하기 위해 연구자들은 귀하에게 추가 허가를 요청하지 않습니다.<li>데이터 보유 <p>연구자들은 귀하의 연구 데이터를 영구히 저장할 계획입니다. 연구자들은 귀하의 정보 및 귀하의 데이터 분석 결과에서 얻은 정보를 영구히 사용하고 공유할 수 있습니다.<li>이 연구 과정에서, 귀하의 연구 참여에 영향을 미칠 수 있는 중요한 새로운 정보를 알게되면, 이 양식 상단에 명시된 연구자들이 귀하에게 해당 정보를 제공할 것입니다.<li>이 연구에 대한 의견, 우려사항 또는 질문이 있다면 이 양식 상단에 명시된 연구자에게 연락하십시오.<li>만약 연구 참여로 인해 부상을 입었다면 연구자들에게 즉시 알려주는 것이 중요합니다. 연구자에게 직접 말하거나 이 양식 상단에 나열된 번호로 전화해서 알려줄 수 있습니다.<li>만약 이 양식 상단에 나열된 연구자들에게 연락이 안되거나, 이 연구와 관련된 일반적인 질문이 있는 경우; 연구에 대한 우려 사항 또는 불만이 있는 경우; 연구 참여자로서의 귀하의 권리에 대해 질문이 있는 경우; 또는 귀하의 의견이나 제안을 하고자 하는 경우, (949) 824-6662 로 전화하거나 IRB@research.uci.edu 또는 160 Aldrich Hall, Irvine, CA 92697-7600 으로 이메일 또는 편지를 보내면 됩니다.<p>IRB 란 무엇인가요? 내부 검토 위원회(IRB)는 과학자와 비과학자로 구성된 위원회입니다. IRB 의 역할은 연구에 참여하는 참여자의 권리와 복지를 보호하는 것입니다. IRB 는 또한 해당 연구가 관련 규정, 법률 및 기관 정책을 준수하는 것을 보장합니다. ",
+    "prompt": "<p>이 연구에 참여하려면, 동의 버튼을 클릭하고 설문을 시작하십시오.",
     "buttons": {
-      "agree": "I agree",
-      "cancel": "Cancel"
+      "agree": "동의하다",
+      "cancel": "취소"
     }
   },
   "resp": {
@@ -35,6 +35,8 @@
     "preamble": "국립 보건원은 (National Institute of Health) 우리가 참가자들의 인구통계학적 정보를 수집하도록 요구합니다. 또한, 우리가 참가자들의 인구통계학적 정보를 <i>특정한 형식으로</i> 수집하도록 지시합니다.",
     "name": "성함:",
     "dob": "생년월일 (MM/DD/YYYY):",
+    "dob_my": "생년월일 (MM/YYYY):",
+    "age": "나이",
     "gender": {
       "prompt": "성별:",
       "m": "남자",
