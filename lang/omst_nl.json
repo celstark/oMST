@@ -1,0 +1,190 @@
+{
+  "task": {
+    "name": "Optimized Mnemonic Similarity Task",
+    "parID": "Participant ID",
+    "stuID": "Study ID",
+    "end": "This experiment has ended."
+  },
+  "consent": {
+    "title": "IRB Consent Form",
+    "study": {
+      "uni": "University of California, Irvine <br>",
+      "sis": "Study Information Sheet <br>",
+      "num": "IRB #1857: fMRI Studies of Memory Encoding and Retrieval <br>"
+    },
+    "researcher": {
+      "title": "Lead Researcher <br>",
+      "name": "Craig Stark, Professor <br>",
+      "dept": "Department of Neurobiology and Behavior <br>",
+      "tele": "949-824-4230 / ",
+      "email": "cestark@uci.edu <br>"
+    },
+    "text": "<li>Please read the information below and ask questions about anything that you do not understand. Aresearcher listed above will be available to answer your questions.<li>You are being asked to participate in a research study. Participation in this study is voluntary. You may choose to skip a question or a study procedure. You may refuse to participate or discontinueyour involvement at any time without penalty or loss of benefits. You are free to withdraw from thisstudy at any time. <b>If you decide to withdraw from this study you should notify the researchteam immediately.</b><li>You are being asked to participate in a research study conducted by researchers at the Universityof California, Irvine. Participating in this study is optional.<li>You are eligible to participate in this study if you are 18 or older.<li>The research procedures involve a memory experiment showing pictures of everyday objects. Thesession will take about 15-30 minutes to complete.<li>If you that some questions may cause embarrassment or anxiety. If you do not wish to answer aquestion, you can skip it and go to the next question. If you do not wish to participate, you can stop.<li>There are no direct benefits from participation in the study.<li>There are no alternative procedures available. The only alternative is not to participate in thisstudy.<li>You will not be compensated for your participation in this research study.<li>There is no cost to you for participation in this study.<li>All research data collected will be stored securely and confidentially on encrypted servers and ordata drives stored in the Stark Lab.<li>The research team, authorized UCI personnel, and regulatory entities, may have access to yourstudy records to protect your safety and welfare.<p>While the research team will make every effort to keep your personal information confidential, it ispossible that an unauthorized person might see it. We cannot guarantee total privacy.<li><i>Future Research Use</i><p> Researchers will use your information to conduct this study. Once the study is done using yourinformation, we may share them with other researchers so they can use them for other studies inthe future. We will not share your name or any other private identifiable information that would let the researchers know who you are. We will not ask you for additional permission to share this de-identified information.<li><i>Data Retention</i><p>The researchers intend to store your research data in a repository indefinitely. The researchers maycontinue to use and share your information and information obtained from analyses of your data indefinitely.<li>If, during the course of this study, significant new information becomes available that may relate toyour willingness to continue to participate, this information will be provided to you by the researchteam listed at the top of the form.<li>If you have any comments, concerns, or questions regarding the conduct of this research pleasecontact the researchers listed at the top of this form.<li>It is important that you promptly tell the researchers if you believe that you have been injuredbecause of taking part in this study. You can tell the researcher in person or call him/her at thenumber listed at the top of this form.<li>Please contact the UCI Institutional Review Board by phone, (949) 824-6662, by e-mail at IRB@research.uci.edu or at 160 Aldrich Hall, Irvine, CA 92697-7600 if you are unable to reach theresearchers listed at the top of the form and have general questions, have concerns or complaintsabout the research; have questions about your rights as a research subject, or have generalcomments or suggestions.</ul><p><b>What is an IRB?</b> An Institutional Review Board (IRB) is a committee made up of scientists andnon-scientists. The IRB's role is to protect the rights and welfare of human subjects involved inresearch. The IRB also assures that the research complies with applicable regulations, laws, andinstitutional policies.",
+    "prompt": "<p>If you want to participate in this study, click the <b>Agree</b> button to start the survey the survey.",
+    "buttons": {
+      "agree": "I agree",
+      "cancel": "Cancel"
+    }
+  },
+  "resp": {
+    "prompt": "Please select if you prefer to use your device's keyboard or if you prefer to use your mouse to click buttons on your screen",
+    "choices": {
+      "keyboard": "Keyboard",
+      "buttons": "Buttons"
+    }
+  },
+  "demog": {
+    "preamble": "Het National Institute of Health (NIH) vereist dat we demografische informatie van deelnemers verzamelen en dat we dit verzamelen <i>in dit specifiek formaat</i>.",
+    "name": "Voornaam en naam:",
+    "dob": "Geboortedatum (DD/MM/YYYY):",
+    "dob_my": "Geboortedatum (MM/YYYY):",
+    "age": "Age:",
+    "gender": {
+      "prompt": "Geslacht:",
+      "m": "Mannelijk",
+      "f": "Vrouwelijk"
+    },
+    "ethnicity": {
+      "prompt": "Etniciteit:",
+      "h": "Spaanssprekend",
+      "nh": "Niet Spaanssprekend"
+    },
+    "race": {
+      "prompt": "Met welk ras identificeert u zich met meest:",
+      "ai": "Indiaans",
+      "a": "Aziatisch",
+      "b": "Zwart",
+      "nh": "Hawaiaans",
+      "w": "Blank",
+      "m": "Ander ras of meer dan 1 ras"
+    },
+    "handedness": {
+      "prompt": "Handigheid:",
+      "l": "Linkshandig",
+      "r": "Rechtshandig",
+      "a": "Tweehandig"
+    }
+  },
+  "pcon": {
+    "instr1_stim": "In deze taak zal u twee objecten na elkaar zien op het scherm, met een enkele seconden \"leeg scherm\" tussen beide objecten. Uw taak is om te beslissen of de twee foto's <i>exact dezelfde</i> zijn of niet.",
+    "instr2_stim": "Hier ziet u de foto's opnieuw. U zou hier <b>Dezelfde</b> moeten geantwoord hebben aangezien het dezelfde foto's waren.",
+    "instr3_stim": "Hier ziet u de foto's opnieuw. U zou hier <b>Verschillend</b> moeten geantwoord hebben aangezien de foto's niet exact dezelfde waren.",
+    "ready": "Hou u klaar...",
+    "wait": "Wacht...",
+    "ty": "Dank u",
+    "key": {
+      "instr_choice": " ",
+      "instr1_prompt": "Druk op de <i>spatiebalk</i> om een voorbeeld te zien",
+      "instr2_prompt": "Druk op de <i>spatiebalk</i> om verder te gaan",
+      "instr3_prompt": "Klaar om de test te beginnen? Druk op de <i>spatiebalk</i> om te starten",
+      "trial_txt": "<b>D</b>ezelfde of <b>V</b>erschillend?",
+      "trial_choices": {
+        "same": "S",
+        "dif": "D"
+      }
+    },
+    "button": {
+      "instr_choice": "OK",
+      "instr1_prompt": "Druk op <i>OK</i> om een voorbeeld te zien",
+      "instr2_prompt": "Druk op <i>OK</i> om verder te gaan",
+      "instr3_prompt": "Klaar om de test te beginnen? Druk op <i>OK</i> om te starten",
+      "trial_txt": "<i>Dezelfde</i> of <i>Verschillend</i>?",
+      "trial_choices": {
+        "same": "Dezelfde",
+        "dif": "Verschillend"
+      }
+    }
+  },
+  "instructions": {
+    "txt0": "U zal één voor één foto's zien van alledaagse objecten. Voor elke foto, druk op <b>Oud</b> als een identieke foto eerder getoond is, druk op <b>Gelijkaardig</b> als een gelijkaardige maar niet exact dezelfde foto eerder getoond is, of druk op <b>Nieuw</b> als het een volledig nieuwe foto is. <p>Met <i>Gelijkaardig</i> wordt bedoeld dat het object dezelfde naam heeft, maar dat de foto ervan verschillend is.  <p>We starten met enkele oefeningen om dit te verduidelijken.",
+    "cor_new": "Goed zo! U heeft exact dezelfde of een gelijkaardige foto nog niet gezien, dus u heeft correct voor <b>Nieuw</b> gekozen",
+    "cor_rep": "Goed zo! U heeft exact dezelfde foto eerder gezien, dus u heeft correct voor <b>Oud</b> gekozen",
+    "cor_lure": "Goed zo! U heeft <i>exact dezelfde</i> foto niet eerder gezien, dus u heeft correct voor <b>Gelijkaardig</b> gekozen",
+    "prompt_test": "Nu is het aan u. Heeft u dit eerder gezien?",
+    "side_by_side": "Zoals u ziet, zijn deze objecten gelijkaardig, maar niet exact dezelfde. Voor dit type foto's, zou u <b>Gelijkaardig</b> moeten antwoorden, om aan te geven dat u eerder in deze sessie iets gelijkaardig zag, maar niet identiek dezelfde foto.",
+    "end": "Dit is dus de bedoeling. We gaan nu verder met de echte test. <p><i>Geen zorgen als de foto verdwijnt voordat u geantwoord heeft, tijdens de test. Antwoordt dan gewoon terwijl het scherm leeg is.</i>",
+    "key": {
+      "instr_choice": " ",
+      "trial_txt": "<i>Oud</i> (<b>v</b>), <i>Gelijkaardig</i> (<b>b</b>), or <i>Nieuw</i> (<b>n</b>)?",
+      "trial_choices": {
+        "old": "v",
+        "sim": "b",
+        "new": "n"
+      },
+      "prompt0": "Druk op de <i>spatiebalk</i> om te beginnen",
+      "prompt_new": "U heeft deze foto nog niet eerder gezien, dus u zou hier <i>Nieuw</i> (<b>n</b>) moeten antwoorden",
+      "inc_new": "U heeft deze foto nog niet eerder gezien, dus druk op <i>Nieuw</i> (<b>n</b>)",
+      "prompt_rep": "U heeft deze foto eerder gezien, dus druk op <i>Oud</i> (<b>v</b>)",
+      "inc_rep": "U heeft deze foto eerder gezien, dus druk op <i>Oud</i> (<b>v</b>)",
+      "prompt_lure": "Dit object is gelijkaardig aan een object dat u eerder gezien heeft, maar niet exact hetzelfde, dus u zou hier <i>Gelijkaardig</i> (<b>b</b>) moeten kiezen",
+      "inc_lure": "U zag eerder een foto die <i>gelijkaardig is, maar niet exact dezelfde</i>, dus druk op <i>Gelijkaardig</i> (<b>b</b>)",
+      "continue": "(Druk op de <i>spatiebalk</i> om verder te gaan)"
+    },
+    "button": {
+      "instr_choice": "OK",
+      "trial_txt": "<i>Oud</i>, <i>Gelijkaardig</i>, or <i>Nieuw</i>?",
+      "trial_choices": {
+        "old": "Oud",
+        "sim": "Gelijkaardig",
+        "new": "Nieuw"
+      },
+      "prompt0": "Druk op <i>OK</i> om te beginnen",
+      "prompt_new": "U heeft deze foto nog niet eerder gezien, dus u zou hier <b>Nieuw</b> moeten antwoorden",
+      "inc_new": "U heeft deze foto nog niet eerder gezien, dus druk op <b>Nieuw</b>",
+      "prompt_rep": "U heeft deze foto eerder gezien, dus druk op <b>Oud</b>",
+      "inc_rep": "U heeft exact dezelfde foto eerder gezien, dus druk op <b>Oud</b>",
+      "prompt_lure": "Dit object is gelijkaardig aan een object dat u eerder gezien heeft, maar niet exact hetzelfde, dus hier zou u <b>Gelijkaardig</b> moeten antwoorden",
+      "inc_lure": "U zag eerder een object dat <i>gelijkaardig is aan dit object, maar niet exact hetzelfde</i>. Dus het correcte antwoord is hier <b>Gelijkaardig</b>",
+      "continue": "(Druk op <i>OK</i> om verder te gaan)"
+    }
+  },
+  "cont": {
+    "key": {
+      "instr_choice": " ",
+      "instr_prompt": "Druk op de <i>spatiebalk</i> om aan de taak te beginnen",
+      "threechoice": {
+        "instr_stim": "Doorlopende Oud (<b>v</b>), Gelijkaardig (<b>b</b>), of Nieuw (<b>n</b>) taak",
+        "trial_prompt": "Heeft u dit eerder gezien? Is het Oud (<b>v</b>), Gelijkaardig (<b>b</b>), of Nieuw (<b>n</b>)?",
+        "trial_choices": {
+          "old": "v",
+          "sim": "b",
+          "new": "n"
+        }
+      },
+      "twochoice": {
+        "instr_stim": "Doorlopende Oud (<b>v</b>) of Nieuw (<b>n</b>) taak",
+        "trial_prompt": "Heeft u dit eerder gezien? Is het Oud (<b>v</b>) of Nieuw (<b>n</b>)?",
+        "trial_choices": {
+          "old": "v",
+          "new": "n"
+        }
+      }
+    },
+    "button": {
+      "instr_choice": "OK",
+      "instr_prompt": "Druk op <i>OK</i> om de volgende taak te starten",
+      "threechoice": {
+        "instr_stim": "Doorlopende <i>Oud</i>, <i>Gelijkaardig</i>, of <i>Nieuw</i> taak",
+        "trial_prompt": "Heeft u dit eerder gezien? Is het <i>Oud</i>, <i>gelijkaardig</i>, or <i>Nieuw</i>?",
+        "trial_choices": {
+          "old": "Oud",
+          "sim": "Gelijkaardig",
+          "new": "Nieuw"
+        }
+      },
+      "twochoice": {
+        "instr_stim": "Doorlopende <i>Oud</i> of <i>Nieuw</i> taak",
+        "trial_prompt": "Heeft u dit eerder gezien? Is het <i>Oud</i> of <i>Nieuw</i>?",
+        "trial_choices": {
+          "old": "Oud",
+          "new": "Nieuw"
+        }
+      }
+    },
+    "ty": "Dank u"
+  },
+  "end": {
+    "nc": "Geen toestemming gegeven. De test is beëindigd.",
+    "ty": "Dank u om deel te nemen aan de tast. U mag dit venster sluiten als u niet doorverwezen wordt"
+  }
+}
