@@ -447,7 +447,7 @@ jatos.onLoad(async function() {
   var debrief_block = {
     type: jsPsychHtmlKeyboardResponse,
     trial_duration: 500,
-    stimulus: prompt['ty'],
+    stimulus: prompts['ty'],
     on_finish: function (data) {
       let validtrials=jsPsych.data.get().filterCustom(function(trial) {
         return trial.resp !== null; 
