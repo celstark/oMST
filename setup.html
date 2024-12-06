@@ -143,6 +143,9 @@ jatos.onLoad(function () {
   if (typeof jatos.studyJsonInput['include_pcon'] !== 'undefined') {
     include_pcon=jatos.studyJsonInput['include_pcon'];
   }
+  if (typeof jatos.studyJsonInput['include_icon'] !== 'undefined') {
+    include_pcon=jatos.studyJsonInput['include_icon'];
+  }
   if (jatos.studyJsonInput) { console.log('jatos.studyJsonInput: ', jatos.studyJsonInput)}
   console.log(include_consent,include_demographics,include_idcode,include_pcon,order)
   console.log(jatos.studyJsonInput);
@@ -171,17 +174,27 @@ jatos.onLoad(function () {
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_pcon'] !== 'undefined' ) { 
     include_pcon=jatos.batchJsonInput['include_pcon'];
   }
-  console.log(include_consent,include_demographics,include_idcode,include_pcon,order)
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_icon'] !== 'undefined' ) { 
+    include_pcon=jatos.batchJsonInput['include_icon'];
+  }
+  console.log(include_consent,include_demographics,include_pcon,order)
   
   if (typeof jatos.urlQueryParameters.set_mst !== 'undefined') {
     jatos.studySessionData['set_omst'] = jatos.urlQueryParameters.set_omst;
   }
 
-  if (include_demographics) { order.unshift(4); }
-  if (include_consent) {order.unshift(3); }
-  if (include_idcode) {order.unshift(2); }
-  if (include_pcon) {order.push(7); }
-  order.push(8); // Add the "end", which is #8 currently
+  if (include_pcon) { order.unshift(6); }
+  if (include_demographics) { order.unshift(3); }
+  if (include_consent) {order.unshift(2); }
+  //if (include_pcon) {order.push(6); }
+  order.push(7); // Add the "end", which is #7 currently
+
+  if (jatos.studySessionData['set_omst'] == -1) { // randomize the set and subset
+    jatos.studySessionData['set_omst'] = Math.floor(Math.random() * 6) + 1;
+    jatos.studySessionData['subset'] = Math.floor(Math.random() * 3) + 1;
+    console.log('Stimulus set randomized to ',jatos.studySessionData['set_omst'],jatos.studySessionData['subset'])
+    
+  }
   jatos.studySessionData["order"] = order;
   console.log('Worker ID/sid=' + sid + '  URLSID='+urlsid+'  omst set='+jatos.studySessionData["set_omst"] );
   console.log('order: ' + order);
@@ -198,6 +211,7 @@ jatos.onLoad(function () {
     selfpaced: jatos.studySessionData['selfpaced'],
     respmode: jatos.studySessionData['resp_mode'],
     oMSTSet: jatos.studySessionData["set_omst"],
+    lang: jatos.studySessionData["lang"],
     date: d.toString()
   });
 
