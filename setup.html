@@ -183,9 +183,11 @@ jatos.onLoad(function () {
     jatos.studySessionData['set_omst'] = jatos.urlQueryParameters.set_omst;
   }
 
-  if (include_pcon) { order.unshift(6); }
-  if (include_demographics) { order.unshift(3); }
-  if (include_consent) {order.unshift(2); }
+  if (include_pcon) { order.unshift(8); }
+  if (include_demographics) { order.unshift(4); }
+  if (include_consent) {order.unshift(3); }
+  if (include_idcode) {order.unshift(2); }
+
   //if (include_pcon) {order.push(6); }
   order.push(7); // Add the "end", which is #7 currently
 
