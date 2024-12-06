@@ -1,6 +1,9 @@
 <!doctype html>
 <html>
-<!-- 11/30/2020: Updated batch session logging to create a single array per subject with a chronological list of each time
+<!-- 
+11/30/2020: Updated batch session logging to create a single array per subject with a chronological list of each time
+6/19/2410/23/23 (CELS): Multi-lang support using Honeycomb style language file
+
 -->
 <head>
   <link rel="stylesheet" href="css/consent_form.css" />
@@ -10,44 +13,9 @@
   <title>Consent Form</title>
 </head>
 
+
 <body>
-  <p id="text">
 
-
-  <div id="consenttext">
-    <h1 style="text-align: center">IRB Consent Form</h1>
-    University of California, Irvine<br>
-    Study Information Sheet<br>     
-    UC Reliance #1857: fMRI Studies of Memory Encoding and Retrieval<br>
-    <br>       
-    Lead Researcher<br>
-    Craig Stark, Professor<br>
-    Department of Neurobiology and Behavior<br>
-    949-824-4230 / <a href="mailto:cestark@uci.edu">cestark@uci.edu</a><br>
-    
-    <ul>
-    <li>We are asking you to take part in a study conducted by researchers at the University of California, Irvine. Participating in this study is optional.</li>
-    <li>If you choose to be in the study, you will complete an online memory experiment involving pictures of everyday objects. You may also participate in a survey that will help us learn more about how eating habits, physical activity, mood, sleep patterns, and stress may influence memory performance. The session will take about 30 minutes to complete.</li>
-    <li>You can skip questions that you do not want to answer or stop the survey at any time. We will keep your answers confidential and will not share your personal information with anyone outside the research team. </li> 
-    <li>This research is only for participants over the age of 18; if you under the age of 18, please do not complete this survey.</li>
-    <li>Some questions may cause embarrassment or anxiety. If you do not wish to answer a question, you can skip it and go to the next questions. If you do not wish to participate, you can stop.</li>
-    <li>As with most research, there is a chance that confidentiality could be compromised. We take precautions to minimize this risk, including coding your data with a number instead of your name and storing it on a password protected database.
-    <li>You will receive extra course credit for an eligible course through the UCI Social Sciences human subjects’ pool.  You will receive a ½ unit of course credit for each ½ hour of participation in this study.  Total amount of credit you may earn for this study is 1 unit of credit.  The course instructor offering extra course credit for participation in research must provide alternatives to earn extra course credit. The alternative assignment must require equal or less time and effort for the amount of extra credit that can be earned through participation in research.</li>
-    <li>If you have any comments, concerns, or questions regarding the conduct of this research please contact the researchers listed at the top of this form.</li>
-    <li>If you have questions or concerns about your rights as a research participant, you can contact the UCI Institutional Review Board by phone, (949) 824-0665, by e-mail at IRB@research.uci.edu or at 141 Innovation, Suite 250, Irvine, CA 92697.    
-
-    <br><br><b>What is an IRB?</b>  An Institutional Review Board (IRB) is a committee made up of scientists and non-scientists.  The IRB’s role is to protect the rights and welfare of human subjects involved in research.  The IRB also assures that the research complies with applicable regulations, laws, and institutional policies.
-    </li>
-        
-    <li>If you want to participate in this study, click the <b>Agree</b> button to start the survey.</li>
-
-  </ul>
-</div>
-<div id="buttons">
-  <button id="agreeButton">I agree</button>
-  <button id="cancelButton">Cancel</button>
-</div>
-</p>
 <script type="text/javascript">
 function getID() {
   // Try to get a reasonable ID code for this person
@@ -64,7 +32,14 @@ function getID() {
   }
   return sid
 }
-jatos.onLoad(function () {
+function waitFor(conditionFunction) {
+  const poll = resolve => {
+  if(conditionFunction()) resolve();
+    else setTimeout(_ => poll(resolve), 400);
+  }
+  return new Promise(poll)
+}
+jatos.onLoad(async function () {
   var sid = getID();
   console.log('In consent, sid= ' + sid);
 
@@ -82,52 +57,96 @@ jatos.onLoad(function () {
     console.log('have the record, appending to ' + "/" + sid)
     jatos.batchSession.add("/" + sid + "/-", "ConsentLoad_" + dcode);
   }
+
+  var lang='en';
+  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+    lang=jatos.studySessionData['lang'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
+    lang=jatos.studyJsonInput['lang']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
+    lang=jatos.batchJsonInput['lang']
+  }
+  // load honeycomb version of lang file
+  console.log('loading json lang')
+  var langfile='lang/omst_'+lang+'.json';
+  var json_prompts=null;
+  $.getJSON(langfile,function( data ) {
+    json_prompts=data;
+    console.debug(langfile + ' loaded...ish');
+  });
+  await waitFor(_ => json_prompts !== null);
+  console.log(json_prompts['task']['name'])
+  let prompts=json_prompts['consent']; // Load in this phase's section
+
+  // Basic HTML for test
+  p=document.createElement("p");
+  p.innerHTML='<div id="consenttext"><h1>' + prompts['title'] + '</h1>' +
+    prompts['study']['uni'] + 
+    prompts['study']['sis'] +  
+    prompts['study']['num'] +  
+    '<br>' + prompts['researcher']['title'] + 
+    prompts['researcher']['name'] + 
+    prompts['researcher']['dept'] + 
+    prompts['researcher']['tele'] + prompts['researcher']['email'] +
+    '<ul>' + prompts['text'] + prompts['prompt'] + '</ul>' +
+    '</div><div id="buttons">' +
+    '<button id="agreeButton">' + prompts['buttons']['agree'] + '</button>' +
+    '<button id="cancelButton">' + prompts['buttons']['cancel'] + '</button></div>';
+  
+  document.body.appendChild(p)
   $("#buttons").show();
+
+  $('#agreeButton').click(function () {
+    var sid = getID();
+    let date = new Date();
+    let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate()) +
+      "-" + date.getHours() + "-" + date.getMinutes();
+    jatos.batchSession.add("/" + sid + "/-", "ConsentAgreed_" + dcode);
+    var expdata = "Consent given, ID=" + sid + " URL ID=" + jatos.urlQueryParameters.sid;
+    //if (typeof jatos.studySessionData["taskindex"] !== 'undefined') { jatos.studySessionData["taskindex"] += 1; }
+    //jatos.submitResultData(result, jatos.startNextComponent);
+    var order=jatos.studySessionData["order"];
+    jatos.studySessionData["taskindex"] += 1;
+    if (typeof order === 'undefined') {
+      // We don't have an 'order' setup, so assume it's 1-N  (e.g., we didn't use the setup.html in this exp)
+      console.log('faking an order')
+      order=Array(jatos.componentList.length).fill().map((e,i)=>i+1);
+      jatos.studySessionData["taskindex"]=jatos.componentPos;
+    }
+    //jatos.submitResultData(result, jatos.startNextComponent);
+    if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) {         // we're done?
+      // Check if this came from SONA - should have URL.sid and .sona
+      if (typeof jatos.urlQueryParameters.sid === 'undefined' || typeof jatos.urlQueryParameters.sona === 'undefined' ||
+        typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {  // not SONA - just finish
+        jatos.submitResultData(expdata,jatos.endStudy);
+      }
+      else { // SONA - give credit
+        var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
+        '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
+        jatos.endStudyAndRedirect(redirect,expdata);
+      }
+    }
+    else { // submit data and start the next  
+      jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
+    }
+  });
+
+  $('#cancelButton').click(function () {
+    var sid = getID();
+    let date = new Date();
+    let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate()) +
+      "-" + date.getHours() + "-" + date.getMinutes();
+    jatos.batchSession.add("/" + sid + "/-", "ConsentNOTAgreed_" + dcode);
+    jatos.abortStudy("Consent not given.");
+  });
 });
 
-$('#agreeButton').click(function () {
-  var sid = getID();
-  let date = new Date();
-  let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate()) +
-    "-" + date.getHours() + "-" + date.getMinutes();
-  jatos.batchSession.add("/" + sid + "/-", "ConsentAgreed_" + dcode);
-  var expdata = "Consent given, ID=" + sid + " URL ID=" + jatos.urlQueryParameters.sid;
-  //if (typeof jatos.studySessionData["taskindex"] !== 'undefined') { jatos.studySessionData["taskindex"] += 1; }
-  //jatos.submitResultData(result, jatos.startNextComponent);
-  var order=jatos.studySessionData["order"];
-  jatos.studySessionData["taskindex"] += 1;
-  if (typeof order === 'undefined') {
-    // We don't have an 'order' setup, so assume it's 1-N  (e.g., we didn't use the setup.html in this exp)
-    console.log('faking an order')
-    order=Array(jatos.componentList.length).fill().map((e,i)=>i+1);
-    jatos.studySessionData["taskindex"]=jatos.componentPos;
-  }
-  //jatos.submitResultData(result, jatos.startNextComponent);
-  if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) {         // we're done?
-    // Check if this came from SONA - should have URL.sid and .sona
-    if (typeof jatos.urlQueryParameters.sid === 'undefined' || typeof jatos.urlQueryParameters.sona === 'undefined' ||
-      typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {  // not SONA - just finish
-      jatos.submitResultData(expdata,jatos.endStudy);
-    }
-    else { // SONA - give credit
-      var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
-      '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
-      jatos.endStudyAndRedirect(redirect,expdata);
-    }
-  }
-  else { // submit data and start the next  
-    jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
-  }
-});
 
-$('#cancelButton').click(function () {
-  var sid = getID();
-  let date = new Date();
-  let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate()) +
-    "-" + date.getHours() + "-" + date.getMinutes();
-  jatos.batchSession.add("/" + sid + "/-", "ConsentNOTAgreed_" + dcode);
-  jatos.abortStudy("Consent not given.");
-});
+
+
+
 </script>
 </body>
 
