@@ -186,7 +186,7 @@ jatos.onLoad(async function() {
   var new1 = {
     type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage), 
     stimulus: 'img/foil_1032.jpg',
-    key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
+    key_answer: prompts['key']['trial_choices']['new'] , button_answer: 2,
     choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
     prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
     force_correct_button_press: true,
@@ -196,7 +196,7 @@ jatos.onLoad(async function() {
   var new2 = {
     type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: 'img/foil_1033.jpg',
-    key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
+    key_answer: prompts['key']['trial_choices']['new'] , button_answer: 2,
     choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
     prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
     force_correct_button_press: true,
@@ -207,7 +207,7 @@ jatos.onLoad(async function() {
   var new3 = {
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: 'img/pcon026a.jpg',
-    key_answer: prompts['key']['trial_choices'][2], button_answer: 2,
+    key_answer: prompts['key']['trial_choices']['new'], button_answer: 2,
     choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
     prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
     force_correct_button_press: true,
@@ -218,7 +218,7 @@ jatos.onLoad(async function() {
   var repeat1 = {
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: "img/foil_1033.jpg",
-    key_answer: prompts['key']['trial_choices'][0] , button_answer: 0,
+    key_answer: prompts['key']['trial_choices']['old'] , button_answer: 0,
     choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
     prompt: "<p>" + prompts[resp_mode]['prompt_rep'] + "</p>",
     force_correct_button_press: true,
@@ -228,7 +228,7 @@ jatos.onLoad(async function() {
   var lure1 ={
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: "img/pcon026b.jpg",
-    key_answer: prompts['key']['trial_choices'][1] , button_answer: 1,
+    key_answer: prompts['key']['trial_choices']['sim'] , button_answer: 1,
     choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
     prompt:"<p>" + prompts[resp_mode]['prompt_lure'] + "</p>",
     force_correct_button_press: true,
@@ -244,7 +244,7 @@ jatos.onLoad(async function() {
   var new4 = {
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: "img/foil_1035.jpg",
-    key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
+    key_answer: prompts['key']['trial_choices']['new'] , button_answer: 2,
     choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
     prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
     force_correct_button_press: true,
@@ -254,7 +254,7 @@ jatos.onLoad(async function() {
   var new5 = {
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: 'img/pcon028a.jpg',
-    key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
+    key_answer: prompts['key']['trial_choices']['new'] , button_answer: 2,
     choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
     prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
     force_correct_button_press: true,
@@ -265,7 +265,7 @@ jatos.onLoad(async function() {
   var repeat2 = {
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: "img/foil_1035.jpg",
-    key_answer: prompts['key']['trial_choices'][0], button_answer: 0,
+    key_answer: prompts['key']['trial_choices']['old'], button_answer: 0,
     choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
     prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
     force_correct_button_press: true,
@@ -276,7 +276,7 @@ jatos.onLoad(async function() {
   var lure2 = {
     type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: "img/pcon028b.jpg",
-    key_answer: prompts['key']['trial_choices'][1] , button_answer: 1,
+    key_answer: prompts['key']['trial_choices']['sim'] , button_answer: 1,
     choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
     prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
     force_correct_button_press: true,
