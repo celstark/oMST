@@ -34,36 +34,36 @@
     }
   },
   "demog": {
-    "preamble": "The National Institute of Health (NIH) mandates that we collect demographic information from participants and that we collect it <i>in this specific format</i>.",
-    "name": "Full name:",
-    "dob": "Date of birth (MM/DD/YYYY):",
-    "dob_my": "Date of birth (MM/YYYY):",
+    "preamble": "美国国立卫生研究院 (NIH) 要求我们收集参与者的人口统计信息，并且必须以<i>这种特定格式</i>收集。",
+    "name": "全名",
+    "dob": "出生日期（月/日/年）：",
+    "dob_my": "出生日期（月/年）：",
     "age": "岁",
     "gender": {
-      "prompt": "Gender:",
-      "m": "Male",
-      "f": "Female"
-    },
-    "ethnicity": {
-      "prompt": "Ethnicity:",
-      "h": "Hispanic or Latino",
-      "nh": "Not Hispanic or Latino"
-    },
-    "race": {
-      "prompt": "Race with which you identify most:",
-      "ai": "American Indian or Alaska Native",
-      "a": "Asian",
-      "b": "Black or African American",
-      "nh": "Native Hawaiian or Pacific Islander",
-      "w": "White",
-      "m": "More than one race or Other"
-    },
-    "handedness": {
-      "prompt": "Handedness:",
-      "l": "Left",
-      "r": "Right",
-      "a": "Ambidextrous"
-    }
+      "prompt": "性别:",
+      "m": "男性",
+      "f": "女性"
+     },
+     "ethnicity": {
+      "prompt": "族裔:",
+      "h": "西班牙裔或拉丁裔",
+      "nh": "非西班牙裔或拉丁裔"
+     },
+     "race": {
+      "prompt": "你认同自己是哪个种族群体：",
+      "ai": "美洲印第安人或阿拉斯加原住民",
+      "a": "亚洲人",
+      "b": "黑人或非裔美国人",
+      "nh": "夏威夷原住民或太平洋岛屿居民",
+      "w": "白人",
+      "m": "多种族或其他"
+     },
+     "handedness": {
+      "prompt": "惯用手:",
+      "l": "左手",
+      "r": "右手",
+      "a": "双手灵活"
+     }
   },
   "pcon": {
     "instr1_stim": "In this task, you will see two objects appear on the screen, one after the other, with a bit of \"static\" for a few seconds between them. Your job is to determine if the two images are <i>exactly the same</i> or not.",
@@ -184,7 +184,7 @@
     "ty": "谢谢"
   },
   "end": {
-    "nc": "Consent not given. The experiment has ended.",
-    "ty": "Thank you for your participation in the experiment. You may close this window if you are not redirected"
+    "nc": "未给予同意。实验已结束。",
+    "ty": "感谢您参与实验。请等待重定向到 Prolific。"
   }
 }
