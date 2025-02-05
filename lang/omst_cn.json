@@ -66,32 +66,37 @@
      }
   },
   "pcon": {
-    "instr1_stim": "In this task, you will see two objects appear on the screen, one after the other, with a bit of \"static\" for a few seconds between them. Your job is to determine if the two images are <i>exactly the same</i> or not.",
-    "instr2_stim": "Here are those images again. You should have said <b>Same</b> for that one as they were the same images.",
-    "instr3_stim": "Here are those images again. You should have said <b>Different</b> for that one as they were not exactly the same.",
-    "ready": "Get ready...",
-    "wait": "Wait...",
-    "ty": "Thank You",
+    "instr1_stim_sd": "在这个任务中，您将看到两个物体依次出现在屏幕上，它们之间会有几秒钟的“静态”间隔。您的任务是判断这两张图片是否<i>完全相同</i>。",
+    "instr1_stim": "在这个任务中，您将看到屏幕上依次出现两个物体，它们之间会有几秒钟的“静态”间隔。您的任务是判断这两张图片是否<i>完全相同</i>。",
+    "instr2_stim": "这些图片再次出现。对于那张图片，您应该说<b>相同</b>，因为它们是相同的图片。",
+    "instr3_stim": "这些图片再次出现。对于那张图片，您应该说<b>不同</b>，因为它们并不完全相同。",
+    "instr3_stim_sd": "这些图片再次出现。对于那张图片，您应该说<b>不同</b>，因为它们并不完全相同。",
+    "ready": "准备好…",
+    "wait": "等一下…",
+    "ty": "谢谢你",
     "key": {
       "instr_choice": " ",
-      "instr1_prompt": "Press <i>spacebar</i> to see a sample",
-      "instr2_prompt": "Press <i>spacebar</i> to continue",
-      "instr3_prompt": "Ready to begin the test? Press <i>spacebar</i> to start",
-      "trial_txt": "Same (<b>s</b>) or Different (<b>d</b>)?",
+      "instr1_prompt": "按<i>空格键</i>查看示例",
+      "instr2_prompt": "按<i>空格键</i>继续",
+      "instr3_prompt": "准备开始测试了吗？按<i>空格键</i>开始",
+      "trial_txt": "相同（<b>s</b>）还是不同（<b>d</b>）？",
+      "trial_txt_sd": "相同 (<b>s</b>) 或 不同 (<b>d</b>)?",
       "trial_choices": {
         "same": "S",
         "dif": "D"
       }
     },
     "button": {
-      "instr_choice": "OK",
-      "instr1_prompt": "Press <i>OK</i> to see a sample",
-      "instr2_prompt": "Press <i>OK</i> to continue",
-      "instr3_prompt": "Ready to begin the test? Press <i>OK</i> to start",
-      "trial_txt": "<i>Same</i> or <i>Different</i>?",
+      "instr_choice": "确定",
+      "instr1_prompt": "按<i>确定</i>查看示例",
+      "instr2_prompt": "按<i>确定</i>继续",
+      "instr3_prompt": "准备开始测试了吗？按<i>确定</i>开始",
+      "trial_txt_sd": "<i>相同</i> 或 <i>不同</i>?",
+      "trial_txt": "<i>相同</i> 还是 <i>相似</i>?",
       "trial_choices": {
-        "same": "Same",
-        "dif": "Different"
+        "same": "相同",
+        "dif_sd": "不同",
+        "dif": "相似"
       }
     }
   },

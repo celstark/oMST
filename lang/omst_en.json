@@ -66,9 +66,11 @@
     }
   },
   "pcon": {
-    "instr1_stim": "In this task, you will see two objects appear on the screen, one after the other, with a bit of \"static\" for a few seconds between them. Your job is to determine if the two images are <i>exactly the same</i> or not.",
+    "instr1_stim_sd": "In this task, you will see two objects appear on the screen, one after the other, with a bit of \"static\" for a few seconds between them. Your job is to determine if the two images are <i>exactly the same</i> or not.",
+    "instr1_stim": "In this task, you will see two objects appear on the screen, one after the other, with a bit of \"static\" for a few seconds between them. Your job is to determine if the two images are <i>exactly the same</i> or only similar.",
     "instr2_stim": "Here are those images again. You should have said <b>Same</b> for that one as they were the same images.",
-    "instr3_stim": "Here are those images again. You should have said <b>Different</b> for that one as they were not exactly the same.",
+    "instr3_stim": "Here are those images again. You should have said <b>Similar</b> for that one as they were not exactly the same.",
+    "instr3_stim_sd": "Here are those images again. You should have said <b>Different</b> for that one as they were not exactly the same.",
     "ready": "Get ready...",
     "wait": "Wait...",
     "ty": "Thank You",
@@ -77,7 +79,8 @@
       "instr1_prompt": "Press <i>spacebar</i> to see a sample",
       "instr2_prompt": "Press <i>spacebar</i> to continue",
       "instr3_prompt": "Ready to begin the test? Press <i>spacebar</i> to start",
-      "trial_txt": "Same (<b>s</b>) or Different (<b>d</b>)?",
+      "trial_txt_sd": "Same (<b>s</b>) or Different (<b>d</b>)?",
+      "trial_txt": "Same (<b>s</b>) or Similar (<b>d</b>)?",
       "trial_choices": {
         "same": "S",
         "dif": "D"
@@ -88,10 +91,12 @@
       "instr1_prompt": "Press <i>OK</i> to see a sample",
       "instr2_prompt": "Press <i>OK</i> to continue",
       "instr3_prompt": "Ready to begin the test? Press <i>OK</i> to start",
-      "trial_txt": "<i>Same</i> or <i>Different</i>?",
+      "trial_txt_sd": "<i>Same</i> or <i>Different</i>?",
+      "trial_txt": "<i>Same</i> or <i>Similar</i>?",
       "trial_choices": {
         "same": "Same",
-        "dif": "Different"
+        "dif_sd": "Different",
+        "dif": "Similar"
       }
     }
   },
