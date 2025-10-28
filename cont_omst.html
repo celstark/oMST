@@ -99,6 +99,8 @@
   <script src="js/jquery-3.1.1.min.js"></script>
   <script src="js/jspsych_731/dist/plugin-html-keyboard-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-image-keyboard-response.js"></script>
+    <script src="js/jspsych_731/dist/plugin-canvas-keyboard-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-canvas-button-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-html-button-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-image-button-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-video-button-response.js"></script>
@@ -184,6 +186,43 @@ function getID() {
     else { sid=1234; }
   }
   return sid
+}
+
+function drawHTMLText(ctx, html, x, y, isMobile) {
+  const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
+  let fontStyle = '';
+  let totalWidth = 0;
+
+  // 1. Measure total width
+  for (let part of parts) {
+    if (part === '<i>') fontStyle = 'italic ';
+    else if (part === '</i>') fontStyle = '';
+    else if (part === '<b>') fontStyle = 'bold ';
+    else if (part === '</b>') fontStyle = '';
+    else {
+      ctx.font = isMobile ? `${fontStyle}48px Arial` : `${fontStyle}24px Arial`;
+      totalWidth += ctx.measureText(part).width;
+    }
+  }
+  console.log({parts, totalWidth});
+  // 2. Compute starting X so the block is centered
+  let startX = x - totalWidth / 2;
+
+  // 3. Draw each segment left to right
+  fontStyle = '';
+  for (let part of parts) {
+    if (part === '<i>') fontStyle = 'italic ';
+    else if (part === '</i>') fontStyle = '';
+    else if (part === '<b>') fontStyle = 'bold ';
+    else if (part === '</b>') fontStyle = '';
+    else {
+      ctx.font = isMobile ? `${fontStyle}32px Arial` : `${fontStyle}24px Arial`;
+      ctx.fillStyle = "#000";
+      ctx.textBaseline = "middle";
+      ctx.fillText(part, startX, y);
+      startX += ctx.measureText(part).width;
+    }
+  }
 }
 
 jatos.onLoad(async function() {
@@ -361,14 +400,72 @@ jatos.onLoad(async function() {
   let choicekey='threechoice';
   if (twochoice == 1) { choicekey="twochoice" }
 
-  var instr1_trial = {  
+  /*var instr1_trial = {  
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     choices: [prompts[resp_mode]['instr_choice']],
     prompt: "<p>" +prompts[resp_mode]['instr_prompt'] + "</p>",
     margin_horizontal: '40px', margin_vertical: '20px',
 //        button_html: '<button style="font-size: 150%" class="jspsych-btn">%choice%</button>',
     stimulus: "<p>" +prompts[resp_mode][choicekey]['instr_stim'] + "</p>",
-  }
+  }*/
+
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : 800;
+  const canvasHeight = isMobile ? window.innerHeight * 0.6 : 150;
+  const fontScale = isMobile ? 1.5 : 1.0;
+  console.log(isMobile);
+  console.log(canvasHeight);
+  console.log(canvasWidth);
+
+  var instr1_trial = {
+    type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
+
+    // Define the canvas drawing function
+    stimulus: function(c) {
+      const ctx = c.getContext('2d');
+      const width = c.width;
+      const height = c.height;
+      const stimHTML = prompts[resp_mode][choicekey]['instr_stim'];
+
+      // Background
+      ctx.fillStyle = "#f7f7f7";
+      ctx.fillRect(0, 0, width, height);
+      /*
+      // Add image frame (optional)
+      const framePadding = 20;
+      ctx.strokeStyle = "#000";
+      ctx.lineWidth = 4;
+      ctx.strokeRect(framePadding, framePadding, width - framePadding * 2, height * 0.6);
+      */
+      // Add stimulus text
+      ctx.save();
+      ctx.scale(fontScale, fontScale);
+      drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.1, isMobile);
+      ctx.restore();
+      /*
+      // Draw progress bar (optional example)
+      const progress = 0.3; // e.g., 30%
+      ctx.fillStyle = "#4CAF50";
+      ctx.fillRect(width * 0.1, height * 0.9, width * 0.8 * progress, 10);
+      ctx.strokeStyle = "#aaa";
+      ctx.strokeRect(width * 0.1, height * 0.9, width * 0.8, 10);
+      */
+    },
+
+    // Buttons for 'button' mode
+    choices: [prompts[resp_mode]['instr_choice']],
+    button_html: isMobile ? ['<button class="jspsych-btn" style="font-size: calc(18px + 5vw); padding: 0.8em 1.5em;">%choice%</button>'] : ['<button class="jspsych-btn">%choice%</button>'],
+    margin_horizontal: isMobile ? '20px' : '40px',
+    margin_vertical: '20px',
+
+    // Optional text prompt below buttons
+    prompt: `<p style="font-size:${isMobile ? 40 : 18}px; margin-top:${isMobile ? 5 : 10}px;">
+             ${prompts[resp_mode]['instr_prompt']}
+           </p>`,
+
+    // Optional canvas size
+    canvas_size: [canvasHeight *3/4, canvasWidth]
+};
   
   // Build up my actual trial timeline
   var tlv = [];
@@ -412,6 +509,11 @@ jatos.onLoad(async function() {
       type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
       prompt: "<p>" +prompts[resp_mode][choicekey]['trial_prompt'] + "</p>",
       choices: trial_choices,
+      button_html: [
+        '<button class="jspsych-btn" style="background-color: red; color: white; max-width: 5em; width: 5em;">%choice%</button>',
+        '<button class="jspsych-btn" style="background-color: blue; color: white; max-width: 5em; width: 5em;">%choice%</button>',
+        '<button class="jspsych-btn" style="background-color: green; color: white; max-width: 5em; width: 5em;">%choice%</button>'
+      ],
       stimulus_duration: 2000,
       trial_duration: (selfpaced==1 ? null : 2500),
       post_trial_gap: 500,
