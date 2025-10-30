@@ -39,6 +39,8 @@
   <script src="js/jspsych_731/dist/plugin-image-keyboard-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-html-button-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-image-button-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-canvas-keyboard-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-canvas-button-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-animation.js"></script>
   <script src="js/jspsych_731/dist/plugin-preload.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
@@ -208,7 +210,12 @@ jatos.onLoad(async function() {
       }
     }
   });
-
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : 500;
+  const canvasHeight = isMobile ? window.innerHeight * 0.6 : 600;
+  const fontScale = isMobile ? 1.5 : 1.0;
+  const stimScale = isMobile ? 1.5 : window.innerHeight <= 800 ? 0.8 : 1.0;
+  document.body.classList.add(isMobile ? 'mobile' : 'desktop');
   jsPsych.data.addProperties({
     task: phasename,
     subject: sid,
@@ -274,8 +281,12 @@ jatos.onLoad(async function() {
   var instr1_trial = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     choices: [prompts[resp_mode]['instr_choice']],
-    prompt: '<p>' + prompts[resp_mode]['instr1_prompt'] + '</p>',
-    margin_horizontal: '40px', margin_vertical: '0px',
+    prompt: function() {  
+      const fontSize = isMobile ? '48px' : '32px';
+      return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts[resp_mode]['instr1_prompt']}</p>`;
+    },
+    button_html: ['<button class="jspsych-btn" style="height:2em;width:4em;margin-top:100px;">%choice%</button>'],
+    margin_horizontal: '40px', margin_vertical: '0em',
     stimulus: '<p>' + prompts['instr1_stim'] + '</p>',
   }
 
@@ -292,26 +303,117 @@ jatos.onLoad(async function() {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
         //choices: (resp_mode == 'button' ? ['Same','Different'] : "NO_KEYS"),
         //button_html: '<button class="jspsych-btn dimtext">%choice%</button>',
-        type: jsPsychImageKeyboardResponse,
+        type: jsPsychCanvasKeyboardResponse,
+
+        // Canvas stimulus
+        stimulus: function(c) {
+          const ctx = c.getContext('2d');
+          const width = c.width;
+          const height = c.height;
+          const stimImg = new Image();
+          const stimPath = jsPsych.timelineVariable('img1');
+
+          const drawBase = function(){
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+          }
+
+          stimImg.onload = function() {
+            const imgWidth = stimImg.width * stimScale;
+            const imgHeight = stimImg.height * stimScale;
+            const x = (width - imgWidth) / 2;
+            const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
+
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = '#786e6d';
+            const framePadding = 20;
+            ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            ctx.lineWidth = 15;
+            ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+
+            ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
+
+
+          };
+          stimImg.src = stimPath;
+        },
         choices: "NO_KEYS",
+        canvas_size: [canvasHeight, canvasWidth],
         trial_duration: 2000,
         response_ends_trial: false,
-        stimulus: jsPsych.timelineVariable('img1')
       },
       {
         type: jsPsychAnimation,
         stimuli: noise_sequence,
         sequence_reps: 2,
         frame_time: 200,
-        prompt: '<p>' + prompts['wait']
+        render_on_canvas: true,
+        prompt: function() {  
+          const fontSize = isMobile ? '48px' : '32px';
+          return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts['wait']}</p>`;
+        },
+        on_load: function() {
+          const canvas = document.querySelector('canvas');
+
+          if (canvas) {
+            canvas.style.width = canvasWidth;
+            canvas.style.height = canvasHeight;
+            canvas.style.objectFit = 'contain';
+            canvas.style.display = 'block';
+            canvas.style.margin = '0 auto';
+          }
+
+          const content = document.querySelector('.jspsych-content');
+          if (content) {
+            content.style.textAlign = 'center';
+          }
+        }
       },
       {
-        type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
+        type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
+
+        // Canvas stimulus
+        stimulus: function(c) {
+          const ctx = c.getContext('2d');
+          const width = c.width;
+          const height = c.height;
+          const stimImg = new Image();
+          const stimPath = jsPsych.timelineVariable('img2');
+
+          const drawBase = function(){
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+          }
+
+          stimImg.onload = function() {
+            const imgWidth = stimImg.width * stimScale;
+            const imgHeight = stimImg.height * stimScale;
+            const x = (width - imgWidth) / 2;
+            const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
+
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = '#786e6d';
+            const framePadding = 20;
+            ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            ctx.lineWidth = 15;
+            ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+
+            ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
+
+
+          };
+          stimImg.src = stimPath;
+        },
         choices: [ prompts[resp_mode]['trial_choices']['same'], prompts[resp_mode]['trial_choices']['dif'] ],
         //stimulus_duration: 2000,
+        canvas_size: [canvasHeight, canvasWidth],
         trial_duration: null,
         response_ends_trial: true,
-        stimulus: jsPsych.timelineVariable('img2')
+        margin_horizontal: '40px',
+        button_html: [
+          '<button class="jspsych-btn" style="background-color:green;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em green;color:white;height:3em;width:5em;">%choice%</button>',
+          '<button class="jspsych-btn" style="background-color:red;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em red;color:white;height:3em;width:5em;">%choice%</button>'
+        ],
       },
     ],
     timeline_variables: [
@@ -321,10 +423,16 @@ jatos.onLoad(async function() {
   var instr2_trial = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     choices: [prompts[resp_mode]['instr_choice']],
-    prompt: '<p>' + prompts[resp_mode]['instr2_prompt'] + '</p>',
+    prompt: function() {  
+      const fontSize = isMobile ? '40px' : '28px';
+      return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts[resp_mode]['instr2_prompt']}</p>`;
+    },
     margin_horizontal: '40px', margin_vertical: '0px',
-    stimulus: '<p>' + prompts['instr2_stim'] + '</p>' + 
-    '<table style = "width:100%"> <tr> <td> <img src = "img/pprac1a.jpg" height=400 width=400> </td> <td> <img src = "img/pprac1a.jpg" height=400 width=400></td></tr></table> '
+    stimulus: function () {
+      const fontSize = isMobile ? '48px' : '32px';
+      return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts['instr2_stim']}</p>
+<table style="width:100%"><tr><td><img src="img/pprac1a.jpg" height="400" width="400"></td><td><img src="img/pprac1a.jpg" height="400" width="400"></td></tr></table>`;
+    } 
   }
   var demo2_trial = {
     timeline: [
@@ -339,26 +447,117 @@ jatos.onLoad(async function() {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
         //choices: (resp_mode == 'button' ? ['Same','Different'] : "NO_KEYS"),
         //button_html: '<button class="jspsych-btn dimtext">%choice%</button>',
-        type: jsPsychImageKeyboardResponse,
+        type: jsPsychCanvasKeyboardResponse,
+
+        // Canvas stimulus
+        stimulus: function(c) {
+          const ctx = c.getContext('2d');
+          const width = c.width;
+          const height = c.height;
+          const stimImg = new Image();
+          const stimPath = jsPsych.timelineVariable('img1');
+
+          const drawBase = function(){
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+          }
+
+          stimImg.onload = function() {
+            const imgWidth = stimImg.width * stimScale;
+            const imgHeight = stimImg.height * stimScale;
+            const x = (width - imgWidth) / 2;
+            const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
+
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = '#786e6d';
+            const framePadding = 20;
+            ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            ctx.lineWidth = 15;
+            ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+
+            ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
+
+
+          };
+          stimImg.src = stimPath;
+        },
         choices: "NO_KEYS",
+        canvas_size: [canvasHeight, canvasWidth],
         trial_duration: 2000,
         response_ends_trial: false,
-        stimulus: jsPsych.timelineVariable('img1')
       },
       {
         type: jsPsychAnimation,
         stimuli: noise_sequence,
         sequence_reps: 2,
         frame_time: 200,
-        prompt: '<p>' + prompts['wait']
+        render_on_canvas: true,
+        prompt: function() {  
+          const fontSize = isMobile ? '48px' : '32px';
+          return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts['wait']}</p>`;
+        },
+        on_load: function() {
+          const canvas = document.querySelector('canvas');
+
+          if (canvas) {
+            canvas.style.width = canvasWidth;
+            canvas.style.height = canvasHeight;
+            canvas.style.objectFit = 'contain';
+            canvas.style.display = 'block';
+            canvas.style.margin = '0 auto';
+          }
+
+          const content = document.querySelector('.jspsych-content');
+          if (content) {
+            content.style.textAlign = 'center';
+          }
+        }
       },
       {
-        type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
+        type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
+
+        // Canvas stimulus
+        stimulus: function(c) {
+          const ctx = c.getContext('2d');
+          const width = c.width;
+          const height = c.height;
+          const stimImg = new Image();
+          const stimPath = jsPsych.timelineVariable('img2');
+
+          const drawBase = function(){
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+          }
+
+          stimImg.onload = function() {
+            const imgWidth = stimImg.width * stimScale;
+            const imgHeight = stimImg.height * stimScale;
+            const x = (width - imgWidth) / 2;
+            const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
+
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = '#786e6d';
+            const framePadding = 20;
+            ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            ctx.lineWidth = 15;
+            ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+
+            ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
+
+
+          };
+          stimImg.src = stimPath;
+        },
         choices: [ prompts[resp_mode]['trial_choices']['same'], prompts[resp_mode]['trial_choices']['dif'] ],
         //stimulus_duration: 2000,
+        canvas_size: [canvasHeight, canvasWidth],
         trial_duration: null,
         response_ends_trial: true,
-        stimulus: jsPsych.timelineVariable('img2')
+        margin_horizontal: '40px',
+        button_html: [
+          '<button class="jspsych-btn" style="background-color:green;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em green;color:white;height:3em;width:5em;">%choice%</button>',
+          '<button class="jspsych-btn" style="background-color:red;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em red;color:white;height:3em;width:5em;">%choice%</button>'
+        ],
       },
     ],
     timeline_variables: [
@@ -368,10 +567,16 @@ jatos.onLoad(async function() {
   var instr3_trial = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     choices: [prompts[resp_mode]['instr_choice']],
-    prompt: '<p class="redtext">' + prompts[resp_mode]['instr3_prompt'] + '</p>',
+    prompt: function() {  
+      const fontSize = isMobile ? '40px' : '28px';
+      return `<p class="redtext" style="font-size:${fontSize}; margin-top:1em;">${prompts[resp_mode]['instr3_prompt']}</p>`;
+    },
     margin_horizontal: '40px', margin_vertical: '0px',
-    stimulus: '<p>' + prompts['instr3_stim'] + '</p>' +
-       '<table style = "width:100%"> <tr> <td> <img src = "img/pprac2a.jpg" height=400 width=400> </td> <td> <img src = "img/pprac2b.jpg" height=400 width=400> </td> </tr> </table>'
+    stimulus: function () {
+      const fontSize = isMobile ? '48px' : '32px';
+      return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts['instr3_stim']}</p>
+<table style="width:100%"><tr><td><img src="img/pprac2a.jpg" height="400" width="400"></td><td><img src="img/pprac2b.jpg" height="400" width="400"></td></tr></table>`;
+    } 
   }
   
   // Main phase
@@ -388,26 +593,119 @@ jatos.onLoad(async function() {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
         //choices: (resp_mode == 'button' ? ['Same','Different'] : "NO_KEYS"),
         //button_html: '<button class="jspsych-btn dimtext">%choice%</button>',
-        type: jsPsychImageKeyboardResponse,
+        type: jsPsychCanvasKeyboardResponse,
+
+        // Canvas stimulus
+        stimulus: function(c) {
+          const ctx = c.getContext('2d');
+          const width = c.width;
+          const height = c.height;
+          const stimImg = new Image();
+          const stimPath = jsPsych.timelineVariable('img1');
+
+          const drawBase = function(){
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+          }
+
+          stimImg.onload = function() {
+            const imgWidth = stimImg.width * stimScale;
+            const imgHeight = stimImg.height * stimScale;
+            const x = (width - imgWidth) / 2;
+            const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
+
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = '#786e6d';
+            const framePadding = 20;
+            ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            ctx.lineWidth = 15;
+            ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+
+            ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
+
+
+          };
+          stimImg.src = stimPath;
+        },
         choices: "NO_KEYS",
+        canvas_size: [canvasHeight, canvasWidth],
         trial_duration: 2000,
         response_ends_trial: false,
-        stimulus: jsPsych.timelineVariable('img1')
+
       },
       {
         type: jsPsychAnimation,
         stimuli: noise_sequence,
         sequence_reps: 2,
         frame_time: 200,
-        prompt: '<p>' + prompts['wait']
+        render_on_canvas: true,
+        prompt: function() {  
+          const fontSize = isMobile ? '48px' : '32px';
+          return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts['wait']}</p>`;
+        },
+        on_load: function() {
+          const canvas = document.querySelector('canvas');
+
+          if (canvas) {
+            canvas.style.width = canvasWidth;
+            canvas.style.height = canvasHeight;
+            canvas.style.objectFit = 'contain';
+            canvas.style.display = 'block';
+            canvas.style.margin = '0 auto';
+          }
+
+          const content = document.querySelector('.jspsych-content');
+          if (content) {
+            content.style.textAlign = 'center';
+          }
+        }
       },
       {
-        type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
+
+        type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
+
+        // Canvas stimulus
+        stimulus: function(c) {
+          const ctx = c.getContext('2d');
+          const width = c.width;
+          const height = c.height;
+          const stimImg = new Image();
+          const stimPath = jsPsych.timelineVariable('img2');
+
+          const drawBase = function(){
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, width, height);
+          }
+
+          stimImg.onload = function() {
+            const imgWidth = stimImg.width * stimScale;
+            const imgHeight = stimImg.height * stimScale;
+            const x = (width - imgWidth) / 2;
+            const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
+
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = '#786e6d';
+            const framePadding = 20;
+            ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            ctx.lineWidth = 15;
+            ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+
+            ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
+
+
+          };
+          stimImg.src = stimPath;
+        },
         choices: [ prompts[resp_mode]['trial_choices']['same'], prompts[resp_mode]['trial_choices']['dif'] ],
-        stimulus_duration: 2000,
+        //stimulus_duration: 2000,
+        canvas_size: [canvasHeight, canvasWidth],
         trial_duration: null,
         response_ends_trial: true,
-        stimulus: jsPsych.timelineVariable('img2'),
+        margin_horizontal: '40px',
+        button_html: [
+          '<button class="jspsych-btn" style="background-color:green;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em green;color:white;height:3em;width:5em;">%choice%</button>',
+          '<button class="jspsych-btn" style="background-color:red;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em red;color:white;height:3em;width:5em;">%choice%</button>'
+        ],
         on_finish: function(data) {
           // same = button 0 = 's'
           // different = button 1 = 'd'

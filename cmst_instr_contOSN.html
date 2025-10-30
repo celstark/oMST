@@ -43,6 +43,8 @@ Revised: November 20, 2019 (CELS) for Cordova
   <script src="js/jspsych_731/dist/jspsych.js"></script>
   <script src="js/jspsych_731/dist/plugin-html-keyboard-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-html-button-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-canvas-keyboard-response.js"></script>
+  <script src="js/jspsych_731/dist/plugin-canvas-button-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-categorize-image.js"></script>
   <script src="js/plugin-categorize-image-buttons.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
@@ -152,7 +154,12 @@ jatos.onLoad(async function() {
       }
     }
   });
-  
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : 500;
+  const canvasHeight = isMobile ? window.innerHeight * 0.6 : 600;
+  const fontScale = isMobile ? 1.5 : 1.0;
+  const stimScale = isMobile ? 1.5 : window.innerHeight <= 800 ? 0.8 : 1.0;
+  document.body.classList.add(isMobile ? 'mobile' : 'desktop');
   jsPsych.data.addProperties({
     task: phasename,
     subject: sid,
@@ -180,18 +187,77 @@ jatos.onLoad(async function() {
   var intro = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     choices: [prompts[resp_mode]['instr_choice']],
-    prompt: "<p>" +prompts[resp_mode]['prompt0'] + "</p>",
+    prompt: function() {  
+      const fontSize = isMobile ? '48px' : '32px';
+      return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts[resp_mode]['prompt0']}</p>`;
+    },
     stimulus: prompts['txt0'],
   }
   var new1 = {
-    type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage), 
-    stimulus: 'img/foil_1032.jpg',
+  
+  
     key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
     choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
+  
     force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>"
+
+    type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
+
+    // Canvas stimulus
+    stimulus: function(c) {
+      const ctx = c.getContext('2d');
+      const width = c.width;
+      const height = c.height;
+      const stimImg = new Image();
+      const stimPath = 'img/foil_1032.jpg';
+
+      const drawBase = function(){
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+      }
+
+      stimImg.onload = function() {
+        const imgWidth = stimImg.width * stimScale;
+        const imgHeight = stimImg.height * stimScale;
+        const x = (width - imgWidth) / 2;
+        const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
+
+        ctx.fillStyle = "#ffffff";
+        ctx.strokeStyle = '#786e6d';
+        const framePadding = 20;
+        ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+        ctx.lineWidth = 15;
+        ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+
+        ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
+
+
+      };
+      stimImg.src = stimPath;
+    },
+    
+    //stimulus_duration: 2000,
+    canvas_size: [canvasHeight, canvasWidth],
+    trial_duration: null,
+    margin_horizontal: '40px',
+    button_html: [
+      '<button class="jspsych-btn" style="background-color:red;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em red;color:white;height:3em;width:5em;">%choice%</button>',
+      '<button class="jspsych-btn" style="background-color:blue;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em blue;color:white;height:3em;width:5em;">%choice%</button>',
+      '<button class="jspsych-btn" style="background-color:green;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em green;color:white;height:3em;width:5em;">%choice%</button>'
+    ],
+    prompt: function() {  
+      const fontSize = isMobile ? '40px' : '28px';
+      return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts[resp_mode]['prompt_new']}</p>`;
+    },
+    incorrect_text: function() {  
+      const fontSize = isMobile ? '40px' : '28px';
+      return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts[resp_mode]['inc_new']}</p>`;
+    },
+    correct_text: function() {  
+      const fontSize = isMobile ? '40px' : '28px';
+      return `<p style="font-size:${fontSize}; margin-top:112px;">${prompts['cor_new']}</p>`;
+    },
+
   }
   var new2 = {
     type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
