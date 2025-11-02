@@ -193,163 +193,204 @@ jatos.onLoad(async function() {
     },
     stimulus: prompts['txt0'],
   }
-  var new1 = {
-  
-  
-    key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-  
-    force_correct_button_press: true,
 
-    type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
+function makeCategorizeTrial(imgPath, keyAnswer, promptText, incText, corText) {
+  return {
+    type: jsPsychCanvasButtonResponse,
+    choices: ['dummy'], // required by plugin but not used
+    trial_duration: null,
+    canvas_size: [canvasHeight, canvasWidth],
 
-    // Canvas stimulus
-    stimulus: function(c) {
+    // Draw the image (once) on the canvas
+    stimulus: function (c) {
       const ctx = c.getContext('2d');
-      const width = c.width;
-      const height = c.height;
-      const stimImg = new Image();
-      const stimPath = 'img/foil_1032.jpg';
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, c.width, c.height);
 
-      const drawBase = function(){
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, width, height);
+      const img = new Image();
+      img.onload = function () {
+        const imgWidth = img.width * stimScale;
+        const imgHeight = img.height * stimScale;
+        const x = (c.width - imgWidth) / 2;
+        const y = (c.height - imgHeight) / 2;
+        const framePadding = 20;
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#786e6d';
+        ctx.lineWidth = 15;
+        ctx.fillRect(
+          x - framePadding,
+          y - framePadding,
+          imgWidth + 2 * framePadding,
+          imgHeight + 2 * framePadding
+        );
+        ctx.strokeRect(
+          x - framePadding,
+          y - framePadding,
+          imgWidth + 2 * framePadding,
+          imgHeight + 2 * framePadding
+        );
+        ctx.drawImage(img, x, y, imgWidth, imgHeight);
+      };
+      img.src = imgPath;
+    },
+
+    on_load: function () {
+      const display = jsPsych.getDisplayElement();
+      const margin_horizontal = isMobile ? '20px' : '40px';
+      const margin_vertical = isMobile ? '10px' : '10px';
+
+      // Remove plugin’s default buttons + wrapper
+      display.querySelectorAll('.jspsych-btn').forEach(b => b.remove());
+      const defaultWrapper = display.querySelector('#jspsych-canvas-button-response-btngroup');
+      if (defaultWrapper) defaultWrapper.remove();
+
+      // Use a single vertical layout container for everything
+      const layout = document.createElement('div');
+      layout.style.display = 'flex';
+      layout.style.flexDirection = 'column';
+      layout.style.alignItems = 'center';
+      layout.style.justifyContent = 'flex-start';
+      layout.style.height = '100%';
+      layout.style.gap = isMobile ? '0.5em' : '0.3em'; // very small spacing
+      display.appendChild(layout);
+
+      // Prompt
+      const promptDiv = document.createElement('div');
+      promptDiv.id = 'prompt';
+      promptDiv.innerHTML = `<p style="font-size:${isMobile ? '40px':'28px'}; margin:0;">${promptText}</p>`;
+      layout.appendChild(promptDiv);
+
+      // Button container
+      const btnWrap = document.createElement('div');
+      btnWrap.id = 'button-container';
+      btnWrap.style.display = 'flex';
+      btnWrap.style.justifyContent = 'center';
+      btnWrap.style.gap = isMobile ? '40px' : '80px';
+      btnWrap.style.padding = '0';
+
+      btnWrap.innerHTML = `
+        <button class="jspsych-btn" id="btn0" style="background-color:red;height:3em;width:5em;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em red;margin=20px;">${prompts[resp_mode]['trial_choices']['old']}</button>
+        <button class="jspsych-btn" id="btn1" style="background-color:blue;height:3em;width:5em;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em blue;">${prompts[resp_mode]['trial_choices']['sim']}</button>
+        <button class="jspsych-btn" id="btn2" style="background-color:green;height:3em;width:5em;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em green;">${prompts[resp_mode]['trial_choices']['new']}</button>`;
+      layout.appendChild(btnWrap);
+
+      // Feedback (fixed height to prevent layout jump)
+      const feedbackDiv = document.createElement('div');
+      feedbackDiv.id = 'feedback';
+      feedbackDiv.style.margin = '0';
+      feedbackDiv.style.fontSize = isMobile ? '40px' : '28px';
+      feedbackDiv.style.height = isMobile ? '2em' : '1.5em'; // pre-allocated space
+      feedbackDiv.style.display = 'flex';
+      feedbackDiv.style.alignItems = 'center';
+      feedbackDiv.style.justifyContent = 'center';
+      layout.appendChild(feedbackDiv);
+
+      // Feedback logic
+      function showFeedback(correct) {
+        feedbackDiv.innerHTML = correct
+          ? `<p style="color:green;margin:0;">${corText}</p>`
+          : `<p style="color:red;margin:0;">${incText}</p>`;
       }
 
-      stimImg.onload = function() {
-        const imgWidth = stimImg.width * stimScale;
-        const imgHeight = stimImg.height * stimScale;
-        const x = (width - imgWidth) / 2;
-        const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
+      function handleResponse(i) {
+        if (i === keyAnswer) {
+          showFeedback(true);
+          setTimeout(() => jsPsych.finishTrial({ response: i, correct: true }), 1000);
+        } else {
+          showFeedback(false);
+        }
+      }
 
-        ctx.fillStyle = "#ffffff";
-        ctx.strokeStyle = '#786e6d';
-        const framePadding = 20;
-        ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
-        ctx.lineWidth = 15;
-        ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
-
-        ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
-
-
-      };
-      stimImg.src = stimPath;
+      // Button listeners
+      for (let i = 0; i < 3; i++) {
+        display.querySelector('#btn' + i).addEventListener('click', () => handleResponse(i));
+      }
     },
-    
-    //stimulus_duration: 2000,
-    canvas_size: [canvasHeight, canvasWidth],
-    trial_duration: null,
-    margin_horizontal: '40px',
-    button_html: [
-      '<button class="jspsych-btn" style="background-color:red;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em red;color:white;height:3em;width:5em;">%choice%</button>',
-      '<button class="jspsych-btn" style="background-color:blue;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em blue;color:white;height:3em;width:5em;">%choice%</button>',
-      '<button class="jspsych-btn" style="background-color:green;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em green;color:white;height:3em;width:5em;">%choice%</button>'
-    ],
-    prompt: function() {  
-      const fontSize = isMobile ? '40px' : '28px';
-      return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts[resp_mode]['prompt_new']}</p>`;
-    },
-    incorrect_text: function() {  
-      const fontSize = isMobile ? '40px' : '28px';
-      return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts[resp_mode]['inc_new']}</p>`;
-    },
-    correct_text: function() {  
-      const fontSize = isMobile ? '40px' : '28px';
-      return `<p style="font-size:${fontSize}; margin-top:112px;">${prompts['cor_new']}</p>`;
-    },
+  };
+}
 
-  }
-  var new2 = {
-    type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: 'img/foil_1033.jpg',
-    key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
-    force_correct_button_press: true,
-    incorrect_text: "<p>" +prompts[resp_mode]['inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
-      
-  }
-  var new3 = {
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: 'img/pcon026a.jpg',
-    key_answer: prompts['key']['trial_choices'][2], button_answer: 2,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
-      
-  }
-  var repeat1 = {
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: "img/foil_1033.jpg",
-    key_answer: prompts['key']['trial_choices'][0] , button_answer: 0,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: "<p>" + prompts[resp_mode]['prompt_rep'] + "</p>",
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_rep'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_rep'] + "</p>",
-  }
-  var lure1 ={
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: "img/pcon026b.jpg",
-    key_answer: prompts['key']['trial_choices'][1] , button_answer: 1,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt:"<p>" + prompts[resp_mode]['prompt_lure'] + "</p>",
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_lure'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_lure'] + "</p>",
-  }
 
-  var side_by_side1 = {
-    type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
-    stimulus: '<p>' + prompts['side_by_side'] + '</p><table style="width:100%"><tr><td><img src="img/pcon026a.jpg"><td><img src="img/pcon026b.jpg"></table> ',
-    choices: [prompts[resp_mode]['instr_choice']],
-  }
-  var new4 = {
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: "img/foil_1035.jpg",
-    key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
-  }
-  var new5 = {
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: 'img/pcon028a.jpg',
-    key_answer: prompts['key']['trial_choices'][2] , button_answer: 2,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
-      
-  }
-  var repeat2 = {
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: "img/foil_1035.jpg",
-    key_answer: prompts['key']['trial_choices'][0], button_answer: 0,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_rep'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_rep'] + "</p>",
-      
-  }
-  var lure2 = {
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: "img/pcon028b.jpg",
-    key_answer: prompts['key']['trial_choices'][1] , button_answer: 1,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_lure'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_lure'] + "</p>",
-      
-  }
+var new1 = makeCategorizeTrial(
+  'img/foil_1032.jpg',
+  2,
+  prompts[resp_mode]['prompt_new'],
+  prompts[resp_mode]['inc_new'],
+  prompts['cor_new']
+)
+
+var new2 = makeCategorizeTrial(
+  'img/foil_1033.jpg',
+  2,
+  prompts[resp_mode]['prompt_new'],
+  prompts[resp_mode]['inc_new'],
+  prompts['cor_new']
+);
+
+var new3 = makeCategorizeTrial(
+  'img/pcon026a.jpg',
+  2,
+  prompts[resp_mode]['prompt_new'],
+  prompts[resp_mode]['inc_new'],
+  prompts['cor_new']
+);
+
+var repeat1 = makeCategorizeTrial(
+  'img/foil_1033.jpg',
+  0,
+  prompts[resp_mode]['prompt_rep'],
+  prompts[resp_mode]['inc_rep'],
+  prompts['cor_rep']
+);
+
+var lure1 = makeCategorizeTrial(
+  'img/pcon026b.jpg',
+  1,
+  prompts[resp_mode]['prompt_lure'],
+  prompts[resp_mode]['inc_lure'],
+  prompts['cor_lure']
+);
+
+var side_by_side1 = {
+  type: (resp_mode === 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
+  stimulus: `<p>${prompts['side_by_side']}</p>
+             <table style="width:100%"><tr>
+             <td><img src="img/pcon026a.jpg"></td>
+             <td><img src="img/pcon026b.jpg"></td>
+             </tr></table>`,
+  choices: [prompts[resp_mode]['instr_choice']]
+};
+
+var new4 = makeCategorizeTrial(
+  'img/foil_1035.jpg',
+  2,
+  prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
+  prompts[resp_mode]['inc_new'],
+  prompts['cor_new']
+);
+
+var new5 = makeCategorizeTrial(
+  'img/pcon028a.jpg',
+  2,
+  prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
+  prompts[resp_mode]['inc_new'],
+  prompts['cor_new']
+);
+
+var repeat2 = makeCategorizeTrial(
+  'img/foil_1035.jpg',
+  0,
+  prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
+  prompts[resp_mode]['inc_rep'],
+  prompts['cor_rep']
+);
+
+var lure2 = makeCategorizeTrial(
+  'img/pcon028b.jpg',
+  1,
+  prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
+  prompts[resp_mode]['inc_lure'],
+  prompts['cor_lure']
+);
   var side_by_side2 = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     stimulus: '<p>' + prompts['side_by_side'] + '</p><table style="width:100%"><tr><td><img src="img/pcon028a.jpg"><td><img src="img/pcon028b.jpg"></table> ',

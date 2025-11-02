@@ -37,6 +37,8 @@
 
 </body>
 <script>
+const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+document.body.classList.add(isMobile ? 'mobile' : 'desktop');
 function getID() {
   // Try to get a reasonable ID code for this person
   // URL > studySession > workerID
@@ -132,26 +134,57 @@ jatos.onLoad(async function() {
   var demogform = {
     type: jsPsychSurveyHtmlForm,
     preamble: prompts['preamble'],
-    html:'<div style="text-align: left; font-size: 16px; line-height: 110%"> <p>' +
-      '<p><b>' + prompts['age'] + '</b> <input name="age" type="text" required /></p>' +
-      '<p><b>' + prompts['gender']['prompt'] + ' </b>'+
-      '<br><input type="radio" id="male" name="gender" value="male" style="margin-left: 50px" required > <label for="male">'+prompts['gender']['m']+'</label> '+
-      '<br><input type="radio" id="female" name="gender" value="female" style="margin-left: 50px"  > <label for="female">'+prompts['gender']['f']+'</label> '+
-      '<p><b>'+ prompts['ethnicity']['prompt'] +' </b>' +
-      '<br><input type="radio" id="hispanic" name="ethnicity" value="hispanic" style="margin-left: 50px" required> <label for="hispanic">'+prompts['ethnicity']['h']+'</label>' +
-      '<br><input type="radio" id="nonhispanic" name="ethnicity" value="nonhispanic" style="margin-left: 50px"> <label for="nonhispanic">'+prompts['ethnicity']['nh']+'</label>' +
-      '<p><b>' + prompts['race']['prompt'] + '</b>' + 
-      '<br><input type="radio" id="nativeamerican" name="race" value="nativeamerican" style="margin-left: 50px" required> <label for="nativeamerican">'+prompts['race']['ai']+'</label>' +
-      '<br><input type="radio" id="asian" name="race" value="asian" style="margin-left: 50px"> <label for="asian">'+prompts['race']['a']+'</label> ' +
-      '<br><input type="radio" id="black" name="race" value="black" style="margin-left: 50px"> <label for="black">'+prompts['race']['b']+'</label> ' +
-      '<br><input type="radio" id="nativehawaiian" name="race" value="nativehawaiian" style="margin-left: 50px"> <label for="nativehawaiian">'+prompts['race']['nh']+'</label> ' +
-      '<br><input type="radio" id="white" name="race" value="white" style="margin-left: 50px"> <label for="white">'+prompts['race']['w']+'</label> ' +
-      '<br><input type="radio" id="more" name="race" value="more" style="margin-left: 50px"> <label for="more">'+prompts['race']['m']+'</label> ' +
-      '<p> <b>'+prompts['handedness']['prompt']+' </b> ' +
-      '<br><input type="radio" id="left" name="handedness" value="left" style="margin-left: 50px" required > <label for="left">'+prompts['handedness']['l']+' </label> ' +
-      '<br><input type="radio" id="right" name="handedness" value="right" style="margin-left: 50px"  > <label for="right"> '+prompts['handedness']['r']+' </label> ' +
-      '<br><input type="radio" id="ambi" name="handedness" value="ambi" style="margin-left: 50px"  > <label for="ambi"> '+prompts['handedness']['a']+' </label> ' +
-      '</div>'
+
+html: function() {
+    const fontSize = isMobile ? '48px' : '24px';
+    const height = isMobile ? '48px' : '24px';
+
+    return `
+      <div style="text-align: left; font-size: ${fontSize}; line-height: 110%">
+        <p><b>${prompts['age']}</b> 
+          <input name="age" type="text" required style="height: ${height}; font-size: ${fontSize};" />
+        </p>
+
+        <p><b>${prompts['gender']['prompt']}</b><br>
+          <input type="radio" id="male" name="gender" value="male" style="margin-left: 50px" required>
+          <label for="male">${prompts['gender']['m']}</label><br>
+          <input type="radio" id="female" name="gender" value="female" style="margin-left: 50px">
+          <label for="female">${prompts['gender']['f']}</label>
+        </p>
+
+        <p><b>${prompts['ethnicity']['prompt']}</b><br>
+          <input type="radio" id="hispanic" name="ethnicity" value="hispanic" style="margin-left: 50px" required>
+          <label for="hispanic">${prompts['ethnicity']['h']}</label><br>
+          <input type="radio" id="nonhispanic" name="ethnicity" value="nonhispanic" style="margin-left: 50px">
+          <label for="nonhispanic">${prompts['ethnicity']['nh']}</label>
+        </p>
+
+        <p><b>${prompts['race']['prompt']}</b><br>
+          <input type="radio" id="nativeamerican" name="race" value="nativeamerican" style="margin-left: 50px" required>
+          <label for="nativeamerican">${prompts['race']['ai']}</label><br>
+          <input type="radio" id="asian" name="race" value="asian" style="margin-left: 50px">
+          <label for="asian">${prompts['race']['a']}</label><br>
+          <input type="radio" id="black" name="race" value="black" style="margin-left: 50px">
+          <label for="black">${prompts['race']['b']}</label><br>
+          <input type="radio" id="nativehawaiian" name="race" value="nativehawaiian" style="margin-left: 50px">
+          <label for="nativehawaiian">${prompts['race']['nh']}</label><br>
+          <input type="radio" id="white" name="race" value="white" style="margin-left: 50px">
+          <label for="white">${prompts['race']['w']}</label><br>
+          <input type="radio" id="more" name="race" value="more" style="margin-left: 50px">
+          <label for="more">${prompts['race']['m']}</label>
+        </p>
+
+        <p><b>${prompts['handedness']['prompt']}</b><br>
+          <input type="radio" id="left" name="handedness" value="left" style="margin-left: 50px" required>
+          <label for="left">${prompts['handedness']['l']}</label><br>
+          <input type="radio" id="right" name="handedness" value="right" style="margin-left: 50px">
+          <label for="right">${prompts['handedness']['r']}</label><br>
+          <input type="radio" id="ambi" name="handedness" value="ambi" style="margin-left: 50px">
+          <label for="ambi">${prompts['handedness']['a']}</label>
+        </p>
+      </div>
+    `;
+  }
   }
   
   var timeline = [browserinfo, demogform];

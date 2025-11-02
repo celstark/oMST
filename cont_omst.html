@@ -494,7 +494,7 @@ jatos.onLoad(async function() {
   }
   //console.log(JSON.stringify(tlv))
   var num_correct = 0;
-  var STIMULUS_DURATION = 2000;
+  var STIMULUS_DURATION = 20000000;
   var test_trials = {
     timeline: [
       {
@@ -586,10 +586,10 @@ jatos.onLoad(async function() {
             const imgWidth = stimImg.width * stimScale;
             const imgHeight = stimImg.height * stimScale;
             const x = (width - imgWidth) / 2;
-            const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
+            const y = (height - imgHeight) / 2 - (isMobile ? +40 : 0); // shift up slightly
 
             ctx.fillStyle = "#ffffff";
-            ctx.strokeStyle = 'rgb(77 78 83)';
+            ctx.strokeStyle = '#786e6d';
             const framePadding = 20;
             ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
             ctx.lineWidth = 15;
@@ -641,8 +641,6 @@ jatos.onLoad(async function() {
           data.correct = resp == data.correct_response;
           if (data.correct){
             num_correct += 1;
-          } else {
-            num_correct +=1;
           }
           
           console.log(data.correct);

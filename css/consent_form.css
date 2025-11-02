@@ -24,9 +24,107 @@ button {
   border: solid 4px #ddd;
   border-radius: 4px;
   padding: 0.5em 2em;
+  margin-left: 2em;
+  margin-right: 2em;
 }
 
 button:hover {
   color: #333;
   background-color: #999;
+}
+
+.mobile #agreeButton {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 42px;
+  font-weight: 400;
+  font-family: 'Open Sans', 'Arial', sans-serif;
+  cursor: pointer;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: #ffffff;
+  background-color: #1a3f20;
+  border-color: #ccc;
+  box-shadow: inset 0 0 0 .15em #ccc, 0 0 0 .25em #1a3f20;
+  height: 3em;
+  width: 5em;
+  margin-left: 2em;
+  margin-right: 2em;
+}
+
+.mobile #cancelButton {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 42px;
+  font-weight: 400;
+  font-family: 'Open Sans', 'Arial', sans-serif;
+  cursor: pointer;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: #ffffff;
+  background-color: #581111;
+  border-color: #ccc;
+  box-shadow: inset 0 0 0 .15em #ccc, 0 0 0 .25em #581111;
+  height: 3em;
+  width: 5em;
+  margin-left: 2em;
+  margin-right: 2em;
+}
+
+.desktop #agreeButton {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 22px;
+  font-weight: 400;
+  font-family: 'Open Sans', 'Arial', sans-serif;
+  cursor: pointer;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: #ffffff;
+  background-color: #1a3f20;
+  border-color: #ccc;
+  box-shadow: inset 0 0 0 .15em #ccc, 0 0 0 .25em #1a3f20;
+  height: 3em;
+  width: 8em;
+  margin-left: 2em;
+  margin-right: 2em;
+}
+
+.desktop #cancelButton {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 22px;
+  font-weight: 400;
+  font-family: 'Open Sans', 'Arial', sans-serif;
+  cursor: pointer;
+  line-height: 1.4;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: #ffffff;
+  background-color: #581111;
+  border-color: #ccc;
+  box-shadow: inset 0 0 0 .15em #ccc, 0 0 0 .25em #581111;
+  height: 3em;
+  width: 8em;
+  margin-left: 2em;
+  margin-right: 2em;
 }

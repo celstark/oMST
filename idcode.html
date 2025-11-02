@@ -65,7 +65,12 @@ jatos.onLoad(function() {
 
     }
   });
-
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : 500;
+  const canvasHeight = isMobile ? window.innerHeight * 0.6 : 600;
+  const fontSize = isMobile ? '48px' : '32px';
+  const stimScale = isMobile ? 1.5 : window.innerHeight <= 800 ? 0.8 : 1.0;
+  document.body.classList.add(isMobile ? 'mobile' : 'desktop');
   //var sid=getID()
   //console.log('In id, sid= ' + sid);
   let date = new Date(); 
@@ -78,9 +83,12 @@ jatos.onLoad(function() {
 
   var idform = {
     type: jsPsychSurveyHtmlForm,
-    preamble: 'Enter your ID code',
-    html: '<div style="text-align: left; font-size: 16px; line-height: 110%"> \
-    <p><b>ID: </b> <input name="idcode" type="text" required /></p> \
+    preamble: function() {  
+      const fontSize = isMobile ? '48px' : '32px';
+      return `<p style="font-size:${fontSize}; margin-top:1em;">Enter your ID code</p>`;
+    },
+    html: '<div style="text-align: left; font-size: 32px; line-height: 110%"> \
+    <p><b>ID: </b> <input name="idcode" type="text" required style="width: 10em; height: 32px; font-size: 32px"/></p> \
     </div>',
     on_finish: function(data) {
       console.log(data.response)

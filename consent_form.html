@@ -39,6 +39,8 @@ function waitFor(conditionFunction) {
   }
   return new Promise(poll)
 }
+const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+document.body.classList.add(isMobile ? 'mobile' : 'desktop');
 jatos.onLoad(async function () {
   var sid = getID();
   console.log('In consent, sid= ' + sid);
