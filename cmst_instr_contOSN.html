@@ -155,8 +155,8 @@ jatos.onLoad(async function() {
     }
   });
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const canvasWidth = isMobile ? window.innerWidth * 0.9 : 500;
-  const canvasHeight = isMobile ? window.innerHeight * 0.6 : 600;
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .4;
+  const canvasHeight = isMobile ? window.innerHeight * 0.6 : window.innerWidth * .3;
   const fontScale = isMobile ? 1.5 : 1.0;
   const stimScale = isMobile ? 1.5 : window.innerHeight <= 800 ? 0.8 : 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
