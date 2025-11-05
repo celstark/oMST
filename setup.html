@@ -39,6 +39,28 @@
       font-size: 200%;
       text-align: center;
     }
+    /* Shrink content for smaller laptops */
+    @media screen and (max-width: 1366px) and (min-width: 1024px) {
+      body {
+        font-size: 140%; /* smaller text */
+      }
+      .jspsych-display-element {
+        font-size: 140%;
+      }
+      .jspsych-btn {
+        font-size: 1em;        /* scale text relative to button */
+        width: auto;           /* let button expand to fit text */
+        padding: 0.5em 1em;    /* proper vertical/horizontal padding */
+        height: auto;          /* let height adjust automatically */
+        margin-top: 1em;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+      }
+      p {
+        font-size: 140%;
+      }
+    }
   </style>
 </head>
 

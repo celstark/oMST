@@ -55,6 +55,21 @@ Revised: November 20, 2019 (CELS) for Cordova
     .jspsych-btn {
       font-size: 150%;
     }
+  /* Slightly shorter special buttons for laptop-size screens */
+  @media screen and (min-width: 1100px) and (max-width: 1400px) {
+    #button-container .jspsych-btn {
+      height: 2.4em !important; /* down from 3em */
+    }
+  }
+
+  /* For short screens (e.g. 632px tall) */
+  @media screen and (max-height: 700px) {
+    #button-container .jspsych-btn {
+      height: 2.2em !important;
+    }
+  }
+
+  
   </style>
 </head>
 <script>
@@ -155,10 +170,21 @@ jatos.onLoad(async function() {
     }
   });
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .4;
-  const canvasHeight = isMobile ? window.innerHeight * 0.6 : window.innerWidth * .3;
+
   const fontScale = isMobile ? 1.5 : 1.0;
-  const stimScale = isMobile ? 1.5 : window.innerHeight <= 800 ? 0.8 : 1.0;
+  const canvasWidth = isMobile
+    ? Math.round(window.innerWidth * 0.9)
+      : Math.round(Math.min(1000, window.innerWidth * 0.6));
+
+  const canvasHeight = isMobile
+    ? Math.round(window.innerHeight * 0.6)
+    : Math.round(Math.min(700, window.innerHeight * 0.5));
+
+  const stimScale = isMobile
+    ? 1.5
+    : (window.innerWidth >= 1100 && window.innerWidth <= 1400) ? 0.65
+    : window.innerHeight <= 800 ? 0.8
+    : 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
   jsPsych.data.addProperties({
     task: phasename,
@@ -209,10 +235,21 @@ function makeCategorizeTrial(imgPath, keyAnswer, promptText, incText, corText) {
 
       const img = new Image();
       img.onload = function () {
-        const imgWidth = img.width * stimScale;
-        const imgHeight = img.height * stimScale;
-        const x = (c.width - imgWidth) / 2;
-        const y = (c.height - imgHeight) / 2;
+        // compute requested size but clamp to canvas area while preserving aspect ratio
+        const maxWidth = c.width * 0.82;   // leave room for borders/buttons
+        const maxHeight = c.height * 0.72; // leave room for prompt/feedback on short screens
+        let imgWidth = img.width * stimScale;
+        let imgHeight = img.height * stimScale;
+
+        // scale down if larger than allowed
+        const widthRatio = maxWidth / imgWidth;
+        const heightRatio = maxHeight / imgHeight;
+        const useRatio = Math.min(1, widthRatio, heightRatio);
+        imgWidth = Math.round(imgWidth * useRatio);
+        imgHeight = Math.round(imgHeight * useRatio);
+
+        const x = Math.round((c.width - imgWidth) / 2);
+        const y = Math.round((c.height - imgHeight) / 2);
         const framePadding = 20;
         ctx.fillStyle = '#ffffff';
         ctx.strokeStyle = '#786e6d';
@@ -309,6 +346,63 @@ function makeCategorizeTrial(imgPath, keyAnswer, promptText, incText, corText) {
   };
 }
 
+function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
+  return {
+    type: jsPsychCanvasButtonResponse,
+    choices: [buttonLabel],
+    canvas_size: [canvasHeight, canvasWidth],
+    stimulus: function(c) {
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, c.width, c.height);
+
+      const gap = 60; // spacing between the two images
+      const framePadding = 20;
+      const borderWidth = 15;
+
+      const imgL = new Image();
+      const imgR = new Image();
+
+      imgL.onload = imgR.onload = function() {
+        const imgWidth = isMobile ? imgL.width * stimScale * 0.6 : imgL.width * stimScale * 0.9;
+        const imgHeight = isMobile ? imgL.height * stimScale * 0.6: imgL.width * stimScale * 0.9;
+        const totalWidth = imgWidth * 2 + gap;
+        const startX = (c.width - totalWidth) / 2;
+        const y = (c.height - imgHeight) / 2;
+
+        // draw function for each image
+        function drawFramedImage(img, x) {
+          ctx.fillStyle = '#ffffff';
+          ctx.strokeStyle = '#786e6d';
+          ctx.lineWidth = borderWidth;
+          ctx.fillRect(
+            x - framePadding,
+            y - framePadding,
+            imgWidth + 2 * framePadding,
+            imgHeight + 2 * framePadding
+          );
+          ctx.strokeRect(
+            x - framePadding,
+            y - framePadding,
+            imgWidth + 2 * framePadding,
+            imgHeight + 2 * framePadding
+          );
+          ctx.drawImage(img, x, y, imgWidth, imgHeight);
+        }
+
+        drawFramedImage(imgL, startX);
+        drawFramedImage(imgR, startX + imgWidth + gap);
+      };
+
+      imgL.src = imgLeft;
+      imgR.src = imgRight;
+    },
+    prompt: function() {
+      return `<p style="font-size:${isMobile ? '40px' : '28px'}; margin-top:0.5em;">${promptText}</p>`;
+    },
+  };
+}
+
 
 var new1 = makeCategorizeTrial(
   'img/foil_1032.jpg',
@@ -350,15 +444,12 @@ var lure1 = makeCategorizeTrial(
   prompts['cor_lure']
 );
 
-var side_by_side1 = {
-  type: (resp_mode === 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
-  stimulus: `<p>${prompts['side_by_side']}</p>
-             <table style="width:100%"><tr>
-             <td><img src="img/pcon026a.jpg"></td>
-             <td><img src="img/pcon026b.jpg"></td>
-             </tr></table>`,
-  choices: [prompts[resp_mode]['instr_choice']]
-};
+var side_by_side1 = makeSideBySideTrial(
+  'img/pcon026a.jpg',
+  'img/pcon026b.jpg',
+  prompts['side_by_side'],
+  prompts[resp_mode]['instr_choice']
+);
 
 var new4 = makeCategorizeTrial(
   'img/foil_1035.jpg',
@@ -391,120 +482,20 @@ var lure2 = makeCategorizeTrial(
   prompts[resp_mode]['inc_lure'],
   prompts['cor_lure']
 );
-  var new1 = {
-    type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage), 
-    stimulus: 'img/foil_1032.jpg',
-    key_answer: prompts['key']['trial_choices']['new'] , button_answer: 2,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>"
-  }
-  var new2 = {
-    type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: 'img/foil_1033.jpg',
-    key_answer: prompts['key']['trial_choices']['new'] , button_answer: 2,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
-    force_correct_button_press: true,
-    incorrect_text: "<p>" +prompts[resp_mode]['inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
-      
-  }
-  var new3 = {
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: 'img/pcon026a.jpg',
-    key_answer: prompts['key']['trial_choices']['new'], button_answer: 2,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
-      
-  }
-  var repeat1 = {
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: "img/foil_1033.jpg",
-    key_answer: prompts['key']['trial_choices']['old'] , button_answer: 0,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: "<p>" + prompts[resp_mode]['prompt_rep'] + "</p>",
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_rep'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_rep'] + "</p>",
-  }
-  var lure1 ={
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: "img/pcon026b.jpg",
-    key_answer: prompts['key']['trial_choices']['sim'] , button_answer: 1,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt:"<p>" + prompts[resp_mode]['prompt_lure'] + "</p>",
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_lure'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_lure'] + "</p>",
-  }
-
-  var side_by_side1 = {
-    type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
-    stimulus: '<p>' + prompts['side_by_side'] + '</p><table style="width:100%"><tr><td><img src="img/pcon026a.jpg"><td><img src="img/pcon026b.jpg"></table> ',
-    choices: [prompts[resp_mode]['instr_choice']],
-  }
-  var new4 = {
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: "img/foil_1035.jpg",
-    key_answer: prompts['key']['trial_choices']['new'] , button_answer: 2,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
-  }
-  var new5 = {
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: 'img/pcon028a.jpg',
-    key_answer: prompts['key']['trial_choices']['new'] , button_answer: 2,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
-      
-  }
-  var repeat2 = {
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: "img/foil_1035.jpg",
-    key_answer: prompts['key']['trial_choices']['old'], button_answer: 0,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_rep'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_rep'] + "</p>",
-      
-  }
-  var lure2 = {
-    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: "img/pcon028b.jpg",
-    key_answer: prompts['key']['trial_choices']['sim'] , button_answer: 1,
-    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
-    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
-    force_correct_button_press: true,
-    incorrect_text: "<p>" + prompts[resp_mode]['inc_lure'] + "</p>",
-    correct_text: "<p " + extra_html+ ">" + prompts['cor_lure'] + "</p>",
-      
-  }
-  var side_by_side2 = {
-    type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
-    stimulus: '<p>' + prompts['side_by_side'] + '</p><table style="width:100%"><tr><td><img src="img/pcon028a.jpg"><td><img src="img/pcon028b.jpg"></table> ',
-    choices: [prompts[resp_mode]['instr_choice']],
-  }
-  var outtro = {
-    type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
-    choices: [prompts[resp_mode]['instr_choice']],
-    prompt: prompts[resp_mode]['prompt0'],
-    stimulus: prompts['end'], 
-  }
-  var  timeline = [intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro];
-  jsPsych.run(timeline);
+var side_by_side2 = makeSideBySideTrial(
+  'img/pcon028a.jpg',
+  'img/pcon028b.jpg',
+  prompts['side_by_side'],
+  prompts[resp_mode]['instr_choice']
+);
+var outtro = {
+  type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
+  choices: [prompts[resp_mode]['instr_choice']],
+  prompt: prompts[resp_mode]['prompt0'],
+  stimulus: prompts['end'], 
+}
+var  timeline = [intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro];
+jsPsych.run(timeline);
     
   
 });

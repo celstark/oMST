@@ -115,6 +115,38 @@
     .jspsych-btn {
       font-size: 150%;
     }
+    
+  /* --- FIX for laptop-size screens --- */
+  @media screen and (min-width: 1100px) and (max-width: 1400px) {
+    .jspsych-display-element {
+      font-size: 175%; /* shrink text slightly */
+    }
+    .jspsych-btn {
+      font-size: 130%;
+      padding: 0.5em 1.2em;
+      margin: 0.3em 0.6em;
+      transform: scale(0.95);
+    }
+    canvas {
+      max-width: 70vw !important;
+      height: auto !important;
+    }
+  }
+
+  /* Tighten up layout on medium height (short laptop screens) */
+  @media screen and (max-height: 700px) {
+    .jspsych-display-element {
+      font-size: 160%;
+    }
+    .jspsych-btn {
+      margin: 0.2em;
+      padding: 0.4em 1em;
+    }
+    body {
+      transform: scale(0.95);
+      transform-origin: top center;
+    }
+  }
   </style>
 </head>
 <body></body>
@@ -329,6 +361,7 @@ jatos.onLoad(async function() {
   console.log(canvasHeight);
   console.log(canvasWidth);
   console.log(window.innerHeight);
+  console.log(window.innerWidth);
   var jsPsych = initJsPsych({on_finish: function() {
     if (0) { jsPsych.data.displayData(); }
       else {
