@@ -66,9 +66,11 @@
     }
   },
   "pcon": {
-    "instr1_stim": "In deze taak zal u twee objecten na elkaar zien op het scherm, met een enkele seconden \"leeg scherm\" tussen beide objecten. Uw taak is om te beslissen of de twee foto's <i>exact dezelfde</i> zijn of niet.",
+    "instr1_stim_sd": "In deze taak zal u twee objecten na elkaar zien op het scherm, met een enkele seconden \"leeg scherm\" tussen beide objecten. Uw taak is om te beslissen of de twee foto's <i>exact dezelfde</i> zijn of niet.",
+    "instr1_stim": "In deze taak zul je twee objecten op het scherm zien verschijnen, één na de ander, met een beetje  \"ruis\" voor een paar seconden ertussen. Jouw taak is om te bepalen of de twee afbeeldingen <i>exact hetzelfde</i> zijn of vergelijkbaar.",
     "instr2_stim": "Hier ziet u de foto's opnieuw. U zou hier <b>Dezelfde</b> moeten geantwoord hebben aangezien het dezelfde foto's waren.",
-    "instr3_stim": "Hier ziet u de foto's opnieuw. U zou hier <b>Verschillend</b> moeten geantwoord hebben aangezien de foto's niet exact dezelfde waren.",
+    "instr3_stim_sd": "Hier ziet u de foto's opnieuw. U zou hier <b>Verschillend</b> moeten geantwoord hebben aangezien de foto's niet exact dezelfde waren.",
+    "instr3_stim": "Hier zijn die afbeeldingen weer. Je had <b>Vergelijkbaar</b> moeten zeggen voor die, omdat ze niet precies hetzelfde waren.",
     "ready": "Hou u klaar...",
     "wait": "Wacht...",
     "ty": "Dank u",
@@ -77,7 +79,8 @@
       "instr1_prompt": "Druk op de <i>spatiebalk</i> om een voorbeeld te zien",
       "instr2_prompt": "Druk op de <i>spatiebalk</i> om verder te gaan",
       "instr3_prompt": "Klaar om de test te beginnen? Druk op de <i>spatiebalk</i> om te starten",
-      "trial_txt": "<b>D</b>ezelfde of <b>V</b>erschillend?",
+      "trial_txt_sd": "<b>D</b>ezelfde of <b>V</b>erschillend?",
+      "trial_txt": "Zelfde (<b>s</b>) of Vergelijkbaar (<b>d</b>)",
       "trial_choices": {
         "same": "S",
         "dif": "D"
@@ -88,10 +91,12 @@
       "instr1_prompt": "Druk op <i>OK</i> om een voorbeeld te zien",
       "instr2_prompt": "Druk op <i>OK</i> om verder te gaan",
       "instr3_prompt": "Klaar om de test te beginnen? Druk op <i>OK</i> om te starten",
-      "trial_txt": "<i>Dezelfde</i> of <i>Verschillend</i>?",
+      "trial_txt_sd": "<i>Dezelfde</i> of <i>Verschillend</i>?",
+      "trial_txt": "<i>Same</i> or <i>Similar</i>?",
       "trial_choices": {
         "same": "Dezelfde",
-        "dif": "Verschillend"
+        "dif_sd": "Verschillend",
+        "dif": "Vergelijkbaar"
       }
     }
   },

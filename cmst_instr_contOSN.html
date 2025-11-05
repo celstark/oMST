@@ -391,6 +391,107 @@ var lure2 = makeCategorizeTrial(
   prompts[resp_mode]['inc_lure'],
   prompts['cor_lure']
 );
+  var new1 = {
+    type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage), 
+    stimulus: 'img/foil_1032.jpg',
+    key_answer: prompts['key']['trial_choices']['new'] , button_answer: 2,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
+    force_correct_button_press: true,
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>"
+  }
+  var new2 = {
+    type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: 'img/foil_1033.jpg',
+    key_answer: prompts['key']['trial_choices']['new'] , button_answer: 2,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
+    force_correct_button_press: true,
+    incorrect_text: "<p>" +prompts[resp_mode]['inc_new'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
+      
+  }
+  var new3 = {
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: 'img/pcon026a.jpg',
+    key_answer: prompts['key']['trial_choices']['new'], button_answer: 2,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: "<p>" + prompts[resp_mode]['prompt_new'] + "</p>",
+    force_correct_button_press: true,
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
+      
+  }
+  var repeat1 = {
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: "img/foil_1033.jpg",
+    key_answer: prompts['key']['trial_choices']['old'] , button_answer: 0,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: "<p>" + prompts[resp_mode]['prompt_rep'] + "</p>",
+    force_correct_button_press: true,
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_rep'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_rep'] + "</p>",
+  }
+  var lure1 ={
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: "img/pcon026b.jpg",
+    key_answer: prompts['key']['trial_choices']['sim'] , button_answer: 1,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt:"<p>" + prompts[resp_mode]['prompt_lure'] + "</p>",
+    force_correct_button_press: true,
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_lure'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_lure'] + "</p>",
+  }
+
+  var side_by_side1 = {
+    type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
+    stimulus: '<p>' + prompts['side_by_side'] + '</p><table style="width:100%"><tr><td><img src="img/pcon026a.jpg"><td><img src="img/pcon026b.jpg"></table> ',
+    choices: [prompts[resp_mode]['instr_choice']],
+  }
+  var new4 = {
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: "img/foil_1035.jpg",
+    key_answer: prompts['key']['trial_choices']['new'] , button_answer: 2,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
+    force_correct_button_press: true,
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
+  }
+  var new5 = {
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: 'img/pcon028a.jpg',
+    key_answer: prompts['key']['trial_choices']['new'] , button_answer: 2,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
+    force_correct_button_press: true,
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_new'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_new'] + "</p>",
+      
+  }
+  var repeat2 = {
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: "img/foil_1035.jpg",
+    key_answer: prompts['key']['trial_choices']['old'], button_answer: 0,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
+    force_correct_button_press: true,
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_rep'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_rep'] + "</p>",
+      
+  }
+  var lure2 = {
+    type:  (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: "img/pcon028b.jpg",
+    key_answer: prompts['key']['trial_choices']['sim'] , button_answer: 1,
+    choices: [prompts[resp_mode]['trial_choices']['old'], prompts[resp_mode]['trial_choices']['sim'], prompts[resp_mode]['trial_choices']['new'],],
+    prompt: '<p>' + prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'] +'</p>',
+    force_correct_button_press: true,
+    incorrect_text: "<p>" + prompts[resp_mode]['inc_lure'] + "</p>",
+    correct_text: "<p " + extra_html+ ">" + prompts['cor_lure'] + "</p>",
+      
+  }
   var side_by_side2 = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     stimulus: '<p>' + prompts['side_by_side'] + '</p><table style="width:100%"><tr><td><img src="img/pcon028a.jpg"><td><img src="img/pcon028b.jpg"></table> ',
