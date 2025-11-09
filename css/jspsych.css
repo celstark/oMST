@@ -30,6 +30,7 @@
    max-width: 95%; /* this is mainly an IE 10-11 fix */
    text-align: center;
    margin: auto; /* this is for overflowing content */
+
  }
 
  .jspsych-top {
@@ -147,6 +148,7 @@
 
 .desktop #jspsych-html-keyboard-response-stimulus {
   font-size: 48px;
+
 }
 
 .mobile .jspsych-content {
