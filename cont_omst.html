@@ -109,12 +109,12 @@
   <script src="js/jspsych_731/dist/plugin-browser-check.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
-    .jspsych-display-element {
-      font-size: 200%;
-    }
-    .jspsych-btn {
-      font-size: 150%;
-    }
+  .jspsych-display-element {
+    font-size: 200%;
+  }
+  .jspsych-btn {
+    font-size: 150%;
+  }
     
   /* --- FIX for laptop-size screens --- */
   @media screen and (min-width: 1100px) and (max-width: 1400px) {
@@ -156,6 +156,57 @@
     }
 
   }
+
+  .image-btn-wrapper {
+    display: inline-block;
+    position: relative;
+    margin: 0 0.5em; /* small, even spacing between buttons */
+  }
+
+  .image-btn-wrapper:hover .image-btn-text {
+    transform: translate(-50%, -40%); /* lower by 5% */
+  }
+
+  .image-btn {
+    width: 20em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
+  .image-btn-text {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-size: 1.5em;
+    color: #fff8d6;
+    font-weight: bold;
+    -webkit-text-stroke: 10px #5d2b12;
+    paint-order: stroke fill;
+    pointer-events: none;
+    letter-spacing: 0.08em;
+  }
+
+  .mobile .image-btn-text {
+    -webkit-text-stroke: 15px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 2em;
+  }
+
+  .mobile .image-btn {
+    width: 25em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
+
+  body {
+    background-color: #fff9e0;
+  }
+  
   </style>
 </head>
 <body></body>
@@ -228,73 +279,18 @@ function getID() {
   }
   return sid
 }
-/*
-function drawHTMLText(ctx, html, x, y, isMobile) {
+
+function drawHTMLText(ctx, html, x, y, isMobile, fontSize) {
   const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
   let fontStyle = '';
-  let totalWidth = 0;
-
-  // === Measure total width ===
-  for (let part of parts) {
-    if (part === '<i>') fontStyle = 'italic ';
-    else if (part === '</i>') fontStyle = '';
-    else if (part === '<b>') fontStyle = 'bold ';
-    else if (part === '</b>') fontStyle = '';
-    else {
-      ctx.font = isMobile ? `${fontStyle}bold 64px "Comic Sans MS", "Comic Neue", cursive` 
-                          : `${fontStyle}bold 64px "Comic Sans MS", "Comic Neue", cursive`;
-      totalWidth += ctx.measureText(part).width;
-    }
-  }
-
-  let startX = x - totalWidth / 2;
-  fontStyle = '';
-
-  // === Draw each word/segment ===
-  for (let part of parts) {
-    if (part === '<i>') fontStyle = 'italic ';
-    else if (part === '</i>') fontStyle = '';
-    else if (part === '<b>') fontStyle = 'bold ';
-    else if (part === '</b>') fontStyle = '';
-    else {
-      // Default cream fill
-      let fillColor = '#fff8d6';
-
-      if (part.includes('Old')) fillColor = '#f9b8d0';
-      else if (part.includes('Similar')) fillColor = '#d3f5a6';
-      else if (part.includes('New')) fillColor = '#b4d8ff';
-
-      // Apply font and style
-      ctx.font = isMobile ? `${fontStyle}bold 64px "Comic Sans MS", "Comic Neue", cursive` 
-                          : `${fontStyle}bold 64px "Comic Sans MS", "Comic Neue", cursive`;
-      ctx.lineWidth = isMobile ? 8 : 12; // Outline thickness
-      ctx.strokeStyle = '#5d2b12';      // Dark brown border
-      ctx.fillStyle = fillColor;
-      ctx.textBaseline = 'middle';
-
-      // Outline first, then fill (gives the “chocolate border” look)
-      ctx.lineJoin = 'round';
-      ctx.lineCap = 'round';
-      ctx.strokeText(part, startX, y);
-      ctx.fillText(part, startX, y);
-
-      startX += ctx.measureText(part).width;
-    }
-  }
-}
-*/
-
-function drawHTMLText(ctx, html, x, y, isMobile) {
-  const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
-  let fontStyle = '';
-  const maxWidth = 1.5*x;
-  const fontSize = isMobile ? 96 : 64;
+  const letterSpacing = fontSize * 0.08 // change multiplier to change kerning
+  const maxWidth = 1.5 * x;
   const fontFamily = `"Comic Sans MS", "Comic Neue", cursive`;
   ctx.textBaseline = 'middle';
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
 
-  // Split into words and keep HTML tags
+  // Split into words, keeping HTML tags
   let words = [];
   for (let part of parts) {
     if (part.startsWith('<')) {
@@ -322,7 +318,7 @@ function drawHTMLText(ctx, html, x, y, isMobile) {
     const wordObj = { text: word, font: ctx.font, width: wordWidth };
 
     if (currentLineWidth + wordWidth > maxWidth) {
-      // If the current line ends with a space, drop it
+      // Trim trailing space
       if (currentLine.length && currentLine[currentLine.length - 1].text.endsWith(' ')) {
         currentLine[currentLine.length - 1].text =
           currentLine[currentLine.length - 1].text.trimEnd();
@@ -331,7 +327,8 @@ function drawHTMLText(ctx, html, x, y, isMobile) {
       }
 
       lines.push(currentLine);
-      // Skip leading spaces on new line
+
+      // Start new line
       const trimmedWord = word.trimStart();
       currentLine = trimmedWord ? [{ text: trimmedWord, font: ctx.font, width: ctx.measureText(trimmedWord).width }] : [];
       currentLineWidth = trimmedWord ? ctx.measureText(trimmedWord).width : 0;
@@ -342,17 +339,19 @@ function drawHTMLText(ctx, html, x, y, isMobile) {
   }
   if (currentLine.length) lines.push(currentLine);
 
-  // Draw each line and each word individually
+  // Draw each line with kerning
   const lineHeight = fontSize * 1.2;
   const startY = y;
 
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
-    const lineWidth = line.reduce((sum, w) => sum + w.width, 0);
+    const lineCharCount = line.reduce((sum, w) => sum + w.text.length, 0);
+    const lineWidth = line.reduce((sum, w) => sum + w.width, 0) + letterSpacing * lineCharCount;
     let startX = x - lineWidth / 2;
 
     for (let word of line) {
       ctx.font = word.font;
+
       // Determine word color
       let fillColor = '#fff8d6';
       if (word.text.includes('Old')) fillColor = '#f9b8d0';
@@ -363,13 +362,20 @@ function drawHTMLText(ctx, html, x, y, isMobile) {
       ctx.strokeStyle = '#5d2b12';
       ctx.fillStyle = fillColor;
 
-      ctx.strokeText(word.text, startX, startY + i * lineHeight);
-      ctx.fillText(word.text, startX, startY + i * lineHeight);
+      // Draw word character by character with spacing
+      let charX = startX;
+      for (let char of word.text) {
+        ctx.strokeText(char, charX, startY + i * lineHeight);
+        ctx.fillText(char, charX, startY + i * lineHeight);
+        charX += ctx.measureText(char).width + letterSpacing;
+      }
 
-      startX += word.width;
+      startX += word.width + letterSpacing * word.text.length;
     }
   }
 }
+
+
 
 jatos.onLoad(async function() {
   baseurl='https://starklab.bio.uci.edu/mst/'; // How we'll get images, videos, etc.  Set to empty string to use local folders
@@ -437,8 +443,21 @@ jatos.onLoad(async function() {
   const preload_fnames = new Array(trial_stim.length)
   for (var i=0; i<trial_stim.length; i++) {  // Make our Set X_rs be SetX_rs
     trial_stim[i].image=baseurl+trial_stim[i].image.replace("Set ","Set");
-    preload_fnames[i]=trial_stim[i].image;
+    preload_fnames.push(trial_stim[i].image);
   }
+
+  preload_fnames.push(
+    "img/assets/blank_blue.png",
+    "img/assets/blank_blue_pressed.png",
+    "img/assets/blank_green_trans.png",
+    "img/assets/blank_green_pressed.png",
+    "img/assets/blank_red.png",
+    "img/assets/blank_red_pressed.png",
+    "img/assets/brain.png",
+    Array.from({length: 11}, (_, i) => `img/assets/star${i}.png`)
+  )
+
+
   
   var lang='en';
   if (typeof jatos.studySessionData['lang'] !== 'undefined') {
@@ -468,7 +487,7 @@ jatos.onLoad(async function() {
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
   const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440;
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-  const canvasHeight = isMobile ? window.innerHeight * 0.6 : smallScreen ? window.innerHeight * 0.69 : window.innerHeight * .6;
+  const canvasHeight = isMobile ? window.innerHeight * 0.6 : smallScreen ? window.innerHeight * 0.69 : window.innerHeight * .65;
   const fontScale = isMobile ? 1.5 : 1.0;
   const stimScale = isMobile ? 1.5 : smallScreen ? 0.7 : 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
@@ -582,25 +601,34 @@ jatos.onLoad(async function() {
       const stimHTML = prompts[resp_mode][choicekey]['instr_stim'];
 
       // Background
-      ctx.fillStyle = "#ffffff"; //#fff6cf
+      ctx.fillStyle = "#fff9e0";
       ctx.fillRect(0, 0, width, height)
       // Add stimulus text
       ctx.save();
       //ctx.scale(fontScale, fontScale);
-      drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.1, isMobile);
+      
+      if (isMobile) {
+        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 96);
+      } else {
+        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+      }
+      
       ctx.restore();
     },
 
     // Buttons for 'button' mode
     choices: [prompts[resp_mode]['instr_choice']],
-    button_html: isMobile ? ['<button class="jspsych-btn" style="font-size: calc(18px + 5vw); padding: 0.6em 1.2em;">%choice%</button>'] : ['<button class="jspsych-btn">%choice%</button>'],
+    button_html:           
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_green_trans.png"
+                    onmouseover="this.src='img/assets/blank_green_pressed.png'"
+                    onmouseout="this.src='img/assets/blank_green_trans.png'"
+                    class="image-btn" style="mix-blend-mode: multiply;">
+            <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
+          </div>`,
     margin_horizontal: isMobile ? '20px' : '40px',
     margin_vertical: '20px',
 
-    // Optional text prompt below buttons
-    prompt: `<p style="font-size:${isMobile ? 40 : 18}px; margin-top:${isMobile ? 5 : 10}px;">
-             ${prompts[resp_mode]['instr_prompt']}
-           </p>`,
 
     // Optional canvas size
     canvas_size: [canvasHeight, canvasWidth]
@@ -680,12 +708,12 @@ jatos.onLoad(async function() {
           }
 
           function drawScene() {
-            ctx.fillStyle = "#ffffff";
+            ctx.fillStyle = "#fff9e0";
             ctx.fillRect(0, 0, width, height);
 
             // === Progress info ===
             const progress = num_correct;
-            
+
 
 
             if (!isMobile){
@@ -698,7 +726,7 @@ jatos.onLoad(async function() {
 
               for (let i = 0; i < fullStars; i++) {
                 const star = new Image();
-                star.src = `img/assets/star10.jpg`;
+                star.src = `img/assets/star10.png`;
                 const posY = leftStartY + (i%4) * (starSize + spacing);
                 star.onload = function() {
                   ctx.drawImage(star, leftX + (Math.floor(i/4) * (starSize + spacing)), posY, starSize, starSize);
@@ -709,10 +737,10 @@ jatos.onLoad(async function() {
 
               // === Brain + Active Star (Right Side) ===
               const brain = new Image();
-              brain.src = "img/assets/brain.jpg";
+              brain.src = "img/assets/brain.png";
 
               const currentStar = new Image();
-              currentStar.src = `img/assets/star${currentLevel}.jpg`;
+              currentStar.src = `img/assets/star${currentLevel}.png`;
             
               brain.onload = function() {
                 const brainW = brain.width * brainScale;
@@ -720,7 +748,7 @@ jatos.onLoad(async function() {
 
                 const brainX = width - brainW - 60; // margin from right
                 const brainY = height * 0.55;
-
+                
                 ctx.drawImage(brain, brainX, brainY, brainW, brainH);
 
                 const activeStarScale = 1.75;
@@ -744,11 +772,11 @@ jatos.onLoad(async function() {
               const leftX = 0; // margin from left edge
               const leftStartY = 20;
               const currentStar = new Image();
-              currentStar.src = `img/assets/star${currentLevel}.jpg`;
+              currentStar.src = `img/assets/star${currentLevel}.png`;
               console.log(currentLevel);
               for (let i = 0; i < fullStars + 1 && i < totalStars; i++) {
                 const star = new Image();
-                star.src = `img/assets/star10.jpg`;
+                star.src = `img/assets/star10.png`;
                 const posX = leftX + i * (starSize + spacing);
                 if (i < fullStars){
                   star.onload = function() {
@@ -775,19 +803,15 @@ jatos.onLoad(async function() {
             const x = (width - imgWidth) / 2;
             
             // Lower the stimulus a bit
-            const y = isMobile ? (height - imgHeight) / 2 + 225 : (height - imgHeight) / 2 + 58; // increase this offset to push it lower
+            const y = isMobile ? (height - imgHeight) / 2 + 225 : (height - imgHeight) / 2 + 65; // increase this offset to push it lower
 
             // === Draw title text image above the stimulus ===
-            const textImg = new Image();
-            textImg.src = isMobile ? "img/assets/TextP-removebg-preview.png" : "img/assets/TextD-removebg-preview.png"; // your "Is this old, similar, or new?" image
-            textImg.onload = function() {
-              const textScale = isMobile ? 1.2 : 0.75; // adjust for size of title
-              const textW = textImg.width * textScale;
-              const textH = textImg.height * textScale;
-              const textX = (width - textW) / 2;
-              const textY = isMobile ? y - textH + 45 : y - textH - 30; // gap between title and stimulus
-              ctx.drawImage(textImg, textX, textY, textW, textH);
-            };
+            if (isMobile){
+              drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.2, isMobile, 70);
+            } else {
+              drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
+            }
+            
 
             // === Rounded white frame behind the stimulus ===
             ctx.fillStyle = "#ffffff";
@@ -808,23 +832,57 @@ jatos.onLoad(async function() {
         },
 
         choices: trial_choices,
-        button_html: isMobile ? 
+        clear_canvas: false,
+        button_html: isMobile ?
         [
-          `<input type="image" src="img/assets/Old.jpg" onmouseover="this.src='img/assets/Oldpressed.jpg'"  onmouseout="this.src='img/assets/Old.jpg'" class="image-btn" style="width:25em; height:auto; margin-left: 1em; margin-right: 1em;">`,
-          `<input type="image" src="img/assets/New.jpg" onmouseover="this.src='img/assets/Newpressed.jpg'"  onmouseout="this.src='img/assets/New.jpg'" class="image-btn" style="width:25em; height:auto; margin-left: 1em; margin-right: 1em;">`,
-          `<input type="image" src="img/assets/Similar.jpg" onmouseover="this.src='img/assets/Similarpressed.jpg'"  onmouseout="this.src='img/assets/Similar.jpg'" class="image-btn" style="width:25em; height:auto; margin-left: 1em; margin-right: 1em;">`,
-
-        ] : 
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_red.png"
+                    onmouseover="this.src='img/assets/blank_red_pressed.png'"
+                    onmouseout="this.src='img/assets/blank_red.png'"
+                    class="image-btn" style="mix-blend-mode: multiply;">
+            <span class="image-btn-text">${trial_choices[0]}</span>
+          </div>`,
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_blue.png"
+                    onmouseover="this.src='img/assets/blank_blue_pressed.png'"
+                    onmouseout="this.src='img/assets/blank_blue.png'"
+                    class="image-btn" style="mix-blend-mode: multiply;">
+            <span class="image-btn-text">${trial_choices[2]}</span>
+          </div>`,
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_green_trans.png"
+                    onmouseover="this.src='img/assets/blank_green_pressed.png'"
+                    onmouseout="this.src='img/assets/blank_green_trans.png'"
+                    class="image-btn" style="mix-blend-mode: multiply;">
+            <span class="image-btn-text">${trial_choices[1]}</span>
+          </div>`
+        ] :
         [
-          `<input type="image" src="img/assets/Old.jpg" onmouseover="this.src='img/assets/Oldpressed.jpg'"  onmouseout="this.src='img/assets/Old.jpg'" class="image-btn" style="width:20em; height:auto; margin-left: 1em; margin-right: 1em;">`,
-          `<input type="image" src="img/assets/Similar.jpg" onmouseover="this.src='img/assets/Similarpressed.jpg'"  onmouseout="this.src='img/assets/Similar.jpg'" class="image-btn" style="width:20em; height:auto; margin-left: 1em; margin-right: 1em;">`,
-          `<input type="image" src="img/assets/New.jpg" onmouseover="this.src='img/assets/Newpressed.jpg'"  onmouseout="this.src='img/assets/New.jpg'" class="image-btn" style="width:20em; height:auto; margin-left: 1em; margin-right: 1em;">`,
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_red.png"
+                    onmouseover="this.src='img/assets/blank_red_pressed.png'"
+                    onmouseout="this.src='img/assets/blank_red.png'"
+                    class="image-btn">
+            <span class="image-btn-text">${trial_choices[0]}</span>
+          </div>`,
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_green_trans.png"
+                    onmouseover="this.src='img/assets/blank_green_pressed.png'"
+                    onmouseout="this.src='img/assets/blank_green_trans.png'"
+                    class="image-btn">
+            <span class="image-btn-text">${trial_choices[1]}</span>
+          </div>`,
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_blue.png"
+                    onmouseover="this.src='img/assets/blank_blue_pressed.png'"
+                    onmouseout="this.src='img/assets/blank_blue.png'"
+                    class="image-btn">
+            <span class="image-btn-text">${trial_choices[2]}</span>
+          </div>`
         ],
-        
 
         canvas_size: [canvasHeight, canvasWidth],
         trial_duration: (selfpaced == 1 ? null : 2500),
-        post_trial_gap: 500,
         margin_horizontal: isMobile ? '20px' : '40px',
         margin_vertical: isMobile ? '0px' : '20px',
 
