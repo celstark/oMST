@@ -68,7 +68,89 @@ Revised: November 20, 2019 (CELS) for Cordova
       height: 2.2em !important;
     }
   }
+  .image-btn-wrapper {
+    display: inline-block;
+    position: relative;
+    margin: 0.5em;
+  }
 
+  .desktop .image-btn-wrapper:hover .image-btn-text {
+    transform: translate(-50%, -40%); /* lower by 5% */
+  }
+
+  .image-btn {
+    width: 20em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
+  .image-btn-text {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-size: 1.5em;
+    color: #fff8d6;
+    font-weight: bold;
+    -webkit-text-stroke: 10px #5d2b12;
+    paint-order: stroke fill;
+    pointer-events: none;
+    letter-spacing: 0.08em;
+  }
+
+  .mobile .image-btn-text {
+    -webkit-text-stroke: 15px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 2em;
+  }
+
+  .mobile .image-btn {
+    width: 25em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
+  .image-btn-text.kr,
+  .image-btn-text.nl,
+  .image-btn-text.ru{
+    font-size: 0.9em;
+  }
+  
+  .mobile .image-btn-text.kr,
+  .mobile .image-btn-text.nl{
+    font-size: 1em;
+  }
+
+  .mobile .image-btn-text.ru {
+    font-size: 1.2em;
+  }
+  
+
+  body {
+    background-color: #fff9e0;
+  }
+
+  .prompt_text {
+    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-size: 1.5em;
+    color: #5d2b12;
+    font-weight: bold;
+    line-height: 1.2;
+  }
+
+  .mobile  .prompt_text {
+    font-size: 2em;
+  }
+
+  #jspsych-html-button-response-stimulus {
+    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-size: 1.5em;
+    color: #5d2b12;
+    line-height: 1.2;
+  }
   
   </style>
 </head>
@@ -170,21 +252,11 @@ jatos.onLoad(async function() {
     }
   });
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-
+  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile;
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .50;
   const fontScale = isMobile ? 1.5 : 1.0;
-  const canvasWidth = isMobile
-    ? Math.round(window.innerWidth * 0.9)
-      : Math.round(Math.min(1000, window.innerWidth * 0.6));
-
-  const canvasHeight = isMobile
-    ? Math.round(window.innerHeight * 0.6)
-    : Math.round(Math.min(700, window.innerHeight * 0.5));
-
-  const stimScale = isMobile
-    ? 1.5
-    : (window.innerWidth >= 1100 && window.innerWidth <= 1400) ? 0.65
-    : window.innerHeight <= 800 ? 0.8
-    : 1.0;
+  const stimScale = isMobile ? 2 : smallScreen ? 0.85: 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
   jsPsych.data.addProperties({
     task: phasename,
@@ -213,16 +285,21 @@ jatos.onLoad(async function() {
   var intro = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     choices: [prompts[resp_mode]['instr_choice']],
-    prompt: function() {  
-      const fontSize = isMobile ? '48px' : '32px';
-      return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts[resp_mode]['prompt0']}</p>`;
-    },
-    stimulus: prompts['txt0'],
+    button_html:           
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_green_trans.png"
+                    onmouseover="this.src='img/assets/blank_green_pressed.png'"
+                    onmouseout="this.src='img/assets/blank_green_trans.png'"
+                    class="image-btn" style="mix-blend-mode: multiply;">
+            <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
+          </div>`,
+    prompt: `<p class="prompt_text">${prompts[resp_mode]['prompt0']}</p>`,
+    stimulus: '<p class=prompt_text">' + prompts['txt0'] + '</p>',
   }
 
 function makeCategorizeTrial(imgPath, keyAnswer, promptText, incText, corText) {
   return {
-    type: jsPsychCanvasButtonResponse,
+    type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
     choices: ['dummy'], // required by plugin but not used
     trial_duration: null,
     canvas_size: [canvasHeight, canvasWidth],
@@ -230,42 +307,43 @@ function makeCategorizeTrial(imgPath, keyAnswer, promptText, incText, corText) {
     // Draw the image (once) on the canvas
     stimulus: function (c) {
       const ctx = c.getContext('2d');
-      ctx.fillStyle = '#ffffff';
+      const framePadding = 20;
+      const radius = 25;
+      const width = c.width;
+      const height = c.height;
+      ctx.fillStyle = '#fff9e0';
       ctx.fillRect(0, 0, c.width, c.height);
+
+
+      function roundRect(ctx, x, y, w, h, r) {
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.lineTo(x + w - r, y);
+        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+        ctx.lineTo(x + w, y + h - r);
+        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+        ctx.lineTo(x + r, y + h);
+        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+        ctx.lineTo(x, y + r);
+        ctx.quadraticCurveTo(x, y, x + r, y);
+        ctx.closePath();
+      }
 
       const img = new Image();
       img.onload = function () {
-        // compute requested size but clamp to canvas area while preserving aspect ratio
-        const maxWidth = c.width * 0.82;   // leave room for borders/buttons
-        const maxHeight = c.height * 0.72; // leave room for prompt/feedback on short screens
-        let imgWidth = img.width * stimScale;
-        let imgHeight = img.height * stimScale;
+        const imgWidth = img.width * stimScale;
+        const imgHeight = img.height * stimScale;
+        
 
-        // scale down if larger than allowed
-        const widthRatio = maxWidth / imgWidth;
-        const heightRatio = maxHeight / imgHeight;
-        const useRatio = Math.min(1, widthRatio, heightRatio);
-        imgWidth = Math.round(imgWidth * useRatio);
-        imgHeight = Math.round(imgHeight * useRatio);
-
-        const x = Math.round((c.width - imgWidth) / 2);
-        const y = Math.round((c.height - imgHeight) / 2);
-        const framePadding = 20;
+        const x = Math.round((width - imgWidth) / 2);
+        const y = isMobile ? (height - imgHeight) / 2 + 225 : (height - imgHeight) / 2 + 5; // increase this offset to push it lower
         ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = '#786e6d';
+        ctx.strokeStyle = '#5d2514';
         ctx.lineWidth = 15;
-        ctx.fillRect(
-          x - framePadding,
-          y - framePadding,
-          imgWidth + 2 * framePadding,
-          imgHeight + 2 * framePadding
-        );
-        ctx.strokeRect(
-          x - framePadding,
-          y - framePadding,
-          imgWidth + 2 * framePadding,
-          imgHeight + 2 * framePadding
-        );
+        roundRect(ctx, x - framePadding, y - framePadding,
+                  imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+        ctx.fill();
+        ctx.stroke();
         ctx.drawImage(img, x, y, imgWidth, imgHeight);
       };
       img.src = imgPath;
@@ -294,7 +372,7 @@ function makeCategorizeTrial(imgPath, keyAnswer, promptText, incText, corText) {
       // Prompt
       const promptDiv = document.createElement('div');
       promptDiv.id = 'prompt';
-      promptDiv.innerHTML = `<p style="font-size:${isMobile ? '40px':'28px'}; margin:0;">${promptText}</p>`;
+      promptDiv.innerHTML = `<p class="prompt_text" style="font-weight: normal;font-size: 1.5em;">${promptText}</p>`;
       layout.appendChild(promptDiv);
 
       // Button container
@@ -304,11 +382,61 @@ function makeCategorizeTrial(imgPath, keyAnswer, promptText, incText, corText) {
       btnWrap.style.justifyContent = 'center';
       btnWrap.style.gap = isMobile ? '40px' : '80px';
       btnWrap.style.padding = '0';
+      btnWrap.style.marginTop = isMobile ? '-20px' : '-20px';
 
-      btnWrap.innerHTML = `
-        <button class="jspsych-btn" id="btn0" style="background-color:red;height:3em;width:5em;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em red;margin=20px;">${prompts[resp_mode]['trial_choices']['old']}</button>
-        <button class="jspsych-btn" id="btn1" style="background-color:blue;height:3em;width:5em;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em blue;">${prompts[resp_mode]['trial_choices']['sim']}</button>
-        <button class="jspsych-btn" id="btn2" style="background-color:green;height:3em;width:5em;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em green;">${prompts[resp_mode]['trial_choices']['new']}</button>`;
+      btnWrap.innerHTML = (isMobile ?
+      [
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_red.png"
+                  onmouseover="this.src='img/assets/blank_red_pressed.png'"
+                  onmouseout="this.src='img/assets/blank_red.png'"
+                  class="image-btn" id="btn0">
+          <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['old']}</span>
+        </div>`,
+
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_blue.png"
+                  onmouseover="this.src='img/assets/blank_blue_pressed.png'"
+                  onmouseout="this.src='img/assets/blank_blue.png'"
+                  class="image-btn" id="btn2">
+          <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['new']}</span>
+        </div>`,
+
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_green_trans.png"
+                  onmouseover="this.src='img/assets/blank_green_pressed.png'"
+                  onmouseout="this.src='img/assets/blank_green_trans.png'"
+                  class="image-btn" id="btn1">
+          <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['sim']}</span>
+        </div>`
+      ]
+      :
+      [
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_red.png"
+                  onmouseover="this.src='img/assets/blank_red_pressed.png'"
+                  onmouseout="this.src='img/assets/blank_red.png'"
+                  class="image-btn" id="btn0">
+          <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['old']}</span>
+        </div>`,
+
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_green_trans.png"
+                  onmouseover="this.src='img/assets/blank_green_pressed.png'"
+                  onmouseout="this.src='img/assets/blank_green_trans.png'"
+                  class="image-btn" id="btn1">
+          <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['sim']}</span>
+        </div>`,
+
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_blue.png"
+                  onmouseover="this.src='img/assets/blank_blue_pressed.png'"
+                  onmouseout="this.src='img/assets/blank_blue.png'"
+                  class="image-btn" id="btn2">
+          <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['new']}</span>
+        </div>`
+      ]
+      ).join('');
       layout.appendChild(btnWrap);
 
       // Feedback (fixed height to prevent layout jump)
@@ -325,8 +453,8 @@ function makeCategorizeTrial(imgPath, keyAnswer, promptText, incText, corText) {
       // Feedback logic
       function showFeedback(correct) {
         feedbackDiv.innerHTML = correct
-          ? `<p style="color:green;margin:0;">${corText}</p>`
-          : `<p style="color:red;margin:0;">${incText}</p>`;
+          ? `<p class="prompt_text" style="color:green;margin:0;font-weight: normal;">${corText}</p>`
+          : `<p class="prompt_text" style="color:red;margin:0;font-weight: normal;">${incText}</p>`;
       }
 
       function handleResponse(i) {

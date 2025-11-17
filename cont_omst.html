@@ -160,10 +160,10 @@
   .image-btn-wrapper {
     display: inline-block;
     position: relative;
-    margin: 0 0.5em; /* small, even spacing between buttons */
+    margin: 0.5em;
   }
 
-  .image-btn-wrapper:hover .image-btn-text {
+  .desktop .image-btn-wrapper:hover .image-btn-text {
     transform: translate(-50%, -40%); /* lower by 5% */
   }
 
@@ -202,9 +202,36 @@
     display: block;
   }
 
+  .image-btn-text.kr,
+  .image-btn-text.nl,
+  .image-btn-text.ru{
+    font-size: 0.9em;
+  }
+  
+  .mobile .image-btn-text.kr,
+  .mobile .image-btn-text.nl{
+    font-size: 1em;
+  }
+
+  .mobile .image-btn-text.ru {
+    font-size: 1.2em;
+  }
+  
 
   body {
     background-color: #fff9e0;
+  }
+
+  .prompt_text {
+    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-size: 1.5em;
+    color: #5d2b12;
+    font-weight: bold;
+    line-height: 1.2;
+  }
+
+  .mobile  .prompt_text {
+    font-size: 2em;
   }
   
   </style>
@@ -460,7 +487,7 @@ jatos.onLoad(async function() {
 
   
   var lang='en';
-  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+  /*if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
   if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
@@ -468,7 +495,7 @@ jatos.onLoad(async function() {
   }
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
-  }
+  }*/
   // load honeycomb version of lang file
   console.log('loading json lang')
   var langfile='lang/omst_'+lang+'.json';
@@ -485,11 +512,11 @@ jatos.onLoad(async function() {
   // START OF CODE THAT SHOULD BE CONSTANT REGARDLESS OF JATOS / CORDOVA
   const phasename='oMSTCont';
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440;
+  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile;
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-  const canvasHeight = isMobile ? window.innerHeight * 0.6 : smallScreen ? window.innerHeight * 0.69 : window.innerHeight * .65;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .65;
   const fontScale = isMobile ? 1.5 : 1.0;
-  const stimScale = isMobile ? 1.5 : smallScreen ? 0.7 : 1.0;
+  const stimScale = isMobile ? 2 : smallScreen ? 0.85: 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
   console.log(isMobile);
   console.log(canvasHeight);
@@ -608,9 +635,19 @@ jatos.onLoad(async function() {
       //ctx.scale(fontScale, fontScale);
       
       if (isMobile) {
-        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 96);
+        if (lang == 'kr' || lang == 'nl' || lang == 'ru') {
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+        } else {
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 96);
+        }
+        
       } else {
-        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+        if (lang == 'kr' || lang == 'nl' || lang == 'ru') {
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+        } else {
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+        }
+        
       }
       
       ctx.restore();
@@ -629,9 +666,9 @@ jatos.onLoad(async function() {
     margin_horizontal: isMobile ? '20px' : '40px',
     margin_vertical: '20px',
 
-
+    prompt: '<p class="prompt_text">' +prompts[resp_mode]['instr_prompt'] + '</p>',
     // Optional canvas size
-    canvas_size: [canvasHeight, canvasWidth]
+    canvas_size: smallScreen ? [canvasHeight * 0.7, canvasWidth] : [canvasHeight * 0.8, canvasWidth]
 };
   
   // Build up my actual trial timeline
@@ -684,7 +721,7 @@ jatos.onLoad(async function() {
           const height = c.height;
           const stimImg = new Image();
           const stimPath = jsPsych.timelineVariable('stimulus');
-          const totalStars = isMobile ? 6 : 12;
+          const totalStars = isMobile ? 6 : 6;
           const maxFill = 10; // star1–star10
           const starSize = isMobile ? Math.min(width, height) * 0.15 : Math.min(width, height) * 0.15;
           const spacing = isMobile ?  starSize * 0.15 : starSize * 0.25;
@@ -717,9 +754,10 @@ jatos.onLoad(async function() {
 
 
             if (!isMobile){
-              const fillLevel = (progress % maxFill) || 0;
-              const currentLevel = Math.min(Math.max(fillLevel, 0), 10);
-              const fullStars = Math.floor(progress / maxFill);
+              const step = Math.floor((progress % (maxFill*2) + 1) / 2) || 0;
+              const fullStars = Math.floor((progress/2) / maxFill);
+              const fillLevel = step;
+              const currentLevel = Math.min(fillLevel, 10);
               // === Completed Stars (Left Side) ===
               const leftX = 40; // margin from left edge
               const leftStartY = height * 0.25;
@@ -727,11 +765,11 @@ jatos.onLoad(async function() {
               for (let i = 0; i < fullStars; i++) {
                 const star = new Image();
                 star.src = `img/assets/star10.png`;
-                const posY = leftStartY + (i%4) * (starSize + spacing);
+                const posY = leftStartY + (i%2) * (starSize + spacing);
                 star.onload = function() {
-                  ctx.drawImage(star, leftX + (Math.floor(i/4) * (starSize + spacing)), posY, starSize, starSize);
+                  ctx.drawImage(star, leftX + (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
                 };
-                if (star.complete) ctx.drawImage(star, leftX+ (Math.floor(i/4) * (starSize + spacing)), posY, starSize, starSize);
+                if (star.complete) ctx.drawImage(star, leftX+ (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
               }
             
 
@@ -807,9 +845,27 @@ jatos.onLoad(async function() {
 
             // === Draw title text image above the stimulus ===
             if (isMobile){
-              drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.2, isMobile, 70);
+              if (lang == 'kr'){
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.15, isMobile, 50);
+              } else if (lang == 'ru' || lang == 'nl'){
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.15, isMobile, 58);
+              } else {
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.2, isMobile, 70);
+              }
+            } else if (smallScreen) {
+              if (lang == 'nl' || lang == 'ru'){
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 48);
+              } else if (lang == 'kr') {
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 36);
+              } else {
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
+              }
             } else {
-              drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
+              if (lang == 'kr' || lang == 'nl' || lang == 'ru'){
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
+              } else {
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
+              }
             }
             
 
@@ -840,21 +896,21 @@ jatos.onLoad(async function() {
                     onmouseover="this.src='img/assets/blank_red_pressed.png'"
                     onmouseout="this.src='img/assets/blank_red.png'"
                     class="image-btn" style="mix-blend-mode: multiply;">
-            <span class="image-btn-text">${trial_choices[0]}</span>
+            <span class="image-btn-text ${lang}">${trial_choices[0]}</span>
           </div>`,
           `<div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_blue.png"
                     onmouseover="this.src='img/assets/blank_blue_pressed.png'"
                     onmouseout="this.src='img/assets/blank_blue.png'"
                     class="image-btn" style="mix-blend-mode: multiply;">
-            <span class="image-btn-text">${trial_choices[2]}</span>
+            <span class="image-btn-text ${lang}">${trial_choices[2]}</span>
           </div>`,
           `<div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_green_trans.png"
                     onmouseover="this.src='img/assets/blank_green_pressed.png'"
                     onmouseout="this.src='img/assets/blank_green_trans.png'"
                     class="image-btn" style="mix-blend-mode: multiply;">
-            <span class="image-btn-text">${trial_choices[1]}</span>
+            <span class="image-btn-text ${lang}">${trial_choices[1]}</span>
           </div>`
         ] :
         [
@@ -863,21 +919,21 @@ jatos.onLoad(async function() {
                     onmouseover="this.src='img/assets/blank_red_pressed.png'"
                     onmouseout="this.src='img/assets/blank_red.png'"
                     class="image-btn">
-            <span class="image-btn-text">${trial_choices[0]}</span>
+            <span class="image-btn-text ${lang}">${trial_choices[0]}</span>
           </div>`,
           `<div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_green_trans.png"
                     onmouseover="this.src='img/assets/blank_green_pressed.png'"
                     onmouseout="this.src='img/assets/blank_green_trans.png'"
                     class="image-btn">
-            <span class="image-btn-text">${trial_choices[1]}</span>
+            <span class="image-btn-text ${lang}">${trial_choices[1]}</span>
           </div>`,
           `<div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_blue.png"
                     onmouseover="this.src='img/assets/blank_blue_pressed.png'"
                     onmouseout="this.src='img/assets/blank_blue.png'"
                     class="image-btn">
-            <span class="image-btn-text">${trial_choices[2]}</span>
+            <span class="image-btn-text ${lang}">${trial_choices[2]}</span>
           </div>`
         ],
 
@@ -918,7 +974,7 @@ jatos.onLoad(async function() {
   var debrief_block = {
     type: jsPsychHtmlKeyboardResponse,
     trial_duration: 500,
-    stimulus: prompts['ty'],
+    stimulus: '<p class="prompt_text">' + prompts['ty'] + '</p>',
     on_finish: function (data) {
       let validtrials=jsPsych.data.get().filterCustom(function(trial) {
         return trial.resp !== null; 
