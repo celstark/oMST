@@ -135,7 +135,7 @@ Revised: November 20, 2019 (CELS) for Cordova
 
   .prompt_text {
     font-family: "Comic Sans MS", "Comic Neue", cursive;
-    font-size: 1.5em;
+    font-size: 1.3em;
     color: #5d2b12;
     font-weight: bold;
     line-height: 1.2;
@@ -152,6 +152,16 @@ Revised: November 20, 2019 (CELS) for Cordova
     line-height: 1.2;
   }
   
+  .jspsych-categorize-image-buttons-stimulus {
+    width: 15em;
+    height: auto;
+  }
+
+  .mobile .jspsych-categorize-image-buttons-stimulus {
+    width: 25em;
+    height: auto;
+  }
+
   </style>
 </head>
 <script>
@@ -262,6 +272,20 @@ jatos.onLoad(async function() {
     task: phasename,
     subject: sid,
   });
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
   //var trial_choices= prompts['k_trial_choices'];  // DELETE THIS
 
   // Default is keyboard here - override if buttons
@@ -297,116 +321,66 @@ jatos.onLoad(async function() {
     stimulus: '<p class=prompt_text">' + prompts['txt0'] + '</p>',
   }
 
-function makeCategorizeTrial(imgPath, keyAnswer, promptText, incText, corText) {
+function makeCategorizeTrial(imgPath, keyAnswer, buttonAnswer, promptText, incText, corText) {
+  const maxPromptHeight = 80;
   return {
-    type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
-    choices: ['dummy'], // required by plugin but not used
-    trial_duration: null,
-    canvas_size: [canvasHeight, canvasWidth],
-
-    // Draw the image (once) on the canvas
-    stimulus: function (c) {
-      const ctx = c.getContext('2d');
-      const framePadding = 20;
-      const radius = 25;
-      const width = c.width;
-      const height = c.height;
-      ctx.fillStyle = '#fff9e0';
-      ctx.fillRect(0, 0, c.width, c.height);
-
-
-      function roundRect(ctx, x, y, w, h, r) {
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + w - r, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + h - r);
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
-      }
-
-      const img = new Image();
-      img.onload = function () {
-        const imgWidth = img.width * stimScale;
-        const imgHeight = img.height * stimScale;
-        
-
-        const x = Math.round((width - imgWidth) / 2);
-        const y = isMobile ? (height - imgHeight) / 2 + 225 : (height - imgHeight) / 2 + 5; // increase this offset to push it lower
-        ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = '#5d2514';
-        ctx.lineWidth = 15;
-        roundRect(ctx, x - framePadding, y - framePadding,
-                  imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
-        ctx.fill();
-        ctx.stroke();
-        ctx.drawImage(img, x, y, imgWidth, imgHeight);
-      };
-      img.src = imgPath;
-    },
-
-    on_load: function () {
-      const display = jsPsych.getDisplayElement();
-      const margin_horizontal = isMobile ? '20px' : '40px';
-      const margin_vertical = isMobile ? '10px' : '10px';
-
-      // Remove plugin’s default buttons + wrapper
-      display.querySelectorAll('.jspsych-btn').forEach(b => b.remove());
-      const defaultWrapper = display.querySelector('#jspsych-canvas-button-response-btngroup');
-      if (defaultWrapper) defaultWrapper.remove();
-
-      // Use a single vertical layout container for everything
-      const layout = document.createElement('div');
-      layout.style.display = 'flex';
-      layout.style.flexDirection = 'column';
-      layout.style.alignItems = 'center';
-      layout.style.justifyContent = 'flex-start';
-      layout.style.height = '100%';
-      layout.style.gap = isMobile ? '0.5em' : '0.3em'; // very small spacing
-      display.appendChild(layout);
-
-      // Prompt
-      const promptDiv = document.createElement('div');
-      promptDiv.id = 'prompt';
-      promptDiv.innerHTML = `<p class="prompt_text" style="font-weight: normal;font-size: 1.5em;">${promptText}</p>`;
-      layout.appendChild(promptDiv);
-
-      // Button container
-      const btnWrap = document.createElement('div');
-      btnWrap.id = 'button-container';
-      btnWrap.style.display = 'flex';
-      btnWrap.style.justifyContent = 'center';
-      btnWrap.style.gap = isMobile ? '40px' : '80px';
-      btnWrap.style.padding = '0';
-      btnWrap.style.marginTop = isMobile ? '-20px' : '-20px';
-
-      btnWrap.innerHTML = (isMobile ?
+    type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
+    stimulus: imgPath,
+    stimulus_width: 15,
+    stimulus_height: 15,
+    key_answer: keyAnswer,
+    button_answer: buttonAnswer,
+    choices: isMobile ?
+    [
+      prompts[resp_mode]['trial_choices']['old'],
+      prompts[resp_mode]['trial_choices']['new'],
+      prompts[resp_mode]['trial_choices']['sim'],
+    ]
+    :
+    [
+      prompts[resp_mode]['trial_choices']['old'],
+      prompts[resp_mode]['trial_choices']['sim'],
+      prompts[resp_mode]['trial_choices']['new'],
+    ],
+    prompt: `
+      <div class="prompt-container" style="height: ${maxPromptHeight}px;">
+        <p class="prompt prompt_text" style="font-weight: normal;">${promptText}</p>
+      </div>
+    `,
+    incorrect_text: `
+      <div class="prompt-container" style="height: ${maxPromptHeight}px;">
+        <p class="prompt prompt_text" style="font-weight: normal;">${incText}</p>
+      </div>
+    `,
+    correct_text: `
+      <div class="prompt-container" style="height: ${maxPromptHeight}px;">
+        <p class="prompt prompt_text" style="font-weight: normal;">${corText}</p>
+      </div>
+    `,
+    force_correct_button_press: true,
+    button_html: isMobile ?
       [
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_red.png"
-                  onmouseover="this.src='img/assets/blank_red_pressed.png'"
-                  onmouseout="this.src='img/assets/blank_red.png'"
-                  class="image-btn" id="btn0">
+            onmouseover="this.src='img/assets/blank_red_pressed.png'"
+            onmouseout="this.src='img/assets/blank_red.png'"
+            class="image-btn" id="btn0">
           <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['old']}</span>
         </div>`,
 
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_blue.png"
-                  onmouseover="this.src='img/assets/blank_blue_pressed.png'"
-                  onmouseout="this.src='img/assets/blank_blue.png'"
-                  class="image-btn" id="btn2">
+            onmouseover="this.src='img/assets/blank_blue_pressed.png'"
+            onmouseout="this.src='img/assets/blank_blue.png'"
+            class="image-btn" id="btn2">
           <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['new']}</span>
         </div>`,
 
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_green_trans.png"
-                  onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                  onmouseout="this.src='img/assets/blank_green_trans.png'"
-                  class="image-btn" id="btn1">
+            onmouseover="this.src='img/assets/blank_green_pressed.png'"
+            onmouseout="this.src='img/assets/blank_green_trans.png'"
+            class="image-btn" id="btn1">
           <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['sim']}</span>
         </div>`
       ]
@@ -414,79 +388,48 @@ function makeCategorizeTrial(imgPath, keyAnswer, promptText, incText, corText) {
       [
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_red.png"
-                  onmouseover="this.src='img/assets/blank_red_pressed.png'"
-                  onmouseout="this.src='img/assets/blank_red.png'"
-                  class="image-btn" id="btn0">
+            onmouseover="this.src='img/assets/blank_red_pressed.png'"
+            onmouseout="this.src='img/assets/blank_red.png'"
+            class="image-btn" id="btn0">
           <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['old']}</span>
         </div>`,
 
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_green_trans.png"
-                  onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                  onmouseout="this.src='img/assets/blank_green_trans.png'"
-                  class="image-btn" id="btn1">
+            onmouseover="this.src='img/assets/blank_green_pressed.png'"
+            onmouseout="this.src='img/assets/blank_green_trans.png'"
+            class="image-btn" id="btn1">
           <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['sim']}</span>
         </div>`,
 
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_blue.png"
-                  onmouseover="this.src='img/assets/blank_blue_pressed.png'"
-                  onmouseout="this.src='img/assets/blank_blue.png'"
-                  class="image-btn" id="btn2">
+            onmouseover="this.src='img/assets/blank_blue_pressed.png'"
+            onmouseout="this.src='img/assets/blank_blue.png'"
+            class="image-btn" id="btn2">
           <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['new']}</span>
         </div>`
       ]
-      ).join('');
-      layout.appendChild(btnWrap);
-
-      // Feedback (fixed height to prevent layout jump)
-      const feedbackDiv = document.createElement('div');
-      feedbackDiv.id = 'feedback';
-      feedbackDiv.style.margin = '0';
-      feedbackDiv.style.fontSize = isMobile ? '40px' : '28px';
-      feedbackDiv.style.height = isMobile ? '2em' : '1.5em'; // pre-allocated space
-      feedbackDiv.style.display = 'flex';
-      feedbackDiv.style.alignItems = 'center';
-      feedbackDiv.style.justifyContent = 'center';
-      layout.appendChild(feedbackDiv);
-
-      // Feedback logic
-      function showFeedback(correct) {
-        feedbackDiv.innerHTML = correct
-          ? `<p class="prompt_text" style="color:green;margin:0;font-weight: normal;">${corText}</p>`
-          : `<p class="prompt_text" style="color:red;margin:0;font-weight: normal;">${incText}</p>`;
-      }
-
-      function handleResponse(i) {
-        if (i === keyAnswer) {
-          showFeedback(true);
-          setTimeout(() => jsPsych.finishTrial({ response: i, correct: true }), 1000);
-        } else {
-          showFeedback(false);
-        }
-      }
-
-      // Button listeners
-      for (let i = 0; i < 3; i++) {
-        display.querySelector('#btn' + i).addEventListener('click', () => handleResponse(i));
-      }
-    },
-  };
+    
+  }
 }
 
 function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
   return {
-    type: jsPsychCanvasButtonResponse,
+    type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
     choices: [buttonLabel],
     canvas_size: [canvasHeight, canvasWidth],
     stimulus: function(c) {
       const ctx = c.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, c.width, c.height);
-
+      ctx.fillStyle = '#fff9e0';
       const gap = 60; // spacing between the two images
       const framePadding = 20;
-      const borderWidth = 15;
+      const radius = 25;
+      const width = c.width;
+      const height = c.height;
+      ctx.fillRect(0, 0, width, height);
+
+
 
       const imgL = new Image();
       const imgR = new Image();
@@ -495,82 +438,124 @@ function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
         const imgWidth = isMobile ? imgL.width * stimScale * 0.6 : imgL.width * stimScale * 0.9;
         const imgHeight = isMobile ? imgL.height * stimScale * 0.6: imgL.width * stimScale * 0.9;
         const totalWidth = imgWidth * 2 + gap;
-        const startX = (c.width - totalWidth) / 2;
+        const x = (c.width - totalWidth) / 2;
         const y = (c.height - imgHeight) / 2;
 
         // draw function for each image
         function drawFramedImage(img, x) {
           ctx.fillStyle = '#ffffff';
-          ctx.strokeStyle = '#786e6d';
-          ctx.lineWidth = borderWidth;
-          ctx.fillRect(
-            x - framePadding,
-            y - framePadding,
-            imgWidth + 2 * framePadding,
-            imgHeight + 2 * framePadding
-          );
-          ctx.strokeRect(
-            x - framePadding,
-            y - framePadding,
-            imgWidth + 2 * framePadding,
-            imgHeight + 2 * framePadding
-          );
+          ctx.strokeStyle = '#5d2514';
+          ctx.lineWidth = 15;
+          roundRect(ctx, x - framePadding, y - framePadding,
+                  imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+          ctx.fill();
+          ctx.stroke();
           ctx.drawImage(img, x, y, imgWidth, imgHeight);
         }
-
-        drawFramedImage(imgL, startX);
-        drawFramedImage(imgR, startX + imgWidth + gap);
+        drawFramedImage(imgL, x);
+        drawFramedImage(imgR, x + imgWidth + gap);
       };
 
       imgL.src = imgLeft;
       imgR.src = imgRight;
     },
-    prompt: function() {
-      return `<p style="font-size:${isMobile ? '40px' : '28px'}; margin-top:0.5em;">${promptText}</p>`;
-    },
+    prompt: `<p class="prompt_text" style="font-weight: normal;">${promptText}</p>`,
+    button_html:           
+      `<div class="image-btn-wrapper">
+        <input type="image" src="img/assets/blank_green_trans.png"
+                onmouseover="this.src='img/assets/blank_green_pressed.png'"
+                onmouseout="this.src='img/assets/blank_green_trans.png'"
+                class="image-btn" style="mix-blend-mode: multiply;">
+        <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
+      </div>`,
   };
 }
 
 
-var new1 = makeCategorizeTrial(
-  'img/foil_1032.jpg',
-  2,
-  prompts[resp_mode]['prompt_new'],
-  prompts[resp_mode]['inc_new'],
-  prompts['cor_new']
-)
+var new1 = isMobile ?
+  makeCategorizeTrial(
+    'img/assets/foil_1032_border.png',
+    prompts['key']['trial_choices']['new'],
+    1,
+    prompts[resp_mode]['prompt_new'],
+    prompts[resp_mode]['inc_new'],
+    prompts['cor_new']
+  ) 
+  :
+  makeCategorizeTrial(
+    'img/assets/foil_1032_border.png',
+    prompts['key']['trial_choices']['new'],
+    2,
+    prompts[resp_mode]['prompt_new'],
+    prompts[resp_mode]['inc_new'],
+    prompts['cor_new']
+  )
 
-var new2 = makeCategorizeTrial(
-  'img/foil_1033.jpg',
-  2,
-  prompts[resp_mode]['prompt_new'],
-  prompts[resp_mode]['inc_new'],
-  prompts['cor_new']
-);
+var new2 = isMobile ?
+  makeCategorizeTrial(
+    'img/assets/foil_1033_border.png',
+    prompts['key']['trial_choices']['new'],
+    1,
+    prompts[resp_mode]['prompt_new'],
+    prompts[resp_mode]['inc_new'],
+    prompts['cor_new']
+  )
+  :
+  makeCategorizeTrial(
+    'img/assets/foil_1033_border.png',
+    prompts['key']['trial_choices']['new'],
+    2,
+    prompts[resp_mode]['prompt_new'],
+    prompts[resp_mode]['inc_new'],
+    prompts['cor_new']
+  );
 
-var new3 = makeCategorizeTrial(
-  'img/pcon026a.jpg',
-  2,
-  prompts[resp_mode]['prompt_new'],
-  prompts[resp_mode]['inc_new'],
-  prompts['cor_new']
-);
+var new3 = isMobile ?
+  makeCategorizeTrial(
+    'img/assets/pcon026a_border.png',
+    prompts['key']['trial_choices']['new'],
+    1,
+    prompts[resp_mode]['prompt_new'],
+    prompts[resp_mode]['inc_new'],
+    prompts['cor_new']
+  )  
+  :
+  makeCategorizeTrial(
+    'img/assets/pcon026a_border.png',
+    prompts['key']['trial_choices']['new'],
+    2,
+    prompts[resp_mode]['prompt_new'],
+    prompts[resp_mode]['inc_new'],
+    prompts['cor_new']
+  );
 
 var repeat1 = makeCategorizeTrial(
-  'img/foil_1033.jpg',
+  'img/assets/foil_1033_border.png',
+  prompts['key']['trial_choices']['old'],
   0,
   prompts[resp_mode]['prompt_rep'],
   prompts[resp_mode]['inc_rep'],
   prompts['cor_rep']
 );
 
-var lure1 = makeCategorizeTrial(
-  'img/pcon026b.jpg',
-  1,
-  prompts[resp_mode]['prompt_lure'],
-  prompts[resp_mode]['inc_lure'],
-  prompts['cor_lure']
-);
+var lure1 = isMobile ?
+  makeCategorizeTrial(
+    'img/assets/pcon026b_border.png',
+    prompts['key']['trial_choices']['sim'],
+    2,
+    prompts[resp_mode]['prompt_lure'],
+    prompts[resp_mode]['inc_lure'],
+    prompts['cor_lure']
+  )
+  :
+  makeCategorizeTrial(
+    'img/assets/pcon026b_border.png',
+    prompts['key']['trial_choices']['sim'],
+    1,
+    prompts[resp_mode]['prompt_lure'],
+    prompts[resp_mode]['inc_lure'],
+    prompts['cor_lure']
+  );
 
 var side_by_side1 = makeSideBySideTrial(
   'img/pcon026a.jpg',
@@ -579,37 +564,72 @@ var side_by_side1 = makeSideBySideTrial(
   prompts[resp_mode]['instr_choice']
 );
 
-var new4 = makeCategorizeTrial(
-  'img/foil_1035.jpg',
-  2,
-  prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
-  prompts[resp_mode]['inc_new'],
-  prompts['cor_new']
-);
+var new4 = isMobile ?
+  makeCategorizeTrial(
+    'img/assets/foil_1035_border.png',
+    prompts['key']['trial_choices']['new'],
+    1,
+    prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
+    prompts[resp_mode]['inc_new'],
+    prompts['cor_new']
+  )
+  :
+  makeCategorizeTrial(
+    'img/assets/foil_1035_border.png',
+    prompts['key']['trial_choices']['new'],
+    2,
+    prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
+    prompts[resp_mode]['inc_new'],
+    prompts['cor_new']
+  );
 
-var new5 = makeCategorizeTrial(
-  'img/pcon028a.jpg',
-  2,
-  prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
-  prompts[resp_mode]['inc_new'],
-  prompts['cor_new']
-);
+var new5 = isMobile ?
+  makeCategorizeTrial(
+    'img/assets/pcon028a_border.png',
+    prompts['key']['trial_choices']['new'],
+    1,
+    prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
+    prompts[resp_mode]['inc_new'],
+    prompts['cor_new']
+  )
+  :
+  makeCategorizeTrial(
+    'img/assets/pcon028a_border.png',
+    prompts['key']['trial_choices']['new'],
+    2,
+    prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
+    prompts[resp_mode]['inc_new'],
+    prompts['cor_new']
+  );
 
 var repeat2 = makeCategorizeTrial(
-  'img/foil_1035.jpg',
+  'img/assets/foil_1035_border.png',
+  prompts['key']['trial_choices']['old'],
   0,
   prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
   prompts[resp_mode]['inc_rep'],
   prompts['cor_rep']
 );
 
-var lure2 = makeCategorizeTrial(
-  'img/pcon028b.jpg',
-  1,
-  prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
-  prompts[resp_mode]['inc_lure'],
-  prompts['cor_lure']
-);
+var lure2 = isMobile ?
+  makeCategorizeTrial(
+    'img/assets/pcon028b_border.png',
+    prompts['key']['trial_choices']['sim'],
+    2,
+    prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
+    prompts[resp_mode]['inc_lure'],
+    prompts['cor_lure']
+  )
+  :
+  makeCategorizeTrial(
+    'img/assets/pcon028b_border.png',
+    prompts['key']['trial_choices']['sim'],
+    1,
+    prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
+    prompts[resp_mode]['inc_lure'],
+    prompts['cor_lure']
+  );
+
 var side_by_side2 = makeSideBySideTrial(
   'img/pcon028a.jpg',
   'img/pcon028b.jpg',
@@ -619,8 +639,16 @@ var side_by_side2 = makeSideBySideTrial(
 var outtro = {
   type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
   choices: [prompts[resp_mode]['instr_choice']],
-  prompt: prompts[resp_mode]['prompt0'],
+  prompt: '<p class="prompt_text">' + prompts[resp_mode]['prompt0'] + '</p>',
   stimulus: prompts['end'], 
+  button_html:           
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_green_trans.png"
+                  onmouseover="this.src='img/assets/blank_green_pressed.png'"
+                  onmouseout="this.src='img/assets/blank_green_trans.png'"
+                  class="image-btn" style="mix-blend-mode: multiply;">
+          <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
+        </div>`,
 }
 var  timeline = [intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro];
 jsPsych.run(timeline);
