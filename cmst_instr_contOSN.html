@@ -85,6 +85,20 @@ Revised: November 20, 2019 (CELS) for Cordova
     display: block;
   }
 
+  .mobile .image-btn {
+    width: 25em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
+  .smallScreen .image-btn {
+    width: 15em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
   .image-btn-text {
     position: absolute;
     top: 38%;
@@ -100,25 +114,18 @@ Revised: November 20, 2019 (CELS) for Cordova
     letter-spacing: 0.08em;
   }
 
+  .image-btn-text.kr,
+  .image-btn-text.nl,
+  .image-btn-text.ru{
+    font-size: 0.9em;
+  }
+
   .mobile .image-btn-text {
     -webkit-text-stroke: 15px #5d2b12;
     paint-order: stroke fill;
     font-size: 2em;
   }
 
-  .mobile .image-btn {
-    width: 25em;
-    height: auto;
-    border: none;
-    display: block;
-  }
-
-  .image-btn-text.kr,
-  .image-btn-text.nl,
-  .image-btn-text.ru{
-    font-size: 0.9em;
-  }
-  
   .mobile .image-btn-text.kr,
   .mobile .image-btn-text.nl{
     font-size: 1em;
@@ -128,6 +135,23 @@ Revised: November 20, 2019 (CELS) for Cordova
     font-size: 1.2em;
   }
   
+  .smallScreen .image-btn-text {
+    -webkit-text-stroke: 10px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 1em;
+  }
+
+  .smallScreen .image-btn-text.kr{
+    -webkit-text-stroke: 6px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 0.5em;
+  }
+
+  .smallScreen .image-btn-text.nl{
+    -webkit-text-stroke: 7px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 0.7em;
+  }
 
   body {
     background-color: #fff9e0;
@@ -145,6 +169,21 @@ Revised: November 20, 2019 (CELS) for Cordova
     font-size: 2em;
   }
 
+  .mobile  .prompt_text.ru,
+  .mobile  .prompt_text.nl,
+  .mobile  .prompt_text.es {
+    font-size: 1.8em;
+  }
+
+  .smallScreen  .prompt_text {
+    font-size: 1.3em;
+  }
+
+  .smallScreen  .prompt_text.ru,
+  .smallScreen  .prompt_text.nl {
+    font-size: 1em;
+  }
+
   #jspsych-html-button-response-stimulus {
     font-family: "Comic Sans MS", "Comic Neue", cursive;
     font-size: 1.5em;
@@ -159,6 +198,11 @@ Revised: November 20, 2019 (CELS) for Cordova
 
   .mobile .jspsych-categorize-image-buttons-stimulus {
     width: 25em;
+    height: auto;
+  }
+
+  .smallScreen .jspsych-categorize-image-buttons-stimulus {
+    width: 10em;
     height: auto;
   }
 
@@ -203,8 +247,8 @@ jatos.onLoad(async function() {
     resp_mode='key';
   }
 
-  var lang='en';
-  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+  var lang='es';
+  /*if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
   if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
@@ -212,7 +256,7 @@ jatos.onLoad(async function() {
   }
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
-  }
+  }*/
 
   // load honeycomb version of lang file
   console.log('loading json lang: ',lang)
@@ -268,6 +312,7 @@ jatos.onLoad(async function() {
   const fontScale = isMobile ? 1.5 : 1.0;
   const stimScale = isMobile ? 2 : smallScreen ? 0.85: 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
+  if (smallScreen) {document.body.classList.add('smallScreen');}
   jsPsych.data.addProperties({
     task: phasename,
     subject: sid,
@@ -306,28 +351,13 @@ jatos.onLoad(async function() {
   }
 
   //console.log(prompts['k_trial_choices'][0], prompts['k_trial_choices'][1], prompts['k_trial_choices'][2])
-  var intro = {
-    type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
-    choices: [prompts[resp_mode]['instr_choice']],
-    button_html:           
-          `<div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_green_trans.png"
-                    onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                    onmouseout="this.src='img/assets/blank_green_trans.png'"
-                    class="image-btn" style="mix-blend-mode: multiply;">
-            <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
-          </div>`,
-    prompt: `<p class="prompt_text">${prompts[resp_mode]['prompt0']}</p>`,
-    stimulus: '<p class=prompt_text">' + prompts['txt0'] + '</p>',
-  }
+
 
 function makeCategorizeTrial(imgPath, keyAnswer, buttonAnswer, promptText, incText, corText) {
   const maxPromptHeight = 80;
   return {
     type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: imgPath,
-    stimulus_width: 15,
-    stimulus_height: 15,
     key_answer: keyAnswer,
     button_answer: buttonAnswer,
     choices: isMobile ?
@@ -344,17 +374,17 @@ function makeCategorizeTrial(imgPath, keyAnswer, buttonAnswer, promptText, incTe
     ],
     prompt: `
       <div class="prompt-container" style="height: ${maxPromptHeight}px;">
-        <p class="prompt prompt_text" style="font-weight: normal;">${promptText}</p>
+        <p class="prompt prompt_text ${lang}" style="font-weight: normal;">${promptText}</p>
       </div>
     `,
     incorrect_text: `
       <div class="prompt-container" style="height: ${maxPromptHeight}px;">
-        <p class="prompt prompt_text" style="font-weight: normal;">${incText}</p>
+        <p class="prompt prompt_text ${lang}" style="font-weight: normal;color: red;">${incText}</p>
       </div>
     `,
     correct_text: `
       <div class="prompt-container" style="height: ${maxPromptHeight}px;">
-        <p class="prompt prompt_text" style="font-weight: normal;">${corText}</p>
+        <p class="prompt prompt_text ${lang}" style="font-weight: normal;color: green;">${corText}</p>
       </div>
     `,
     force_correct_button_press: true,
@@ -418,7 +448,7 @@ function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
   return {
     type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
     choices: [buttonLabel],
-    canvas_size: [canvasHeight, canvasWidth],
+    canvas_size: isMobile ? [canvasHeight * 0.6, canvasWidth] : smallScreen ? [canvasHeight * 0.8, canvasWidth] : [canvasHeight, canvasWidth],
     stimulus: function(c) {
       const ctx = c.getContext('2d');
       ctx.fillStyle = '#fff9e0';
@@ -435,8 +465,8 @@ function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
       const imgR = new Image();
 
       imgL.onload = imgR.onload = function() {
-        const imgWidth = isMobile ? imgL.width * stimScale * 0.6 : imgL.width * stimScale * 0.9;
-        const imgHeight = isMobile ? imgL.height * stimScale * 0.6: imgL.width * stimScale * 0.9;
+        const imgWidth = isMobile ? imgL.width * stimScale * 0.45 : imgL.width * stimScale * 0.9;
+        const imgHeight = isMobile ? imgL.height * stimScale * 0.45: imgL.width * stimScale * 0.9;
         const totalWidth = imgWidth * 2 + gap;
         const x = (c.width - totalWidth) / 2;
         const y = (c.height - imgHeight) / 2;
@@ -459,7 +489,7 @@ function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
       imgL.src = imgLeft;
       imgR.src = imgRight;
     },
-    prompt: `<p class="prompt_text" style="font-weight: normal;">${promptText}</p>`,
+    prompt: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='es') ? 0.9 : 1) : 1.3)}em; font-weight: normal;">${promptText}</p>`,
     button_html:           
       `<div class="image-btn-wrapper">
         <input type="image" src="img/assets/blank_green_trans.png"
@@ -471,6 +501,20 @@ function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
   };
 }
 
+var intro = {
+  type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
+  choices: [prompts[resp_mode]['instr_choice']],
+  button_html:           
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_green_trans.png"
+                  onmouseover="this.src='img/assets/blank_green_pressed.png'"
+                  onmouseout="this.src='img/assets/blank_green_trans.png'"
+                  class="image-btn" style="mix-blend-mode: multiply;">
+          <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
+        </div>`,
+  prompt: `<p class="prompt_text"style="font-size: ${isMobile ? 2 : (smallScreen ? 1 : 1.3)}em;"">${prompts[resp_mode]['prompt0']}</p>`,
+  stimulus: `<p class="prompt_text" style="font-size: ${isMobile ? 1 : (smallScreen ? ((lang=='ru') ? 0.6 : 0.65) : ((lang=='ru') ? 0.85 : 1))}em;font-weight: normal;">` + prompts['txt0'] + '</p>',
+}
 
 var new1 = isMobile ?
   makeCategorizeTrial(

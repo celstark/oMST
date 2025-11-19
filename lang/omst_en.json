@@ -101,7 +101,7 @@
     }
   },
   "instructions": {
-    "txt0": "You are going to see pictures of everyday items, one at a time. For each one, you will select <b>Old</b> if you have seen this exact picture before, <b>Similar</b> if it is similar, but not exactly the same as one you saw before, or <b>New</b> if it is entirely a new picture.</p> <p>The way to think of <i>Similar</i> is whether it has the same name, but is a different picture in any way.</p> <p>A few practice trials should make this clear.",
+    "txt0": "You are going to see pictures of everyday items, one at a time. For each one, you will select <b>Old</b> if you have seen this exact picture before, <b>Similar</b> if it is similar, but not exactly the same as one you saw before, or <b>New</b> if it is entirely a new picture.<br><br> The way to think of <i>Similar</i> is whether it has the same name, but is a different picture in any way.<br><br>A few practice trials should make this clear.",
     "cor_new": "Good! You have not seen this image yet, so you correctly selected <b>New</b>",
     "cor_rep": "Good! You have seen this exact image, so you correctly selected <b>Old</b>",
     "cor_lure": "Good! You have not seen this <i>exact</i> image, so you correctly selected <b>Similar</b>",

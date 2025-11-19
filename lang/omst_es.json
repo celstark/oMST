@@ -99,7 +99,7 @@
     }
   },
   "instructions": {
-    "txt0": "Verá imágenes de objetos comunes uno a uno. Para cada imagen, seleccionará <b>Viejo</b> si usted ha visto esta imagen exacta antes, <b>Similar</b> si es similar, pero no es exactamente idéntica a la imagen que vió antes, o <b>Nuevo</b> si es una imagen totalmente nueva. <p> La manera de pensar en <i>Similar</i> es si el objeto tiene el mismo nombre, pero es una imagen diferente de algún modo. <p> Unas pruebas de práctica le ayudaran a entender mejor esta tarea",
+    "txt0": "Verá imágenes de objetos comunes uno a uno. Para cada imagen, seleccionará <b>Viejo</b> si usted ha visto esta imagen exacta antes, <b>Similar</b> si es similar, pero no es exactamente idéntica a la imagen que vió antes, o <b>Nuevo</b> si es una imagen totalmente nueva. <br><br> La manera de pensar en <i>Similar</i> es si el objeto tiene el mismo nombre, pero es una imagen diferente de algún modo. <br><br> Unas pruebas de práctica le ayudaran a entender mejor esta tarea",
     "cor_new": "¡Muy Bien!! Todavía no ha visto esta imagen, así que ha seleccionado correctamente <b>Nuevo</b>",
     "cor_rep": "¡Muy Bien!! Usted ya ha visto esta imagen exacta, así que ha seleccionado correctamente <b>Viejo</b>",
     "cor_lure": "¡Muy Bien!! No ha visto esta imagen <i>exacta</i>, así que ha seleccionado correctamente <b>Similar</b>",

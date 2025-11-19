@@ -101,7 +101,7 @@
     }
   },
   "instructions": {
-    "txt0": "U zal één voor één foto's zien van alledaagse objecten. Voor elke foto, druk op <b>Oud</b> als een identieke foto eerder getoond is, druk op <b>Gelijkaardig</b> als een gelijkaardige maar niet exact dezelfde foto eerder getoond is, of druk op <b>Nieuw</b> als het een volledig nieuwe foto is. <p>Met <i>Gelijkaardig</i> wordt bedoeld dat het object dezelfde naam heeft, maar dat de foto ervan verschillend is.  <p>We starten met enkele oefeningen om dit te verduidelijken.",
+    "txt0": "U zal één voor één foto's zien van alledaagse objecten. Voor elke foto, druk op <b>Oud</b> als een identieke foto eerder getoond is, druk op <b>Gelijkaardig</b> als een gelijkaardige maar niet exact dezelfde foto eerder getoond is, of druk op <b>Nieuw</b> als het een volledig nieuwe foto is. <br><br>Met <i>Gelijkaardig</i> wordt bedoeld dat het object dezelfde naam heeft, maar dat de foto ervan verschillend is.  <br><br>We starten met enkele oefeningen om dit te verduidelijken.",
     "cor_new": "Goed zo! U heeft exact dezelfde of een gelijkaardige foto nog niet gezien, dus u heeft correct voor <b>Nieuw</b> gekozen",
     "cor_rep": "Goed zo! U heeft exact dezelfde foto eerder gezien, dus u heeft correct voor <b>Oud</b> gekozen",
     "cor_lure": "Goed zo! U heeft <i>exact dezelfde</i> foto niet eerder gezien, dus u heeft correct voor <b>Gelijkaardig</b> gekozen",
