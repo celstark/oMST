@@ -45,19 +45,179 @@
   <script src="js/jspsych_731/dist/plugin-preload.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
-    .jspsych-display-element {
-      font-size: 200%;
+  .jspsych-display-element {
+    font-size: 200%;
+  }
+  .jspsych-btn {
+    font-size: 150%;
+  }
+  /* Slightly shorter special buttons for laptop-size screens */
+  @media screen and (min-width: 1100px) and (max-width: 1400px) {
+    #button-container .jspsych-btn {
+      height: 2.4em !important; /* down from 3em */
     }
-    .jspsych-btn {
-      font-size: 150%;
+  }
+
+  /* For short screens (e.g. 632px tall) */
+  @media screen and (max-height: 700px) {
+    #button-container .jspsych-btn {
+      height: 2.2em !important;
     }
-    .dimtext {
-        color: #F0f0F0;
-        border-color: #F0f0F0;
-    }
-    .redtext {
-      color: red;
-    }
+  }
+  .image-btn-wrapper {
+    display: inline-block;
+    position: relative;
+    margin: 0.5em;
+  }
+
+  .desktop .image-btn-wrapper:hover .image-btn-text {
+    transform: translate(-50%, -40%); /* lower by 10% */
+  }
+
+  .image-btn {
+    width: 20em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
+  .mobile .image-btn {
+    width: 25em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
+  .smallScreen .image-btn {
+    width: 15em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
+  .image-btn-text {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-size: 1.5em;
+    color: #fff8d6;
+    font-weight: bold;
+    -webkit-text-stroke: 10px #5d2b12;
+    paint-order: stroke fill;
+    pointer-events: none;
+    letter-spacing: 0.08em;
+  }
+
+  .image-btn-text.kr,
+  .image-btn-text.ru{
+    font-size: 0.9em;
+  }
+
+  .image-btn-text.nl{
+    font-size: 0.8em;
+  }
+
+  .mobile .image-btn-text {
+    -webkit-text-stroke: 15px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 2em;
+  }
+
+  .mobile .image-btn-text.nl{
+    font-size: 1em;
+  }
+
+  .mobile .image-btn-text.kr{
+    font-size: 1.4em;
+  }
+
+  .mobile .image-btn-text.ru {
+    font-size: 1.2em;
+  }
+
+  .mobile .image-btn-text.es {
+    font-size: 1.8em;
+  }
+  
+  .smallScreen .image-btn-text {
+    -webkit-text-stroke: 10px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 1em;
+  }
+
+  .smallScreen .image-btn-text.kr{
+    -webkit-text-stroke: 8px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 0.8em;
+  }
+
+  .smallScreen .image-btn-text.nl{
+    -webkit-text-stroke: 6px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 0.6em;
+  }
+
+  .smallScreen .image-btn-text.ru{
+    -webkit-text-stroke: 8px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 0.8em;
+    line-height: 1.5;
+  }
+
+  body {
+    background-color: #fff9e0;
+  }
+
+  .prompt_text {
+    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-size: 1.3em;
+    color: #5d2b12;
+    font-weight: bold;
+    line-height: 1.2;
+  }
+
+  .mobile  .prompt_text {
+    font-size: 2em;
+  }
+
+  .mobile  .prompt_text.ru,
+  .mobile  .prompt_text.nl,
+  .mobile  .prompt_text.es {
+    font-size: 1.8em;
+  }
+
+  .smallScreen  .prompt_text {
+    font-size: 1.3em;
+  }
+
+  .smallScreen  .prompt_text.ru,
+  .smallScreen  .prompt_text.nl {
+    font-size: 1em;
+  }
+
+  #jspsych-html-button-response-stimulus {
+    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-size: 1.5em;
+    color: #5d2b12;
+    line-height: 1.2;
+  }
+  
+  .jspsych-categorize-image-buttons-stimulus {
+    width: 15em;
+    height: auto;
+  }
+
+  .mobile .jspsych-categorize-image-buttons-stimulus {
+    width: 25em;
+    height: auto;
+  }
+
+  .smallScreen .jspsych-categorize-image-buttons-stimulus {
+    width: 10em;
+    height: auto;
+  }
   </style>
 </head>
 <body></body>
@@ -138,8 +298,9 @@ jatos.onLoad(async function() {
     resp_mode='key';
   }
 
-  var lang='en';
+  var lang='ru';
   //lang='kor';
+  /*
   if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
@@ -148,7 +309,7 @@ jatos.onLoad(async function() {
   }
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
-  }
+  }*/
   
   if (jatos.studySessionData['resp_mode'] == 'keyboard') {
     resp_mode='keyboard';
@@ -211,81 +372,87 @@ jatos.onLoad(async function() {
     }
   });
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile;
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .50;
   const fontScale = isMobile ? 1.5 : 1.0;
-  const canvasWidth = isMobile
-    ? Math.round(window.innerWidth * 0.9)
-      : Math.round(Math.min(1000, window.innerWidth * 0.6));
-
-  const canvasHeight = isMobile
-    ? Math.round(window.innerHeight * 0.6)
-    : Math.round(Math.min(700, window.innerHeight * 0.5));
-
-  const stimScale = isMobile
-    ? 1.5
-    : (window.innerWidth >= 1100 && window.innerWidth <= 1400) ? 0.65
-    : window.innerHeight <= 800 ? 0.8
-    : 1.0;
+  const stimScale = isMobile ? 2 : smallScreen ? 0.85: 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
+  if (smallScreen) {document.body.classList.add('smallScreen');}
   jsPsych.data.addProperties({
     task: phasename,
     subject: sid,
     randomize: randomize
-  });
+});
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
 
   function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
     return {
-      type: jsPsychCanvasButtonResponse,
+      type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
       choices: [buttonLabel],
-      canvas_size: [canvasHeight, canvasWidth],
+      canvas_size: isMobile ? [canvasHeight * 0.6, canvasWidth] : smallScreen ? [canvasHeight * 0.8, canvasWidth] : [canvasHeight, canvasWidth],
       stimulus: function(c) {
         const ctx = c.getContext('2d');
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, c.width, c.height);
-
+        ctx.fillStyle = '#fff9e0';
         const gap = 60; // spacing between the two images
         const framePadding = 20;
-        const borderWidth = 15;
+        const radius = 25;
+        const width = c.width;
+        const height = c.height;
+        ctx.fillRect(0, 0, width, height);
+
+
 
         const imgL = new Image();
         const imgR = new Image();
 
         imgL.onload = imgR.onload = function() {
-          const imgWidth = isMobile ? imgL.width * stimScale * 0.6 : imgL.width * stimScale * 0.9;
-          const imgHeight = isMobile ? imgL.height * stimScale * 0.6: imgL.width * stimScale * 0.9;
+          const imgWidth = isMobile ? imgL.width * stimScale * 0.45 : imgL.width * stimScale * 0.9;
+          const imgHeight = isMobile ? imgL.height * stimScale * 0.45: imgL.width * stimScale * 0.9;
           const totalWidth = imgWidth * 2 + gap;
-          const startX = (c.width - totalWidth) / 2;
+          const x = (c.width - totalWidth) / 2;
           const y = (c.height - imgHeight) / 2;
 
           // draw function for each image
           function drawFramedImage(img, x) {
             ctx.fillStyle = '#ffffff';
-            ctx.strokeStyle = '#786e6d';
-            ctx.lineWidth = borderWidth;
-            ctx.fillRect(
-              x - framePadding,
-              y - framePadding,
-              imgWidth + 2 * framePadding,
-              imgHeight + 2 * framePadding
-            );
-            ctx.strokeRect(
-              x - framePadding,
-              y - framePadding,
-              imgWidth + 2 * framePadding,
-              imgHeight + 2 * framePadding
-            );
+            ctx.strokeStyle = '#5d2514';
+            ctx.lineWidth = 15;
+            roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            ctx.fill();
+            ctx.stroke();
             ctx.drawImage(img, x, y, imgWidth, imgHeight);
           }
-
-          drawFramedImage(imgL, startX);
-          drawFramedImage(imgR, startX + imgWidth + gap);
+          drawFramedImage(imgL, x);
+          drawFramedImage(imgR, x + imgWidth + gap);
         };
 
         imgL.src = imgLeft;
         imgR.src = imgRight;
       },
-      prompt: function() {
-        return `<p style="font-size:${isMobile ? '40px' : '28px'}; margin-top:0.5em;">${promptText}</p>`;
-      },
+      prompt: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='es') ? 0.9 : 1) : 1.3)}em; font-weight: normal;">${promptText}</p>`,
+      button_html:           
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_green_trans.png"
+                  onmouseover="this.src='img/assets/blank_green_pressed.png'"
+                  onmouseout="this.src='img/assets/blank_green_trans.png'"
+                  class="image-btn" style="mix-blend-mode: multiply;">
+          <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
+        </div>`,
     };
   }
   // Setup prompts and response options based on keyboard/button and 2/3 choices
@@ -346,13 +513,16 @@ jatos.onLoad(async function() {
   var instr1_trial = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     choices: [prompts[resp_mode]['instr_choice']],
-    prompt: function() {  
-      const fontSize = isMobile ? '48px' : '32px';
-      return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts[resp_mode]['instr1_prompt']}</p>`;
-    },
-    button_html: ['<button class="jspsych-btn" style="height:2em;width:4em;margin-top:100px;">%choice%</button>'],
-    margin_horizontal: '40px', margin_vertical: '0em',
-    stimulus: '<p>' + prompts['instr1_stim'] + '</p>',
+    prompt: `<p class="prompt_text"style="font-size: ${isMobile ? 2 : (smallScreen ? 1 : 1.3)}em;"">${prompts[resp_mode]['instr1_prompt']}</p>`,
+    button_html: 
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_green_trans.png"
+                  onmouseover="this.src='img/assets/blank_green_pressed.png'"
+                  onmouseout="this.src='img/assets/blank_green_trans.png'"
+                  class="image-btn" style="mix-blend-mode: multiply;">
+          <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
+        </div>`,
+    stimulus: `<p class="prompt_text" style="font-size: ${isMobile ? 1 : (smallScreen ? ((lang=='ru') ? 0.6 : 0.65) : ((lang=='ru') ? 0.85 : 1))}em;font-weight: normal;">` + prompts['instr1_stim'] + '</p>',
   }
 
   var demo1_trial = {
@@ -362,7 +532,7 @@ jatos.onLoad(async function() {
         choices:  "NO_KEYS",
         trial_duration: 1000,
         response_ends_trial: false,
-        stimulus: prompts['ready'],
+        stimulus: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='ru') ? 0.6 : 0.65) : ((lang=='ru') ? 0.85 : 1))}em;font-weight: normal;">` + prompts['ready'] + '</p>',
       },
       {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
@@ -377,6 +547,8 @@ jatos.onLoad(async function() {
           const height = c.height;
           const stimImg = new Image();
           const stimPath = jsPsych.timelineVariable('img1');
+          const framePadding = 20;
+          const radius = 25;
 
           const drawBase = function(){
             ctx.fillStyle = "#ffffff";
@@ -390,15 +562,14 @@ jatos.onLoad(async function() {
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
             ctx.fillStyle = "#ffffff";
-            ctx.strokeStyle = '#786e6d';
-            const framePadding = 20;
-            ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            ctx.fill();
+            ctx.stroke();
 
             ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
-
-
           };
           stimImg.src = stimPath;
         },
@@ -413,10 +584,7 @@ jatos.onLoad(async function() {
         sequence_reps: 2,
         frame_time: 200,
         render_on_canvas: true,
-        prompt: function() {  
-          const fontSize = isMobile ? '48px' : '32px';
-          return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts['wait']}</p>`;
-        },
+        prompt: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='es') ? 0.9 : 1) : 1.3)}em; font-weight: normal;">${prompts['wait']}</p>`,
         on_load: function() {
           const canvas = document.querySelector('canvas');
 
@@ -444,6 +612,8 @@ jatos.onLoad(async function() {
           const height = c.height;
           const stimImg = new Image();
           const stimPath = jsPsych.timelineVariable('img2');
+          const framePadding = 20;
+          const radius = 25;
 
           const drawBase = function(){
             ctx.fillStyle = "#ffffff";
@@ -457,11 +627,12 @@ jatos.onLoad(async function() {
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
             ctx.fillStyle = "#ffffff";
-            ctx.strokeStyle = '#786e6d';
-            const framePadding = 20;
-            ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            ctx.fill();
+            ctx.stroke();
 
             ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
 
@@ -476,8 +647,21 @@ jatos.onLoad(async function() {
         response_ends_trial: true,
         margin_horizontal: '40px',
         button_html: [
-          '<button class="jspsych-btn" style="background-color:green;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em green;color:white;height:3em;width:5em;">%choice%</button>',
-          '<button class="jspsych-btn" style="background-color:red;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em red;color:white;height:3em;width:5em;">%choice%</button>'
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_red.png"
+              onmouseover="this.src='img/assets/blank_red_pressed.png'"
+              onmouseout="this.src='img/assets/blank_red.png'"
+              class="image-btn choice" id="btn0">
+            <span class="image-btn-text ${lang}">%choice%</span>
+          </div>`,
+
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_blue.png"
+              onmouseover="this.src='img/assets/blank_blue_pressed.png'"
+              onmouseout="this.src='img/assets/blank_blue.png'"
+              class="image-btn choice" id="btn2">
+            <span class="image-btn-text ${lang}">%choice%</span>
+          </div>`,
         ],
       },
     ],
@@ -499,7 +683,7 @@ jatos.onLoad(async function() {
         choices:  "NO_KEYS",
         trial_duration: 500,
         response_ends_trial: false,
-        stimulus: prompts['ready'],
+        stimulus: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='ru') ? 0.6 : 0.65) : ((lang=='ru') ? 0.85 : 1))}em;font-weight: normal;">` + prompts['ready'] + '</p>',
       },
       {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
@@ -514,6 +698,8 @@ jatos.onLoad(async function() {
           const height = c.height;
           const stimImg = new Image();
           const stimPath = jsPsych.timelineVariable('img1');
+          const framePadding = 20;
+          const radius = 25;
 
           const drawBase = function(){
             ctx.fillStyle = "#ffffff";
@@ -527,11 +713,12 @@ jatos.onLoad(async function() {
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
             ctx.fillStyle = "#ffffff";
-            ctx.strokeStyle = '#786e6d';
-            const framePadding = 20;
-            ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            ctx.fill();
+            ctx.stroke();
 
             ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
 
@@ -550,10 +737,7 @@ jatos.onLoad(async function() {
         sequence_reps: 2,
         frame_time: 200,
         render_on_canvas: true,
-        prompt: function() {  
-          const fontSize = isMobile ? '48px' : '32px';
-          return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts['wait']}</p>`;
-        },
+        prompt: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='es') ? 0.9 : 1) : 1.3)}em; font-weight: normal;">${prompts['wait']}</p>`,
         on_load: function() {
           const canvas = document.querySelector('canvas');
 
@@ -581,6 +765,8 @@ jatos.onLoad(async function() {
           const height = c.height;
           const stimImg = new Image();
           const stimPath = jsPsych.timelineVariable('img2');
+          const framePadding = 20;
+          const radius = 25;
 
           const drawBase = function(){
             ctx.fillStyle = "#ffffff";
@@ -594,12 +780,13 @@ jatos.onLoad(async function() {
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
             ctx.fillStyle = "#ffffff";
-            ctx.strokeStyle = '#786e6d';
-            const framePadding = 20;
-            ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
-
+            roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            ctx.fill();
+            ctx.stroke();
+            
             ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
 
 
@@ -613,8 +800,21 @@ jatos.onLoad(async function() {
         response_ends_trial: true,
         margin_horizontal: '40px',
         button_html: [
-          '<button class="jspsych-btn" style="background-color:green;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em green;color:white;height:3em;width:5em;">%choice%</button>',
-          '<button class="jspsych-btn" style="background-color:red;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em red;color:white;height:3em;width:5em;">%choice%</button>'
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_red.png"
+              onmouseover="this.src='img/assets/blank_red_pressed.png'"
+              onmouseout="this.src='img/assets/blank_red.png'"
+              class="image-btn choice" id="btn0">
+            <span class="image-btn-text ${lang}">%choice%</span>
+          </div>`,
+
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_blue.png"
+              onmouseover="this.src='img/assets/blank_blue_pressed.png'"
+              onmouseout="this.src='img/assets/blank_blue.png'"
+              class="image-btn choice" id="btn2">
+            <span class="image-btn-text ${lang}">%choice%</span>
+          </div>`,
         ],
       },
     ],
@@ -638,7 +838,7 @@ jatos.onLoad(async function() {
         choices:  "NO_KEYS",
         trial_duration: 500,
         response_ends_trial: false,
-        stimulus: prompts['ready'],
+        stimulus: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='ru') ? 0.6 : 0.65) : ((lang=='ru') ? 0.85 : 1))}em;font-weight: normal;">` + prompts['ready'] + '</p>',
       },
       {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
@@ -653,6 +853,8 @@ jatos.onLoad(async function() {
           const height = c.height;
           const stimImg = new Image();
           const stimPath = jsPsych.timelineVariable('img1');
+          const framePadding = 20;
+          const radius = 25;
 
           const drawBase = function(){
             ctx.fillStyle = "#ffffff";
@@ -666,11 +868,12 @@ jatos.onLoad(async function() {
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
             ctx.fillStyle = "#ffffff";
-            ctx.strokeStyle = '#786e6d';
-            const framePadding = 20;
-            ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            ctx.fill();
+            ctx.stroke();
 
             ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
 
@@ -690,10 +893,7 @@ jatos.onLoad(async function() {
         sequence_reps: 2,
         frame_time: 200,
         render_on_canvas: false,
-        prompt: function() {  
-          const fontSize = isMobile ? '48px' : '32px';
-          return `<p style="font-size:${fontSize}; margin-top:1em;">${prompts['wait']}</p>`;
-        },
+        prompt: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='es') ? 0.9 : 1) : 1.3)}em; font-weight: normal;">${prompts['wait']}</p>`,
         on_load: function() {
           const canvas = document.querySelector('canvas');
 
@@ -722,6 +922,8 @@ jatos.onLoad(async function() {
           const height = c.height;
           const stimImg = new Image();
           const stimPath = jsPsych.timelineVariable('img2');
+          const framePadding = 20;
+          const radius = 25;
 
           const drawBase = function(){
             ctx.fillStyle = "#ffffff";
@@ -735,11 +937,12 @@ jatos.onLoad(async function() {
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
             ctx.fillStyle = "#ffffff";
-            ctx.strokeStyle = '#786e6d';
-            const framePadding = 20;
-            ctx.fillRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            ctx.strokeRect(x - framePadding, y - framePadding, imgWidth + 2 * framePadding, imgHeight + 2 * framePadding);
+            roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            ctx.fill();
+            ctx.stroke();
 
             ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
 
@@ -754,8 +957,21 @@ jatos.onLoad(async function() {
         response_ends_trial: true,
         margin_horizontal: '40px',
         button_html: [
-          '<button class="jspsych-btn" style="background-color:green;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em green;color:white;height:3em;width:5em;">%choice%</button>',
-          '<button class="jspsych-btn" style="background-color:red;box-shadow:inset 0 0 0 .15em #ccc, 0 0 0 0.25em red;color:white;height:3em;width:5em;">%choice%</button>'
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_red.png"
+              onmouseover="this.src='img/assets/blank_red_pressed.png'"
+              onmouseout="this.src='img/assets/blank_red.png'"
+              class="image-btn choice" id="btn0">
+            <span class="image-btn-text ${lang}">%choice%</span>
+          </div>`,
+
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_blue.png"
+              onmouseover="this.src='img/assets/blank_blue_pressed.png'"
+              onmouseout="this.src='img/assets/blank_blue.png'"
+              class="image-btn choice" id="btn2">
+            <span class="image-btn-text ${lang}">%choice%</span>
+          </div>`,
         ],
         on_finish: function(data) {
           // same = button 0 = 's'
@@ -813,7 +1029,7 @@ jatos.onLoad(async function() {
   var summary_block = {
     type: jsPsychHtmlKeyboardResponse,
     trial_duration: 500,
-    stimulus: prompts['ty'],
+    stimulus: `<p class="prompt_text" style="font-size: ${isMobile ? 1 : (smallScreen ? ((lang=='ru') ? 0.6 : 0.65) : ((lang=='ru') ? 0.85 : 1))}em;font-weight: normal;">` + prompts['ty'] + '</p>',
     response_ends_trial: false,
     on_finish: function (data) {
       let validtrials=jsPsych.data.get().filterCustom(function(trial) {

@@ -381,9 +381,9 @@ function drawHTMLText(ctx, html, x, y, isMobile, fontSize) {
 
       // Determine word color
       let fillColor = '#fff8d6';
-      if (word.text.includes('Old')) fillColor = '#f9b8d0';
-      else if (word.text.includes('Similar')) fillColor = '#d3f5a6';
-      else if (word.text.includes('New')) fillColor = '#b4d8ff';
+      if (word.text.includes('Old') || word.text.includes('Viejo') || word.text.includes('旧') || word.text.includes('이전') || word.text.includes('Oud') || word.text.includes('Старое')) fillColor = '#f9b8d0';
+      else if (word.text.includes('Similar') || word.text.includes('相近') || word.text.includes('비슷한') || word.text.includes('Gelijkaardig') || word.text.includes('Похожее')) fillColor = '#d3f5a6';
+      else if (word.text.includes('New') || word.text.includes('Nuevo') || word.text.includes('新') || word.text.includes('새로운') || word.text.includes('Nieuw') || word.text.includes('Новое')) fillColor = '#b4d8ff';
 
       ctx.lineWidth = isMobile ? 15 : 12;
       ctx.strokeStyle = '#5d2b12';
@@ -486,7 +486,7 @@ jatos.onLoad(async function() {
 
 
   
-  var lang='en';
+  var lang='ru';
   /*if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
@@ -637,6 +637,8 @@ jatos.onLoad(async function() {
       if (isMobile) {
         if (lang == 'kr' || lang == 'nl' || lang == 'ru') {
           drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+        } else if (lang == 'cn' || lang =='es') {
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 84);
         } else {
           drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 96);
         }
@@ -708,7 +710,7 @@ jatos.onLoad(async function() {
   }
   //console.log(JSON.stringify(tlv))
   var num_correct = 0;
-  var STIMULUS_DURATION = 200000;
+  var STIMULUS_DURATION = 2000;
   var test_trials = {
     timeline: [
       {
@@ -750,8 +752,32 @@ jatos.onLoad(async function() {
 
             // === Progress info ===
             const progress = num_correct;
-
-
+            // draw text
+            if (isMobile){
+              if (lang == 'kr'){
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.165, isMobile, 52);
+              } else if (lang == 'ru' || lang == 'nl'){
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.15, isMobile, 58);
+              }  else if (lang == 'cn'){
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.15, isMobile, 70);
+              } else {
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.2, isMobile, 70);
+              }
+            } else if (smallScreen) {
+              if (lang == 'nl' || lang == 'ru'){
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 48);
+              } else if (lang == 'kr') {
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 36);
+              } else {
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
+              }
+            } else {
+              if (lang == 'kr' || lang == 'nl' || lang == 'ru'){
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
+              } else {
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
+              }
+            }
 
             if (!isMobile){
               const step = Math.floor((progress % (maxFill*2) + 1) / 2) || 0;
@@ -842,32 +868,6 @@ jatos.onLoad(async function() {
             console.log(x)
             // Lower the stimulus a bit
             const y = isMobile ? (height - imgHeight) / 2 + 225 : (height - imgHeight) / 2 + 65; // increase this offset to push it lower
-
-            // === Draw title text image above the stimulus ===
-            if (isMobile){
-              if (lang == 'kr'){
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.15, isMobile, 50);
-              } else if (lang == 'ru' || lang == 'nl'){
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.15, isMobile, 58);
-              } else {
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.2, isMobile, 70);
-              }
-            } else if (smallScreen) {
-              if (lang == 'nl' || lang == 'ru'){
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 48);
-              } else if (lang == 'kr') {
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 36);
-              } else {
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
-              }
-            } else {
-              if (lang == 'kr' || lang == 'nl' || lang == 'ru'){
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
-              } else {
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
-              }
-            }
-            
 
             // === Rounded white frame behind the stimulus ===
             ctx.fillStyle = "#ffffff";
