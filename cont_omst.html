@@ -164,7 +164,7 @@
   }
 
   .desktop .image-btn-wrapper:hover .image-btn-text {
-    transform: translate(-50%, -40%); /* lower by 5% */
+    transform: translate(-50%, -40%); 
   }
 
   .image-btn {
@@ -188,11 +188,15 @@
     pointer-events: none;
     letter-spacing: 0.08em;
   }
+  
+  .image-btn-wrapper.pressed .image-btn-text {
+    transform: translate(-50%, -40%);
+  }
 
   .mobile .image-btn-text {
     -webkit-text-stroke: 15px #5d2b12;
     paint-order: stroke fill;
-    font-size: 2em;
+    font-size: 1.85em;
   }
 
   .mobile .image-btn {
@@ -203,9 +207,13 @@
   }
 
   .image-btn-text.kr,
-  .image-btn-text.nl,
   .image-btn-text.ru{
     font-size: 0.9em;
+  }
+
+  .image-btn-text.nl {
+    font-size: 0.9em;
+    -webkit-text-stroke: 8px #5d2b12;
   }
   
   .mobile .image-btn-text.kr,
@@ -476,17 +484,17 @@ jatos.onLoad(async function() {
   preload_fnames.push(
     "img/assets/blank_blue.png",
     "img/assets/blank_blue_pressed.png",
-    "img/assets/blank_green_trans.png",
+    "img/assets/blank_green.png",
     "img/assets/blank_green_pressed.png",
     "img/assets/blank_red.png",
     "img/assets/blank_red_pressed.png",
     "img/assets/brain.png",
-    Array.from({length: 11}, (_, i) => `img/assets/star${i}.png`)
+    ...Array.from({length: 11}, (_, i) => `img/assets/star${i}.png`)
   )
 
 
   
-  var lang='ru';
+  var lang='es';
   /*if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
@@ -512,13 +520,18 @@ jatos.onLoad(async function() {
   // START OF CODE THAT SHOULD BE CONSTANT REGARDLESS OF JATOS / CORDOVA
   const phasename='oMSTCont';
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile;
+  const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024 && !isMobile;
+  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile && !isTablet;
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
   const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .65;
   const fontScale = isMobile ? 1.5 : 1.0;
-  const stimScale = isMobile ? 2 : smallScreen ? 0.85: 1.0;
+  const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
+  if (smallScreen) {document.body.classList.add('smallScreen');}
+  if (isTablet) {document.body.classList.add('tablet');}
   console.log(isMobile);
+  console.log(isTablet);
+  console.log(smallScreen);
   console.log(canvasHeight);
   console.log(canvasWidth);
   console.log(window.innerHeight);
@@ -617,60 +630,93 @@ jatos.onLoad(async function() {
 
 
 
-  var instr1_trial = {
-    type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
+var instr1_trial = {
+  type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
 
-    // Define the canvas drawing function
-    stimulus: function(c) {
-      const ctx = c.getContext('2d');
-      const width = c.width;
-      const height = c.height;
-      const stimHTML = prompts[resp_mode][choicekey]['instr_stim'];
+  // Canvas drawing
+  stimulus: function(c) {
+    const ctx = c.getContext('2d');
+    const width = c.width;
+    const height = c.height;
+    const stimHTML = prompts[resp_mode][choicekey]['instr_stim'];
 
-      // Background
-      ctx.fillStyle = "#fff9e0";
-      ctx.fillRect(0, 0, width, height)
-      // Add stimulus text
-      ctx.save();
-      //ctx.scale(fontScale, fontScale);
-      
-      if (isMobile) {
-        if (lang == 'kr' || lang == 'nl' || lang == 'ru') {
-          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
-        } else if (lang == 'cn' || lang =='es') {
-          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 84);
-        } else {
-          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 96);
-        }
-        
+    // Background
+    ctx.fillStyle = "#fff9e0";
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.save();
+
+    if (isMobile) {
+      if (['kr', 'nl', 'ru'].includes(lang)) {
+        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+      } else if (['cn', 'es'].includes(lang)) {
+        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 84);
       } else {
-        if (lang == 'kr' || lang == 'nl' || lang == 'ru') {
-          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
-        } else {
-          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
-        }
-        
+        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 96);
       }
-      
-      ctx.restore();
-    },
+    } else {
+      if (['kr', 'nl', 'ru'].includes(lang)) {
+        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+      } else {
+        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+      }
+    }
 
-    // Buttons for 'button' mode
-    choices: [prompts[resp_mode]['instr_choice']],
-    button_html:           
-          `<div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_green_trans.png"
-                    onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                    onmouseout="this.src='img/assets/blank_green_trans.png'"
-                    class="image-btn" style="mix-blend-mode: multiply;">
-            <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
-          </div>`,
-    margin_horizontal: isMobile ? '20px' : '40px',
-    margin_vertical: '20px',
+    ctx.restore();
+  },
 
-    prompt: '<p class="prompt_text">' +prompts[resp_mode]['instr_prompt'] + '</p>',
-    // Optional canvas size
-    canvas_size: smallScreen ? [canvasHeight * 0.7, canvasWidth] : [canvasHeight * 0.8, canvasWidth]
+  // Buttons
+  choices: [prompts[resp_mode]['instr_choice']],
+  button_html: `<div class="image-btn-wrapper">
+                  <input type="image" src="img/assets/blank_green.png"
+                         class="image-btn" style="mix-blend-mode: multiply;">
+                  <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
+                </div>`,
+  margin_horizontal: isMobile ? '20px' : '40px',
+  margin_vertical: '20px',
+  prompt: '<p class="prompt_text">' + prompts[resp_mode]['instr_prompt'] + '</p>',
+  canvas_size: smallScreen ? [canvasHeight * 0.7, canvasWidth] : [canvasHeight * 0.8, canvasWidth],
+
+  // After button HTML is rendered, attach proper event listeners
+  on_load: function() {
+    const wrapper = document.querySelector('.image-btn-wrapper');
+    const btn = wrapper.querySelector('.image-btn');
+    const origSrc = btn.src;
+    const pressedSrc = origSrc.replace('.png', '_pressed.png');
+
+    // Desktop hover effect
+    wrapper.addEventListener('mouseenter', () => {
+      btn.src = pressedSrc;
+      wrapper.classList.add('pressed');
+    });
+    wrapper.addEventListener('mouseup', () => {
+      btn.src = origSrc;
+      wrapper.classList.remove('pressed');
+    });
+    wrapper.addEventListener('mouseleave', () => {
+      btn.src = origSrc;
+      wrapper.classList.remove('pressed');
+    });
+
+    // Mobile touch effect
+    btn.addEventListener('touchstart', () => {
+      btn.src = pressedSrc;
+      wrapper.classList.add('pressed');
+    });
+    btn.addEventListener('touchend', () => {
+      requestAnimationFrame(() => {
+        btn.src = origSrc;
+        wrapper.classList.remove('pressed');
+      });
+    });
+
+    btn.addEventListener('touchcancel', () => {
+      requestAnimationFrame(() => {
+        btn.src = origSrc;
+        wrapper.classList.remove('pressed');
+      });
+    });
+  }
 };
   
   // Build up my actual trial timeline
@@ -711,12 +757,20 @@ jatos.onLoad(async function() {
   //console.log(JSON.stringify(tlv))
   var num_correct = 0;
   var STIMULUS_DURATION = 2000;
+  const brain = new Image();
+  brain.src = "img/assets/brain.png";
+
+  const starImgs = Array.from({length: 11}, (_, i) => {
+    let img = new Image();
+    img.src = `img/assets/star${i}.png`;
+    return img;
+  });
   var test_trials = {
+
     timeline: [
       {
         type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
-
-        // Canvas stimulus
+        render_on_canvas: false,
         stimulus: function(c) {
           const ctx = c.getContext('2d');
           const width = c.width;
@@ -725,13 +779,16 @@ jatos.onLoad(async function() {
           const stimPath = jsPsych.timelineVariable('stimulus');
           const totalStars = isMobile ? 6 : 6;
           const maxFill = 10; // star1–star10
-          const starSize = isMobile ? Math.min(width, height) * 0.15 : Math.min(width, height) * 0.15;
-          const spacing = isMobile ?  starSize * 0.15 : starSize * 0.25;
+          const starSize = isMobile ? Math.min(width, height) * 0.15 :
+                          isTablet ? Math.min(width, height) * 0.1 :
+                          Math.min(width, height) * 0.15;
+          const spacing = isMobile ?  starSize * 0.15 :
+                          isTablet ? starSize * 0.1 :
+                          starSize * 0.25;
           const framePadding = 20;
           const radius = 25;
-          const brainScale = 0.2;
+          const brainScale = isTablet ? 0.15 : 0.2;
 
-          // helper to draw rounded frame
           function roundRect(ctx, x, y, w, h, r) {
             ctx.beginPath();
             ctx.moveTo(x + r, y);
@@ -750,9 +807,8 @@ jatos.onLoad(async function() {
             ctx.fillStyle = "#fff9e0";
             ctx.fillRect(0, 0, width, height);
 
-            // === Progress info ===
+            // === Progress info (stars/brain) ===
             const progress = num_correct;
-            // draw text
             if (isMobile){
               if (lang == 'kr'){
                 drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.165, isMobile, 52);
@@ -771,171 +827,115 @@ jatos.onLoad(async function() {
               } else {
                 drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
               }
-            } else {
-              if (lang == 'kr' || lang == 'nl' || lang == 'ru'){
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
+            } else if (isTablet) {
+              if (lang == 'kr'){
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 43);
               } else {
                 drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
               }
+            } else {
+              drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
             }
 
+            // Draw stars and brain
+            const step = Math.floor((progress % (maxFill*2) + 1) / 2) || 0;
+            const fullStars = Math.floor((progress/2) / maxFill);
+            const fillLevel = step;
+            const currentLevel = Math.min(fillLevel, 10);
+
             if (!isMobile){
-              const step = Math.floor((progress % (maxFill*2) + 1) / 2) || 0;
-              const fullStars = Math.floor((progress/2) / maxFill);
-              const fillLevel = step;
-              const currentLevel = Math.min(fillLevel, 10);
-              // === Completed Stars (Left Side) ===
-              const leftX = 40; // margin from left edge
+              const leftX = isTablet ? 10 : 40;
               const leftStartY = height * 0.25;
 
               for (let i = 0; i < fullStars; i++) {
-                const star = new Image();
-                star.src = `img/assets/star10.png`;
-                const posY = leftStartY + (i%2) * (starSize + spacing);
+                const star = starImgs[10];
+                const posY = isTablet ? leftStartY + (i%6) * (starSize + spacing) : leftStartY + (i%2) * (starSize + spacing);
                 star.onload = function() {
-                  ctx.drawImage(star, leftX + (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
+                  if (isTablet) ctx.drawImage(star, leftX + (Math.floor(i/6) * (starSize + spacing)), posY, starSize, starSize);
+                  else ctx.drawImage(star, leftX + (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
                 };
-                if (star.complete) ctx.drawImage(star, leftX+ (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
+                if (star.complete) isTablet ? ctx.drawImage(star, leftX+ (Math.floor(i/6) * (starSize + spacing)), posY, starSize, starSize) : ctx.drawImage(star, leftX+ (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
               }
+
+              const currentStar = starImgs[currentLevel];
+
+              
+              const brainW = brain.width * brainScale;
+              const brainH = brain.height * brainScale;
+              const brainX = isTablet ? width - brainW - 10 : width - brainW - 60;
+              const brainY = height * 0.55;
+              ctx.drawImage(brain, brainX, brainY, brainW, brainH);
+
+              const activeStarScale = 1.75;
+              const activeStarSize = starSize * activeStarScale;
+              const starX = brainX + brainW / 2 - activeStarSize / 2;
+              const starY = brainY - activeStarSize * 1.2;
+              currentStar.onload = function() { ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize); };
+              if (currentStar.complete) ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize);
             
-
-              // === Brain + Active Star (Right Side) ===
-              const brain = new Image();
-              brain.src = "img/assets/brain.png";
-
-              const currentStar = new Image();
-              currentStar.src = `img/assets/star${currentLevel}.png`;
-            
-              brain.onload = function() {
-                const brainW = brain.width * brainScale;
-                const brainH = brain.height * brainScale;
-
-                const brainX = width - brainW - 60; // margin from right
-                const brainY = height * 0.55;
-                
-                ctx.drawImage(brain, brainX, brainY, brainW, brainH);
-
-                const activeStarScale = 1.75;
-                const activeStarSize = starSize * activeStarScale;
-
-                // position current star slightly above the brain
-                const starX = brainX + brainW / 2 - activeStarSize / 2;
-                const starY = brainY - activeStarSize * 1.2;
-                currentStar.onload = function() {
-                  ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize);
-                };
-                if (currentStar.complete)
-                  ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize);
-              };
             } else {
-              const step = Math.floor((progress % (maxFill*2) + 1) / 2) || 0;
-              const fullStars = Math.floor((progress/2) / maxFill);
-              const fillLevel = step;
-              const currentLevel = Math.min(fillLevel, 10);
-              // === Completed Stars (Left Side) ===
-              const leftX = 0; // margin from left edge
+              const leftX = 0;
               const leftStartY = 20;
-              const currentStar = new Image();
-              currentStar.src = `img/assets/star${currentLevel}.png`;
-              console.log(currentLevel);
+              const currentStar = starImgs[currentLevel];
               for (let i = 0; i < fullStars + 1 && i < totalStars; i++) {
-                const star = new Image();
-                star.src = `img/assets/star10.png`;
+                const star = starImgs[10];
                 const posX = leftX + i * (starSize + spacing);
                 if (i < fullStars){
-                  star.onload = function() {
-                    ctx.drawImage(star, posX, leftStartY, starSize, starSize);
-                  };
+                  star.onload = function() { ctx.drawImage(star, posX, leftStartY, starSize, starSize); };
                   if (star.complete) ctx.drawImage(star, posX, leftStartY, starSize, starSize);
                 } else {
-                  currentStar.onload = function() {
-                    ctx.drawImage(currentStar, posX, leftStartY, starSize, starSize);
-                  };
+                  currentStar.onload = function() { ctx.drawImage(currentStar, posX, leftStartY, starSize, starSize); };
                   if (currentStar.complete) ctx.drawImage(currentStar, posX, leftStartY, starSize, starSize);
                 }
               }
             }
-
           }
 
-          drawScene();
-
-          // === Main stimulus ===
           stimImg.onload = function() {
             const imgWidth = stimImg.width * stimScale;
             const imgHeight = stimImg.height * stimScale;
             const x = (width - imgWidth) / 2;
-            console.log(x)
-            // Lower the stimulus a bit
-            const y = isMobile ? (height - imgHeight) / 2 + 225 : (height - imgHeight) / 2 + 65; // increase this offset to push it lower
+            const y = isMobile ? (height - imgHeight) / 2 + 225 : (height - imgHeight) / 2 + 65;
 
-            // === Rounded white frame behind the stimulus ===
             ctx.fillStyle = "#ffffff";
             ctx.strokeStyle = "#5d2514";
             ctx.lineWidth = 15;
-            roundRect(ctx, x - framePadding, y - framePadding,
-                      imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            roundRect(ctx, x - framePadding, y - framePadding, imgWidth + 2*framePadding, imgHeight + 2*framePadding, radius);
             ctx.fill();
             ctx.stroke();
-
-            // === Draw the main stimulus image ===
             ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
           };
           stimImg.src = stimPath;
 
-          // redraw progress visuals after timeout
-          setTimeout(drawScene, STIMULUS_DURATION);
+          drawScene();
+
+          // After stimulus duration, remove only the image + its frame
+          setTimeout(() => {
+            const ctx2 = c.getContext('2d');
+            const imgWidth = stimImg.width * stimScale;
+            const imgHeight = stimImg.height * stimScale;
+            const x = (width - imgWidth) / 2;
+            const y = isMobile ? (height - imgHeight) / 2 + 225 : (height - imgHeight) / 2 + 65;
+
+            // Clear the frame + stim image area
+            ctx2.clearRect(
+              x - framePadding - ctx2.lineWidth,
+              y - framePadding - ctx2.lineWidth,
+              imgWidth + 2 * framePadding + ctx2.lineWidth * 2,
+              imgHeight + 2 * framePadding + ctx2.lineWidth * 2
+            );
+          }, STIMULUS_DURATION);
         },
 
         choices: trial_choices,
         clear_canvas: false,
-        button_html: isMobile ?
-        [
-          `<div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_red.png"
-                    onmouseover="this.src='img/assets/blank_red_pressed.png'"
-                    onmouseout="this.src='img/assets/blank_red.png'"
-                    class="image-btn" style="mix-blend-mode: multiply;">
-            <span class="image-btn-text ${lang}">${trial_choices[0]}</span>
-          </div>`,
-          `<div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_blue.png"
-                    onmouseover="this.src='img/assets/blank_blue_pressed.png'"
-                    onmouseout="this.src='img/assets/blank_blue.png'"
-                    class="image-btn" style="mix-blend-mode: multiply;">
-            <span class="image-btn-text ${lang}">${trial_choices[2]}</span>
-          </div>`,
-          `<div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_green_trans.png"
-                    onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                    onmouseout="this.src='img/assets/blank_green_trans.png'"
-                    class="image-btn" style="mix-blend-mode: multiply;">
-            <span class="image-btn-text ${lang}">${trial_choices[1]}</span>
-          </div>`
-        ] :
-        [
-          `<div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_red.png"
-                    onmouseover="this.src='img/assets/blank_red_pressed.png'"
-                    onmouseout="this.src='img/assets/blank_red.png'"
-                    class="image-btn">
-            <span class="image-btn-text ${lang}">${trial_choices[0]}</span>
-          </div>`,
-          `<div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_green_trans.png"
-                    onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                    onmouseout="this.src='img/assets/blank_green_trans.png'"
-                    class="image-btn">
-            <span class="image-btn-text ${lang}">${trial_choices[1]}</span>
-          </div>`,
-          `<div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_blue.png"
-                    onmouseover="this.src='img/assets/blank_blue_pressed.png'"
-                    onmouseout="this.src='img/assets/blank_blue.png'"
-                    class="image-btn">
-            <span class="image-btn-text ${lang}">${trial_choices[2]}</span>
-          </div>`
-        ],
+        button_html: trial_choices.map((txt, i) => `
+          <div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_${['red','green','blue'][i]}.png"
+                  class="image-btn" style="${isMobile ? 'mix-blend-mode: multiply;' : ''}">
+            <span class="image-btn-text ${lang}">${txt}</span>
+          </div>
+        `),
 
         canvas_size: [canvasHeight, canvasWidth],
         trial_duration: (selfpaced == 1 ? null : 2500),
@@ -944,30 +944,39 @@ jatos.onLoad(async function() {
 
         data: jsPsych.timelineVariable('data'),
 
+        on_load: function() {
+          document.querySelectorAll('.image-btn-wrapper').forEach(wrapper => {
+            const btn = wrapper.querySelector('.image-btn');
+            const origSrc = btn.src;
+            const pressedSrc = origSrc.replace('.png','_pressed.png');
+
+            wrapper.addEventListener('mouseenter', () => { btn.src = pressedSrc; wrapper.classList.add('pressed'); });
+            wrapper.addEventListener('mouseup', () => { btn.src = origSrc; wrapper.classList.remove('pressed'); });
+            wrapper.addEventListener('mouseleave', () => { btn.src = origSrc; wrapper.classList.remove('pressed'); });
+
+            wrapper.addEventListener('touchstart', () => { btn.src = pressedSrc; wrapper.classList.add('pressed'); });
+            wrapper.addEventListener('touchend', () => { btn.src = origSrc; wrapper.classList.remove('pressed'); });
+            wrapper.addEventListener('touchcancel', () => { btn.src = origSrc; wrapper.classList.remove('pressed'); });
+          });
+        },
+
         on_finish: function(data) {
           let resp = null;
           if (resp_mode == 'button') {
-            if (data.response == 0) { resp = 'o' }
-            else if (data.response == 2) { resp = isMobile  ? 's' : 'n' }
-            else if (data.response == 1) { resp = isMobile ? 'n' : (twochoice == 1 ? 'n' : 's') }
+            if (data.response == 0) { resp = 'o'; }
+            else if (data.response == 2) { resp = isMobile  ? 's' : 'n'; }
+            else if (data.response == 1) { resp = isMobile ? 'n' : (twochoice == 1 ? 'n' : 's'); }
           } else {
-            if (data.response == 'v') { resp = 'o' }
-            else if (data.response == 'b') { resp = 's' }
-            else if (data.response == 'n') { resp = 'n' }
+            if (data.response == 'v') { resp = 'o'; }
+            else if (data.response == 'b') { resp = 's'; }
+            else if (data.response == 'n') { resp = 'n'; }
           }
           data.correct = resp == data.correct_response;
-          if (data.correct){
-            num_correct += 1;
-          } else {
-            num_correct += 1;
-          }
-          
-          console.log(data.correct);
-          console.log(resp);
-          console.log(trial_choices);
+          num_correct += 1;
           data.resp = resp;
         }
-      }],
+      }
+    ],
     timeline_variables: tlv
   };
 

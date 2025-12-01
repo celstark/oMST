@@ -20,11 +20,227 @@
   <script src="js/jspsych_731/dist/plugin-survey-html-form.js"></script>
   <link rel="stylesheet" href="js/jspsych_731/dist/jspsych.css"></link>
   <style>
+    body {
+      margin:0;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
+      background-color: #fff9e0;
+    }
+
     .jspsych-display-element {
       font-size: 200%;
     }
     .jspsych-btn {
-      font-size: 125%;
+      font-size: 150%;
+    }
+    /* Slightly shorter special buttons for laptop-size screens */
+    @media screen and (min-width: 1100px) and (max-width: 1400px) {
+      #button-container .jspsych-btn {
+        height: 2.4em !important; /* down from 3em */
+      }
+    }
+
+    /* For short screens (e.g. 632px tall) */
+    @media screen and (max-height: 700px) {
+      #button-container .jspsych-btn {
+        height: 2.2em !important;
+      }
+    }
+    .image-btn-wrapper {
+      display: inline-block;
+      position: relative;
+      margin: 0.5em;
+    }
+
+    .desktop .image-btn-wrapper:hover .image-btn-text {
+      transform: translate(-50%, -40%); /* lower by 10% */
+    }
+
+    .image-btn {
+      width: 20em;
+      height: auto;
+      border: none;
+      display: block;
+    }
+
+    .mobile .image-btn {
+      width: 30em;
+      height: auto;
+      border: none;
+      display: block;
+    }
+
+    .smallScreen .image-btn {
+      width: 15em;
+      height: auto;
+      border: none;
+      display: block;
+    }
+
+    .image-btn-text {
+      position: absolute;
+      top: 38%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: "Comic Sans MS", "Comic Neue", cursive;
+      font-size: 1.2em;
+      color: #fff8d6;
+      font-weight: bold;
+      -webkit-text-stroke: 8px #5d2b12;
+      stroke-linejoin: round;
+      paint-order: stroke fill;
+      pointer-events: none;
+      letter-spacing: 0.08em;
+
+    }
+
+    .image-btn-text.kr,
+    .image-btn-text.ru{
+      font-size: 0.9em;
+      -webkit-text-stroke: 8px #5d2b12;
+    }
+
+    .image-btn-text.nl{
+      font-size: 0.8em;
+    }
+
+    .mobile .image-btn-text {
+      -webkit-text-stroke: 15px #5d2b12;
+      paint-order: stroke fill;
+      font-size: 2em;
+    }
+
+    .mobile .image-btn-text.nl{
+      font-size: 1em;
+    }
+
+    .mobile .image-btn-text.kr{
+      font-size: 1.4em;
+    }
+
+    .mobile .image-btn-text.ru {
+      font-size: 1.2em;
+    }
+
+    .mobile .image-btn-text.es {
+      font-size: 1.8em;
+    }
+    
+    .smallScreen .image-btn-text {
+      -webkit-text-stroke: 10px #5d2b12;
+      paint-order: stroke fill;
+      font-size: 1em;
+    }
+
+    .smallScreen .image-btn-text.kr{
+      -webkit-text-stroke: 8px #5d2b12;
+      paint-order: stroke fill;
+      font-size: 0.8em;
+    }
+
+    .smallScreen .image-btn-text.nl{
+      -webkit-text-stroke: 6px #5d2b12;
+      paint-order: stroke fill;
+      font-size: 0.6em;
+    }
+
+    .smallScreen .image-btn-text.ru{
+      -webkit-text-stroke: 8px #5d2b12;
+      paint-order: stroke fill;
+      font-size: 0.8em;
+      line-height: 1.5;
+    }
+
+    .prompt_text {
+      font-family: "Comic Sans MS", "Comic Neue", cursive;
+      font-size: 2em;
+      color: #5d2b12;
+      font-weight: normal;
+      line-height: 1.2;
+    }
+
+    .mobile  .prompt_text {
+      font-size: 2em;
+    }
+
+    .mobile  .prompt_text.ru,
+    .mobile  .prompt_text.nl,
+    .mobile  .prompt_text.es {
+      font-size: 1.8em;
+    }
+
+    .smallScreen  .prompt_text {
+      font-size: 1.3em;
+    }
+
+    .smallScreen  .prompt_text.ru,
+    .smallScreen  .prompt_text.nl {
+      font-size: 1em;
+    }
+
+    #jspsych-html-button-response-stimulus {
+      font-family: "Comic Sans MS", "Comic Neue", cursive;
+      font-size: 1.5em;
+      color: #5d2b12;
+      line-height: 1.2;
+    }
+    
+    .jspsych-categorize-image-buttons-stimulus {
+      width: 15em;
+      height: auto;
+    }
+
+    .mobile .jspsych-categorize-image-buttons-stimulus {
+      width: 25em;
+      height: auto;
+    }
+
+    .smallScreen .jspsych-categorize-image-buttons-stimulus {
+      width: 10em;
+      height: auto;
+    }
+
+    .idcode_text {
+      font-size: 1.5em !important;
+    }
+
+    .idcode {
+      height: 1.3em !important;
+      font-size: 1.3em !important;
+      width: 10em !important;
+      padding: 0 0.3em !important;
+      border: 2px solid #5d2b12 !important;
+      border-radius: 4px !important;
+    }
+
+    .mobile .idcode_text {
+      font-size: 1.5em !important;
+    }
+
+    .mobile .idcode {
+      height: 1.5em !important;
+      font-size: 1.5em !important;
+      width: 10em !important;
+      padding: 0 0.3em !important;
+      border: 2px solid #5d2b12 !important;
+      border-radius: 4px !important;
+    }
+
+    .smallScreen .idcode_text {
+      font-size: 1.5em !important;
+    }
+
+    .smallScreen .idcode {
+      height: 1.3em !important;
+      font-size: 1.3em !important;
+      width: 10em !important;
+      padding: 0 0.3em !important;
+      border: 2px solid #5d2b12 !important;
+      border-radius: 4px !important;
     }
   </style>
 </head>
@@ -66,11 +282,13 @@ jatos.onLoad(function() {
     }
   });
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile;
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .4;
   const canvasHeight = isMobile ? window.innerHeight * 0.6 : window.innerWidth * .3;
   const fontSize = isMobile ? '48px' : '32px';
   const stimScale = isMobile ? 1.5 : window.innerHeight <= 800 ? 0.8 : 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
+  if (smallScreen) {document.body.classList.add('smallScreen');}
   //var sid=getID()
   //console.log('In id, sid= ' + sid);
   let date = new Date(); 
@@ -84,12 +302,36 @@ jatos.onLoad(function() {
   var idform = {
     type: jsPsychSurveyHtmlForm,
     preamble: function() {  
-      const fontSize = isMobile ? '48px' : '32px';
-      return `<p style="font-size:${fontSize}; margin-top:1em;">Enter your ID code</p>`;
+      return `<p class="prompt_text">Enter your ID code</p>`;
     },
-    html: '<div style="text-align: left; font-size: 32px; line-height: 110%"> \
-    <p><b>ID: </b> <input name="idcode" type="text" required style="width: 10em; height: 32px; font-size: 32px"/></p> \
-    </div>',
+    html:   `
+      <div style="display:flex; justify-content:center; align-items:center; font-size:32px; line-height:110%; gap:10px;">
+        <p class="prompt_text idcode_text" style="margin:0;"><b>ID:</b></p>
+        <input class="idcode" name="idcode" type="text" required/>
+      </div>
+    `,
+    on_load: function() {
+      // hide default button
+      document.querySelector('.jspsych-btn').style.display = 'none';
+
+      // insert your custom button
+      document.querySelector('.jspsych-content').insertAdjacentHTML('beforeend', `
+        <div id="myStartButton" class="image-btn-wrapper"
+            style="display:inline-flex; align-items:center; justify-content:center; margin-top:40px;">
+          <input type="image"
+                src="img/assets/blank_green.png"
+                onmouseover="this.src='img/assets/blank_green_pressed.png'"
+                onmouseout="this.src='img/assets/blank_green.png'"
+                class="image-btn"
+                style="mix-blend-mode: multiply;">
+          <span class="image-btn-text">Continue</span>
+        </div>
+      `);
+
+      document.getElementById('myStartButton').addEventListener('click', () => {
+        document.querySelector('.jspsych-btn').click(); // trigger real form submit
+      });
+    },
     on_finish: function(data) {
       console.log(data.response)
       var sid=data.response['idcode'];

@@ -407,9 +407,9 @@ function makeCategorizeTrial(imgPath, keyAnswer, buttonAnswer, promptText, incTe
         </div>`,
 
         `<div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_green_trans.png"
+          <input type="image" src="img/assets/blank_green.png"
             onmouseover="this.src='img/assets/blank_green_pressed.png'"
-            onmouseout="this.src='img/assets/blank_green_trans.png'"
+            onmouseout="this.src='img/assets/blank_green.png'"
             class="image-btn" id="btn1">
           <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['sim']}</span>
         </div>`
@@ -425,9 +425,9 @@ function makeCategorizeTrial(imgPath, keyAnswer, buttonAnswer, promptText, incTe
         </div>`,
 
         `<div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_green_trans.png"
+          <input type="image" src="img/assets/blank_green.png"
             onmouseover="this.src='img/assets/blank_green_pressed.png'"
-            onmouseout="this.src='img/assets/blank_green_trans.png'"
+            onmouseout="this.src='img/assets/blank_green.png'"
             class="image-btn" id="btn1">
           <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['sim']}</span>
         </div>`,
@@ -492,9 +492,9 @@ function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
     prompt: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='es') ? 0.9 : 1) : 1.3)}em; font-weight: normal;">${promptText}</p>`,
     button_html:           
       `<div class="image-btn-wrapper">
-        <input type="image" src="img/assets/blank_green_trans.png"
+        <input type="image" src="img/assets/blank_green.png"
                 onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                onmouseout="this.src='img/assets/blank_green_trans.png'"
+                onmouseout="this.src='img/assets/blank_green.png'"
                 class="image-btn" style="mix-blend-mode: multiply;">
         <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
       </div>`,
@@ -506,9 +506,9 @@ var intro = {
   choices: [prompts[resp_mode]['instr_choice']],
   button_html:           
         `<div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_green_trans.png"
+          <input type="image" src="img/assets/blank_green.png"
                   onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                  onmouseout="this.src='img/assets/blank_green_trans.png'"
+                  onmouseout="this.src='img/assets/blank_green.png'"
                   class="image-btn" style="mix-blend-mode: multiply;">
           <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
         </div>`,
@@ -687,9 +687,9 @@ var outtro = {
   stimulus: prompts['end'], 
   button_html:           
         `<div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_green_trans.png"
+          <input type="image" src="img/assets/blank_green.png"
                   onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                  onmouseout="this.src='img/assets/blank_green_trans.png'"
+                  onmouseout="this.src='img/assets/blank_green.png'"
                   class="image-btn" style="mix-blend-mode: multiply;">
           <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
         </div>`,

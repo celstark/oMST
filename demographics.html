@@ -31,6 +31,186 @@
     .jspsych-btn {
       font-size: 125%;
     }
+    body {
+    background-color: #fff9e0;
+  }
+  /* Slightly shorter special buttons for laptop-size screens */
+  @media screen and (min-width: 1100px) and (max-width: 1400px) {
+    #button-container .jspsych-btn {
+      height: 2.4em !important; /* down from 3em */
+    }
+  }
+
+  /* For short screens (e.g. 632px tall) */
+  @media screen and (max-height: 700px) {
+    #button-container .jspsych-btn {
+      height: 2.2em !important;
+    }
+  }
+  .image-btn-wrapper {
+    display: inline-block;
+    position: relative;
+    margin: 0.5em;
+  }
+
+  .desktop .image-btn-wrapper:hover .image-btn-text {
+    transform: translate(-50%, -40%); /* lower by 10% */
+  }
+
+  .image-btn {
+    width: 20em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
+  .mobile .image-btn {
+    width: 25em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
+  .smallScreen .image-btn {
+    width: 15em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
+  .image-btn-text {
+    position: absolute;
+    top: 38%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-size: 1.2em;
+    color: #fff8d6;
+    font-weight: bold;
+    -webkit-text-stroke: 10px #5d2b12;
+    stroke-linejoin: round;
+    paint-order: stroke fill;
+    pointer-events: none;
+    letter-spacing: 0.08em;
+
+  }
+
+  .image-btn-text.kr,
+  .image-btn-text.ru{
+    font-size: 0.9em;
+    -webkit-text-stroke: 8px #5d2b12;
+  }
+
+  .image-btn-text.nl{
+    font-size: 0.8em;
+  }
+
+  .mobile .image-btn-text {
+    -webkit-text-stroke: 15px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 1.5em;
+  }
+
+  .mobile .image-btn-text.nl{
+    font-size: 1em;
+  }
+
+  .mobile .image-btn-text.kr{
+    font-size: 1.4em;
+  }
+
+  .mobile .image-btn-text.ru {
+    font-size: 1.2em;
+  }
+
+  .mobile .image-btn-text.es {
+    font-size: 1.8em;
+  }
+  
+  .smallScreen .image-btn-text {
+    -webkit-text-stroke: 10px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 1em;
+  }
+
+  .smallScreen .image-btn-text.kr{
+    -webkit-text-stroke: 8px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 0.8em;
+  }
+
+  .smallScreen .image-btn-text.nl{
+    -webkit-text-stroke: 6px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 0.6em;
+  }
+
+  .smallScreen .image-btn-text.ru{
+    -webkit-text-stroke: 8px #5d2b12;
+    paint-order: stroke fill;
+    font-size: 0.8em;
+    line-height: 1.5;
+  }
+
+  .prompt_text {
+    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-size: 2em;
+    color: #5d2b12;
+    font-weight: normal;
+    line-height: 1.2;
+  }
+
+  .mobile  .prompt_text {
+    font-size: 2em;
+  }
+
+  .mobile  .prompt_text.ru,
+  .mobile  .prompt_text.nl,
+  .mobile  .prompt_text.es {
+    font-size: 1.8em;
+  }
+
+  .smallScreen  .prompt_text {
+    font-size: 1.3em;
+  }
+
+  .smallScreen  .prompt_text.ru,
+  .smallScreen  .prompt_text.nl {
+    font-size: 1em;
+  }
+
+  #jspsych-html-button-response-stimulus {
+    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-size: 1.5em;
+    color: #5d2b12;
+    line-height: 1.2;
+  }
+  
+  .jspsych-categorize-image-buttons-stimulus {
+    width: 15em;
+    height: auto;
+  }
+
+  .mobile .jspsych-categorize-image-buttons-stimulus {
+    width: 25em;
+    height: auto;
+  }
+
+  .smallScreen .jspsych-categorize-image-buttons-stimulus {
+    width: 10em;
+    height: auto;
+  }
+
+  .no-default-btn .jspsych-btn {
+    display: none !important;
+  }
+
+  .mobile input[type="radio"] {
+    width: 2.4em;
+    height: 2.4em;
+    vertical-align: middle;
+  }
+
   </style>
 </head>
 <body>
@@ -66,8 +246,8 @@ function waitFor(conditionFunction) {
 jatos.onLoad(async function() {
   var sid=getID();
   //console.log('In demog, sid= ' + sid);
-  var lang='en';
-  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+  var lang='cn';
+  /*if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
   if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
@@ -75,7 +255,7 @@ jatos.onLoad(async function() {
   }
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
-  }
+  }*/
   // load honeycomb version of lang file
   console.log('loading json lang')
   var langfile='lang/omst_'+lang+'.json';
@@ -134,56 +314,82 @@ jatos.onLoad(async function() {
   var demogform = {
     type: jsPsychSurveyHtmlForm,
     preamble: prompts['preamble'],
+    css_classes: ['no-default-btn'],
+  html: function() {
+      const fontSize = isMobile ? '48px' : '24px';
+      const height = isMobile ? '48px' : '24px';
 
-html: function() {
-    const fontSize = isMobile ? '48px' : '24px';
-    const height = isMobile ? '48px' : '24px';
+      return `
+        <div style="text-align: left; font-size: ${fontSize}; line-height: 110%">
+          <p><b>${prompts['age']}</b> 
+            <input name="age" type="text" required style="height: ${height}; font-size: ${fontSize};" />
+          </p>
 
-    return `
-      <div style="text-align: left; font-size: ${fontSize}; line-height: 110%">
-        <p><b>${prompts['age']}</b> 
-          <input name="age" type="text" required style="height: ${height}; font-size: ${fontSize};" />
-        </p>
+          <p><b>${prompts['gender']['prompt']}</b><br>
+            <input type="radio" id="male" name="gender" value="male" style="margin-left: 50px" required>
+            <label for="male">${prompts['gender']['m']}</label><br>
+            <input type="radio" id="female" name="gender" value="female" style="margin-left: 50px">
+            <label for="female">${prompts['gender']['f']}</label>
+          </p>
 
-        <p><b>${prompts['gender']['prompt']}</b><br>
-          <input type="radio" id="male" name="gender" value="male" style="margin-left: 50px" required>
-          <label for="male">${prompts['gender']['m']}</label><br>
-          <input type="radio" id="female" name="gender" value="female" style="margin-left: 50px">
-          <label for="female">${prompts['gender']['f']}</label>
-        </p>
+          <p><b>${prompts['ethnicity']['prompt']}</b><br>
+            <input type="radio" id="hispanic" name="ethnicity" value="hispanic" style="margin-left: 50px" required>
+            <label for="hispanic">${prompts['ethnicity']['h']}</label><br>
+            <input type="radio" id="nonhispanic" name="ethnicity" value="nonhispanic" style="margin-left: 50px">
+            <label for="nonhispanic">${prompts['ethnicity']['nh']}</label>
+          </p>
 
-        <p><b>${prompts['ethnicity']['prompt']}</b><br>
-          <input type="radio" id="hispanic" name="ethnicity" value="hispanic" style="margin-left: 50px" required>
-          <label for="hispanic">${prompts['ethnicity']['h']}</label><br>
-          <input type="radio" id="nonhispanic" name="ethnicity" value="nonhispanic" style="margin-left: 50px">
-          <label for="nonhispanic">${prompts['ethnicity']['nh']}</label>
-        </p>
+          <p><b>${prompts['race']['prompt']}</b><br>
+            <input type="radio" id="nativeamerican" name="race" value="nativeamerican" style="margin-left: 50px" required>
+            <label for="nativeamerican">${prompts['race']['ai']}</label><br>
+            <input type="radio" id="asian" name="race" value="asian" style="margin-left: 50px">
+            <label for="asian">${prompts['race']['a']}</label><br>
+            <input type="radio" id="black" name="race" value="black" style="margin-left: 50px">
+            <label for="black">${prompts['race']['b']}</label><br>
+            <input type="radio" id="nativehawaiian" name="race" value="nativehawaiian" style="margin-left: 50px">
+            <label for="nativehawaiian">${prompts['race']['nh']}</label><br>
+            <input type="radio" id="white" name="race" value="white" style="margin-left: 50px">
+            <label for="white">${prompts['race']['w']}</label><br>
+            <input type="radio" id="more" name="race" value="more" style="margin-left: 50px">
+            <label for="more">${prompts['race']['m']}</label>
+          </p>
 
-        <p><b>${prompts['race']['prompt']}</b><br>
-          <input type="radio" id="nativeamerican" name="race" value="nativeamerican" style="margin-left: 50px" required>
-          <label for="nativeamerican">${prompts['race']['ai']}</label><br>
-          <input type="radio" id="asian" name="race" value="asian" style="margin-left: 50px">
-          <label for="asian">${prompts['race']['a']}</label><br>
-          <input type="radio" id="black" name="race" value="black" style="margin-left: 50px">
-          <label for="black">${prompts['race']['b']}</label><br>
-          <input type="radio" id="nativehawaiian" name="race" value="nativehawaiian" style="margin-left: 50px">
-          <label for="nativehawaiian">${prompts['race']['nh']}</label><br>
-          <input type="radio" id="white" name="race" value="white" style="margin-left: 50px">
-          <label for="white">${prompts['race']['w']}</label><br>
-          <input type="radio" id="more" name="race" value="more" style="margin-left: 50px">
-          <label for="more">${prompts['race']['m']}</label>
-        </p>
+          <p><b>${prompts['handedness']['prompt']}</b><br>
+            <input type="radio" id="left" name="handedness" value="left" style="margin-left: 50px" required>
+            <label for="left">${prompts['handedness']['l']}</label><br>
+            <input type="radio" id="right" name="handedness" value="right" style="margin-left: 50px">
+            <label for="right">${prompts['handedness']['r']}</label><br>
+            <input type="radio" id="ambi" name="handedness" value="ambi" style="margin-left: 50px">
+            <label for="ambi">${prompts['handedness']['a']}</label>
+          </p>
+        </div>
 
-        <p><b>${prompts['handedness']['prompt']}</b><br>
-          <input type="radio" id="left" name="handedness" value="left" style="margin-left: 50px" required>
-          <label for="left">${prompts['handedness']['l']}</label><br>
-          <input type="radio" id="right" name="handedness" value="right" style="margin-left: 50px">
-          <label for="right">${prompts['handedness']['r']}</label><br>
-          <input type="radio" id="ambi" name="handedness" value="ambi" style="margin-left: 50px">
-          <label for="ambi">${prompts['handedness']['a']}</label>
-        </p>
-      </div>
-    `;
+        <div style="text-align:center; margin-top:20px;">
+          <div class="image-btn-wrapper">
+            <input type="image"
+              src="img/assets/blank_green.png"
+              onmouseover="this.src='img/assets/blank_green_pressed.png'"
+              onmouseout="this.src='img/assets/blank_green.png'"
+              class="image-btn">
+            <span class="image-btn-text">Continue</span>
+          </div>
+        </div>
+      `;
+    },
+  on_load: function() {
+    // grab the form element
+    const form = document.querySelector('form');
+    // grab the custom button input
+    const btn = form.querySelector('.image-btn-wrapper input');
+
+    btn.addEventListener('click', e => {
+      e.preventDefault();  // prevent weird image input default
+      form.requestSubmit(); // properly submit the form
+    });
+  },
+
+  on_finish: function(data) {
+    console.log(data.response);
   }
   }
   
