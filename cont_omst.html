@@ -179,24 +179,33 @@
     top: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
-    font-size: 1.5em;
-    color: #fff8d6;
-    font-weight: bold;
-    -webkit-text-stroke: 10px #5d2b12;
-    paint-order: stroke fill;
     pointer-events: none;
+    width: 100%;
+    height: auto; /* scales with wrapper if you want */
+  }
+
+  .image-btn-text text {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    font-size: 1.5em;
+    fill: #fff8d6;       /* inner text color */
+    stroke: #5d2b12;     /* outline color */
+    stroke-width: 10;     /* outline thickness */
+    font-weight: bold;
     letter-spacing: 0.08em;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    paint-order: stroke fill;
+    stroke-linejoin: round;
+    stroke-linecap: round;
   }
   
-  .image-btn-wrapper.pressed .image-btn-text {
+  .image-btn-wrapper.pressed .image-btn-text{
     transform: translate(-50%, -40%);
   }
 
-  .mobile .image-btn-text {
-    -webkit-text-stroke: 15px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 1.85em;
+  .mobile .image-btn-text text{
+    stroke-width: 12;
+    font-size: 1.5em;
   }
 
   .mobile .image-btn {
@@ -213,7 +222,7 @@
 
   .image-btn-text.nl {
     font-size: 0.9em;
-    -webkit-text-stroke: 8px #5d2b12;
+    stroke-width: 8;
   }
   
   .mobile .image-btn-text.kr,
@@ -670,7 +679,9 @@ var instr1_trial = {
   button_html: `<div class="image-btn-wrapper">
                   <input type="image" src="img/assets/blank_green.png"
                          class="image-btn" style="mix-blend-mode: multiply;">
-                  <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
+                  <svg class="image-btn-text" viewBox="0 0 266 160">
+                    <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+                  </svg>
                 </div>`,
   margin_horizontal: isMobile ? '20px' : '40px',
   margin_vertical: '20px',
@@ -933,7 +944,9 @@ var instr1_trial = {
           <div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_${['red','green','blue'][i]}.png"
                   class="image-btn" style="${isMobile ? 'mix-blend-mode: multiply;' : ''}">
-            <span class="image-btn-text ${lang}">${txt}</span>
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">${txt}</text>
+            </svg>
           </div>
         `),
 
