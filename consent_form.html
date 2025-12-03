@@ -256,10 +256,10 @@ jatos.onLoad(async function () {
 
   // Determine language
   var lang='en';
-  /*if (typeof jatos.studySessionData['lang'] !== 'undefined') lang=jatos.studySessionData['lang'];
+  if (typeof jatos.studySessionData['lang'] !== 'undefined') lang=jatos.studySessionData['lang'];
   if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined') lang=jatos.studyJsonInput['lang'];
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined') lang=jatos.batchJsonInput['lang'];
-*/
+
   // Load language JSON
   var langfile='lang/omst_'+lang+'.json';
   var json_prompts=null;

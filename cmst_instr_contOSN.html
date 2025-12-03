@@ -47,6 +47,7 @@ Revised: November 20, 2019 (CELS) for Cordova
   <script src="js/jspsych_731/dist/plugin-canvas-button-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-categorize-image.js"></script>
   <script src="js/plugin-categorize-image-buttons.js"></script>
+  <script src="js/jspsych_731/dist/plugin-preload.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
   .jspsych-display-element {
@@ -55,45 +56,59 @@ Revised: November 20, 2019 (CELS) for Cordova
   .jspsych-btn {
     font-size: 150%;
   }
-  /* Slightly shorter special buttons for laptop-size screens */
+    
+  /* --- FIX for laptop-size screens --- */
   @media screen and (min-width: 1100px) and (max-width: 1400px) {
-    #button-container .jspsych-btn {
-      height: 2.4em !important; /* down from 3em */
+    .jspsych-display-element {
+      font-size: 175%; /* shrink text slightly */
+    }
+    .jspsych-btn {
+      font-size: 130%;
+      padding: 0.5em 1.2em;
+      margin: 0.3em 0.6em;
+      transform: scale(0.95);
+    }
+    .jspsych-btn, input.image-btn {
+      margin-left: 0.1em !important;
+      margin-right: 0.1em !important;
+    }
+    .jspsych-canvas-button-response-button { 
+      transform: scale(0.75);
+    }
+
+    canvas {
+      max-width: 70vw !important;
+      height: auto !important;
     }
   }
 
-  /* For short screens (e.g. 632px tall) */
+  /* Tighten up layout on medium height (short laptop screens) */
   @media screen and (max-height: 700px) {
-    #button-container .jspsych-btn {
-      height: 2.2em !important;
+    .jspsych-display-element {
+      font-size: 160%;
+    }
+    .jspsych-btn {
+      margin: 0.2em;
+      padding: 0.4em 1em;
+    }
+    body {
+      transform: scale(0.95);
+      transform-origin: top center;
     }
   }
+
   .image-btn-wrapper {
     display: inline-block;
     position: relative;
     margin: 0.5em;
   }
 
-  .desktop .image-btn-wrapper:hover .image-btn-text {
-    transform: translate(-50%, -40%); /* lower by 5% */
+  .desktop:not(.tablet) .image-btn-wrapper:hover .image-btn-text {
+    transform: translate(-50%, -40%); 
   }
 
   .image-btn {
     width: 20em;
-    height: auto;
-    border: none;
-    display: block;
-  }
-
-  .mobile .image-btn {
-    width: 25em;
-    height: auto;
-    border: none;
-    display: block;
-  }
-
-  .smallScreen .image-btn {
-    width: 15em;
     height: auto;
     border: none;
     display: block;
@@ -104,53 +119,72 @@ Revised: November 20, 2019 (CELS) for Cordova
     top: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
-    font-size: 1.5em;
-    color: #fff8d6;
-    font-weight: bold;
-    -webkit-text-stroke: 10px #5d2b12;
-    paint-order: stroke fill;
     pointer-events: none;
+    width: 100%;
+    height: auto; /* scales with wrapper if you want */
+  }
+
+  .image-btn-text text {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    font-size: 1.5em;
+    fill: #fff8d6;       /* inner text color */
+    stroke: #5d2b12;     /* outline color */
+    stroke-width: 10;     /* outline thickness */
+    font-weight: bold;
     letter-spacing: 0.08em;
-  }
-
-  .image-btn-text.kr,
-  .image-btn-text.nl,
-  .image-btn-text.ru{
-    font-size: 0.9em;
-  }
-
-  .mobile .image-btn-text {
-    -webkit-text-stroke: 15px #5d2b12;
+    text-anchor: middle;
+    dominant-baseline: middle;
     paint-order: stroke fill;
-    font-size: 2em;
-  }
-
-  .mobile .image-btn-text.kr,
-  .mobile .image-btn-text.nl{
-    font-size: 1em;
-  }
-
-  .mobile .image-btn-text.ru {
-    font-size: 1.2em;
+    stroke-linejoin: round;
+    stroke-linecap: round;
   }
   
-  .smallScreen .image-btn-text {
-    -webkit-text-stroke: 10px #5d2b12;
-    paint-order: stroke fill;
+  .image-btn-wrapper.pressed .image-btn-text{
+    transform: translate(-50%, -40%) !important;
+  }
+
+  .mobile .image-btn-text text{
+    stroke-width: 12;
+    font-size: 1.5em;
+  }
+
+  .mobile .image-btn {
+    width: 25em;
+    height: auto;
+    border: none;
+    display: block;
+  }
+
+  .image-btn-text.kr text,
+  .image-btn-text.ru text{
+    font-size: 0.9em;
+    stroke-width: 8;
+  }
+
+  .image-btn-text.nl  text{
+    font-size: 0.9em;
+    stroke-width: 10;
+  }
+  
+  .mobile .image-btn-text.kr text,
+  .mobile .image-btn-text.nl text{
     font-size: 1em;
+    stroke-width: 8;
   }
 
-  .smallScreen .image-btn-text.kr{
-    -webkit-text-stroke: 6px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 0.5em;
+  .mobile .image-btn-text.ru text{
+    font-size: 1.2em;
+    stroke-width: 10;
+  }
+  
+  .tablet .image-btn-text.kr text {
+    font-size: 1em;
+    stroke-width: 8;
   }
 
-  .smallScreen .image-btn-text.nl{
-    -webkit-text-stroke: 7px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 0.7em;
+  .tablet .image-btn-text.ru text{
+    font-size: 1.2em;
+    stroke-width: 10;
   }
 
   body {
@@ -159,7 +193,7 @@ Revised: November 20, 2019 (CELS) for Cordova
 
   .prompt_text {
     font-family: "Comic Sans MS", "Comic Neue", cursive;
-    font-size: 1.3em;
+    font-size: 1.5em;
     color: #5d2b12;
     font-weight: bold;
     line-height: 1.2;
@@ -169,41 +203,14 @@ Revised: November 20, 2019 (CELS) for Cordova
     font-size: 2em;
   }
 
-  .mobile  .prompt_text.ru,
-  .mobile  .prompt_text.nl,
-  .mobile  .prompt_text.es {
-    font-size: 1.8em;
+  .tablet .prompt_text{
+    font-size: 1.2em;
+    font-weight: normal;
   }
 
-  .smallScreen  .prompt_text {
-    font-size: 1.3em;
-  }
-
-  .smallScreen  .prompt_text.ru,
-  .smallScreen  .prompt_text.nl {
-    font-size: 1em;
-  }
-
-  #jspsych-html-button-response-stimulus {
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
-    font-size: 1.5em;
-    color: #5d2b12;
-    line-height: 1.2;
-  }
-  
-  .jspsych-categorize-image-buttons-stimulus {
-    width: 15em;
-    height: auto;
-  }
-
-  .mobile .jspsych-categorize-image-buttons-stimulus {
-    width: 25em;
-    height: auto;
-  }
-
-  .smallScreen .jspsych-categorize-image-buttons-stimulus {
-    width: 10em;
-    height: auto;
+  .tablet .prompt_text.intro {
+    font-size: 1.4em;
+    font-weight: normal;
   }
 
   </style>
@@ -247,8 +254,8 @@ jatos.onLoad(async function() {
     resp_mode='key';
   }
 
-  var lang='es';
-  /*if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+  var lang='en';
+  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
   if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
@@ -256,7 +263,7 @@ jatos.onLoad(async function() {
   }
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
-  }*/
+  }
 
   // load honeycomb version of lang file
   console.log('loading json lang: ',lang)
@@ -269,6 +276,28 @@ jatos.onLoad(async function() {
   await waitFor(_ => json_prompts !== null);
   console.log(json_prompts['task']['name'])
   let prompts=json_prompts['instructions']; // Load in this phase's section
+
+  const preload_fnames = new Array(17);
+
+  preload_fnames.push(
+    "img/assets/blank_blue.png",
+    "img/assets/blank_blue_pressed.png",
+    "img/assets/blank_green.png",
+    "img/assets/blank_green_pressed.png",
+    "img/assets/blank_red.png",
+    "img/assets/blank_red_pressed.png",
+    'img/assets/foil_1032_border.png',
+    'img/assets/foil_1033_border.png',
+    'img/assets/pcon026a_border.png',
+    'img/assets/pcon026b_border.png',
+    'img/pcon026a.jpg',
+    'img/pcon026b.jpg',
+    'img/assets/foil_1035_border.png',
+    'img/assets/pcon028a_border.png',
+    'img/assets/pcon028b_border.png',
+    'img/pcon028a.jpg',
+    'img/pcon028b.jpg',
+  );
 
   var jsPsych = initJsPsych({on_finish: function() {
       if (0) { jsPsych.data.displayData(); }
@@ -306,13 +335,15 @@ jatos.onLoad(async function() {
     }
   });
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile;
+  const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024 && !isMobile;
+  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile && !isTablet;
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .50;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .65;
   const fontScale = isMobile ? 1.5 : 1.0;
-  const stimScale = isMobile ? 2 : smallScreen ? 0.85: 1.0;
+  const stimScale = isMobile ? 0.9 : smallScreen ? 0.85: isTablet ? 0.8 : 0.9;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
   if (smallScreen) {document.body.classList.add('smallScreen');}
+  if (isTablet) {document.body.classList.add('tablet');}
   jsPsych.data.addProperties({
     task: phasename,
     subject: sid,
@@ -330,6 +361,30 @@ jatos.onLoad(async function() {
     ctx.lineTo(x, y + r);
     ctx.quadraticCurveTo(x, y, x + r, y);
     ctx.closePath();
+  }
+
+  function handlePress(e) {
+    const wrapper = e.target.closest('.image-btn-wrapper');
+    if (!wrapper) return;
+
+    const btn = wrapper.querySelector('.image-btn');
+    const origSrc = btn.dataset.orig || btn.src;
+    const pressedSrc = btn.dataset.pressed || origSrc.replace('.png', '_pressed.png');
+
+    btn.dataset.orig = origSrc;
+    btn.dataset.pressed = pressedSrc;
+
+    btn.src = pressedSrc;
+    wrapper.classList.add('pressed');
+  }
+
+  function handleRelease(e) {
+    const wrapper = e.target.closest('.image-btn-wrapper');
+    if (!wrapper) return;
+
+    const btn = wrapper.querySelector('.image-btn');
+    btn.src = btn.dataset.orig;
+    wrapper.classList.remove('pressed');
   }
   //var trial_choices= prompts['k_trial_choices'];  // DELETE THIS
 
@@ -355,23 +410,20 @@ jatos.onLoad(async function() {
 
 function makeCategorizeTrial(imgPath, keyAnswer, buttonAnswer, promptText, incText, corText) {
   const maxPromptHeight = 80;
+  const trial_choices = isMobile ?
+    [prompts[resp_mode]['trial_choices']['old'], 
+    prompts[resp_mode]['trial_choices']['new'], 
+    prompts[resp_mode]['trial_choices']['sim']]
+    :
+    [prompts[resp_mode]['trial_choices']['old'], 
+    prompts[resp_mode]['trial_choices']['sim'], 
+    prompts[resp_mode]['trial_choices']['new']];
   return {
     type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: imgPath,
     key_answer: keyAnswer,
     button_answer: buttonAnswer,
-    choices: isMobile ?
-    [
-      prompts[resp_mode]['trial_choices']['old'],
-      prompts[resp_mode]['trial_choices']['new'],
-      prompts[resp_mode]['trial_choices']['sim'],
-    ]
-    :
-    [
-      prompts[resp_mode]['trial_choices']['old'],
-      prompts[resp_mode]['trial_choices']['sim'],
-      prompts[resp_mode]['trial_choices']['new'],
-    ],
+    choices: trial_choices,
     prompt: `
       <div class="prompt-container" style="height: ${maxPromptHeight}px;">
         <p class="prompt prompt_text ${lang}" style="font-weight: normal;">${promptText}</p>
@@ -388,59 +440,28 @@ function makeCategorizeTrial(imgPath, keyAnswer, buttonAnswer, promptText, incTe
       </div>
     `,
     force_correct_button_press: true,
-    button_html: isMobile ?
-      [
-        `<div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_red.png"
-            onmouseover="this.src='img/assets/blank_red_pressed.png'"
-            onmouseout="this.src='img/assets/blank_red.png'"
-            class="image-btn" id="btn0">
-          <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['old']}</span>
-        </div>`,
+    button_html: trial_choices.map((txt, i) => `
+          <div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_${isMobile ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">${txt}</text>
+            </svg>
+          </div>
+        `),
+    on_load: function() {
+      document.addEventListener('mousedown', handlePress);
+      document.addEventListener('mouseup', handleRelease);
+      document.addEventListener('touchstart', handlePress, { passive: true });
+      document.addEventListener('touchend', handleRelease);
+    },
 
-        `<div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_blue.png"
-            onmouseover="this.src='img/assets/blank_blue_pressed.png'"
-            onmouseout="this.src='img/assets/blank_blue.png'"
-            class="image-btn" id="btn2">
-          <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['new']}</span>
-        </div>`,
-
-        `<div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_green.png"
-            onmouseover="this.src='img/assets/blank_green_pressed.png'"
-            onmouseout="this.src='img/assets/blank_green.png'"
-            class="image-btn" id="btn1">
-          <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['sim']}</span>
-        </div>`
-      ]
-      :
-      [
-        `<div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_red.png"
-            onmouseover="this.src='img/assets/blank_red_pressed.png'"
-            onmouseout="this.src='img/assets/blank_red.png'"
-            class="image-btn" id="btn0">
-          <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['old']}</span>
-        </div>`,
-
-        `<div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_green.png"
-            onmouseover="this.src='img/assets/blank_green_pressed.png'"
-            onmouseout="this.src='img/assets/blank_green.png'"
-            class="image-btn" id="btn1">
-          <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['sim']}</span>
-        </div>`,
-
-        `<div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_blue.png"
-            onmouseover="this.src='img/assets/blank_blue_pressed.png'"
-            onmouseout="this.src='img/assets/blank_blue.png'"
-            class="image-btn" id="btn2">
-          <span class="image-btn-text ${lang}">${prompts[resp_mode]['trial_choices']['new']}</span>
-        </div>`
-      ]
-    
+    on_finish: function() {
+      document.removeEventListener('mousedown', handlePress);
+      document.removeEventListener('mouseup', handleRelease);
+      document.removeEventListener('touchstart', handlePress);
+      document.removeEventListener('touchend', handleRelease);
+    },
   }
 }
 
@@ -465,8 +486,8 @@ function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
       const imgR = new Image();
 
       imgL.onload = imgR.onload = function() {
-        const imgWidth = isMobile ? imgL.width * stimScale * 0.45 : imgL.width * stimScale * 0.9;
-        const imgHeight = isMobile ? imgL.height * stimScale * 0.45: imgL.width * stimScale * 0.9;
+        const imgWidth = imgL.width * stimScale;
+        const imgHeight = imgL.height * stimScale;
         const totalWidth = imgWidth * 2 + gap;
         const x = (c.width - totalWidth) / 2;
         const y = (c.height - imgHeight) / 2;
@@ -489,15 +510,28 @@ function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
       imgL.src = imgLeft;
       imgR.src = imgRight;
     },
-    prompt: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='es') ? 0.9 : 1) : 1.3)}em; font-weight: normal;">${promptText}</p>`,
+    prompt: `<p class="prompt_text">${promptText}</p>`,
     button_html:           
       `<div class="image-btn-wrapper">
         <input type="image" src="img/assets/blank_green.png"
-                onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                onmouseout="this.src='img/assets/blank_green.png'"
-                class="image-btn" style="mix-blend-mode: multiply;">
-        <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
+              class="image-btn">
+        <svg class="image-btn-text" viewBox="0 0 266 160">
+          <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+        </svg>
       </div>`,
+    on_load: function() {
+      document.addEventListener('mousedown', handlePress);
+      document.addEventListener('mouseup', handleRelease);
+      document.addEventListener('touchstart', handlePress, { passive: true });
+      document.addEventListener('touchend', handleRelease);
+    },
+
+    on_finish: function() {
+      document.removeEventListener('mousedown', handlePress);
+      document.removeEventListener('mouseup', handleRelease);
+      document.removeEventListener('touchstart', handlePress);
+      document.removeEventListener('touchend', handleRelease);
+    },
   };
 }
 
@@ -505,15 +539,28 @@ var intro = {
   type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
   choices: [prompts[resp_mode]['instr_choice']],
   button_html:           
-        `<div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_green.png"
-                  onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                  onmouseout="this.src='img/assets/blank_green.png'"
-                  class="image-btn" style="mix-blend-mode: multiply;">
-          <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
-        </div>`,
-  prompt: `<p class="prompt_text"style="font-size: ${isMobile ? 2 : (smallScreen ? 1 : 1.3)}em;"">${prompts[resp_mode]['prompt0']}</p>`,
-  stimulus: `<p class="prompt_text" style="font-size: ${isMobile ? 1 : (smallScreen ? ((lang=='ru') ? 0.6 : 0.65) : ((lang=='ru') ? 0.85 : 1))}em;font-weight: normal;">` + prompts['txt0'] + '</p>',
+       `<div class="image-btn-wrapper">
+        <input type="image" src="img/assets/blank_green.png"
+              class="image-btn">
+        <svg class="image-btn-text" viewBox="0 0 266 160">
+          <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+        </svg>
+      </div>`,
+  on_load: function() {
+    document.addEventListener('mousedown', handlePress);
+    document.addEventListener('mouseup', handleRelease);
+    document.addEventListener('touchstart', handlePress, { passive: true });
+    document.addEventListener('touchend', handleRelease);
+  },
+
+  on_finish: function() {
+    document.removeEventListener('mousedown', handlePress);
+    document.removeEventListener('mouseup', handleRelease);
+    document.removeEventListener('touchstart', handlePress);
+    document.removeEventListener('touchend', handleRelease);
+  },
+  prompt: `<p class="prompt_text">${prompts[resp_mode]['prompt0']}</p>`,
+  stimulus: `<p class="prompt_text intro">` + prompts['txt0'] + '</p>',
 }
 
 var new1 = isMobile ?
@@ -694,7 +741,23 @@ var outtro = {
           <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
         </div>`,
 }
-var  timeline = [intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro];
+
+var preload = {
+  type: jsPsychPreload,
+  images: preload_fnames, // since we use a timeline variable, we can't use the simple "trials"
+  show_progress_bar: true,
+  show_detailed_erros: true,
+  continue_after_error: true,
+  on_error: function(fname) {
+    console.log('FAILED  '+fname)
+  },
+  on_finish: function(data) {
+    console.log('Preload success? ' + data.success)
+    console.log('Failed on ' + data.failed_images.length)
+  }
+}
+
+var  timeline = [preload, intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro];
 jsPsych.run(timeline);
     
   

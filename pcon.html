@@ -303,9 +303,9 @@ jatos.onLoad(async function() {
     resp_mode='key';
   }
 
-  var lang='ru';
+  var lang='en';
   //lang='kor';
-  /*
+  
   if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
@@ -314,7 +314,7 @@ jatos.onLoad(async function() {
   }
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
-  }*/
+  }
   
   if (jatos.studySessionData['resp_mode'] == 'keyboard') {
     resp_mode='keyboard';

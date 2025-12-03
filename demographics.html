@@ -246,8 +246,8 @@ function waitFor(conditionFunction) {
 jatos.onLoad(async function() {
   var sid=getID();
   //console.log('In demog, sid= ' + sid);
-  var lang='cn';
-  /*if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+  var lang='en';
+  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
   if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
@@ -255,7 +255,7 @@ jatos.onLoad(async function() {
   }
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
-  }*/
+  }
   // load honeycomb version of lang file
   console.log('loading json lang')
   var langfile='lang/omst_'+lang+'.json';

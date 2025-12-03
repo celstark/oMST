@@ -200,7 +200,7 @@
   }
   
   .image-btn-wrapper.pressed .image-btn-text{
-    transform: translate(-50%, -40%);
+    transform: translate(-50%, -40%) !;
   }
 
   .mobile .image-btn-text text{
@@ -215,25 +215,37 @@
     display: block;
   }
 
-  .image-btn-text.kr,
-  .image-btn-text.ru{
-    font-size: 0.9em;
-  }
-
-  .image-btn-text.nl {
+  .image-btn-text.kr text,
+  .image-btn-text.ru text{
     font-size: 0.9em;
     stroke-width: 8;
   }
+
+  .image-btn-text.nl  text{
+    font-size: 0.9em;
+    stroke-width: 10;
+  }
   
-  .mobile .image-btn-text.kr,
-  .mobile .image-btn-text.nl{
+  .mobile .image-btn-text.kr text,
+  .mobile .image-btn-text.nl text{
     font-size: 1em;
+    stroke-width: 8;
   }
 
-  .mobile .image-btn-text.ru {
+  .mobile .image-btn-text.ru text{
     font-size: 1.2em;
+    stroke-width: 10;
   }
   
+  .tablet .image-btn-text.kr text {
+    font-size: 1em;
+    stroke-width: 8;
+  }
+
+  .tablet .image-btn-text.ru text{
+    font-size: 1.2em;
+    stroke-width: 10;
+  }
 
   body {
     background-color: #fff9e0;
@@ -503,8 +515,8 @@ jatos.onLoad(async function() {
 
 
   
-  var lang='es';
-  /*if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+  var lang='en';
+  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
   if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
@@ -512,7 +524,7 @@ jatos.onLoad(async function() {
   }
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
-  }*/
+  }
   // load honeycomb version of lang file
   console.log('loading json lang')
   var langfile='lang/omst_'+lang+'.json';
@@ -606,9 +618,14 @@ jatos.onLoad(async function() {
   else {
     console.log(prompts[resp_mode])
     console.log(prompts[resp_mode]['threechoice']['trial_choices'])
-    var trial_choices= [prompts[resp_mode]['threechoice']['trial_choices']['old'], 
+    var trial_choices= isMobile || isTablet ?
+      [prompts[resp_mode]['threechoice']['trial_choices']['old'], 
+      prompts[resp_mode]['threechoice']['trial_choices']['new'], 
+      prompts[resp_mode]['threechoice']['trial_choices']['sim']]
+      :
+      [prompts[resp_mode]['threechoice']['trial_choices']['old'], 
       prompts[resp_mode]['threechoice']['trial_choices']['sim'], 
-      prompts[resp_mode]['threechoice']['trial_choices']['new'] ];
+      prompts[resp_mode]['threechoice']['trial_choices']['new']];
   }
   //   trial_txt='Old (<b>v</b>) or New? (<b>n</b>)';
   //   trial_choices=['v','n'];
@@ -840,7 +857,7 @@ var instr1_trial = {
               }
             } else if (isTablet) {
               if (lang == 'kr'){
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 43);
+                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 42);
               } else {
                 drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
               }
@@ -942,7 +959,7 @@ var instr1_trial = {
         clear_canvas: false,
         button_html: trial_choices.map((txt, i) => `
           <div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_${['red','green','blue'][i]}.png"
+            <input type="image" src="img/assets/blank_${isMobile || isTablet ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
                   class="image-btn" style="${isMobile ? 'mix-blend-mode: multiply;' : ''}">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
               <text x="50%" y="50%">${txt}</text>
@@ -977,15 +994,18 @@ var instr1_trial = {
           let resp = null;
           if (resp_mode == 'button') {
             if (data.response == 0) { resp = 'o'; }
-            else if (data.response == 2) { resp = isMobile  ? 's' : 'n'; }
-            else if (data.response == 1) { resp = isMobile ? 'n' : (twochoice == 1 ? 'n' : 's'); }
+            else if (data.response == 2) { resp = isMobile || isTablet  ? 's' : 'n'; }
+            else if (data.response == 1) { resp = isMobile || isTablet ? 'n' : (twochoice == 1 ? 'n' : 's'); }
           } else {
             if (data.response == 'v') { resp = 'o'; }
             else if (data.response == 'b') { resp = 's'; }
             else if (data.response == 'n') { resp = 'n'; }
           }
           data.correct = resp == data.correct_response;
-          num_correct += 1;
+          if(data.correct) {
+            num_correct += 1;
+          }
+          
           data.resp = resp;
         }
       }
