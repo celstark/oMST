@@ -107,7 +107,7 @@
     "cor_lure": "Good! You have not seen this <i>exact</i> image, so you correctly selected <b>Similar</b>",
     "prompt_test": "Your turn. Have you seen this?",
     "side_by_side": "As you can see, these items are similar, but not exactly the same. For this kind of image, you should select <b>Similar</b> to indicate that you saw something similar to this but have not seen that exact item before during this session.",
-    "end": "That's the idea. Now, we'll do the actual test.</p> <p><i>As you do the actual task, if the picture disappears before you respond, don't worry. Just make your response even if the screen is blank.</i>",
+    "end": "That's the idea. Now, we'll do the actual test.<br><br> <i>As you do the actual task, if the picture disappears before you respond, don't worry. Just make your response even if the screen is blank.</i>",
     "key": {
       "instr_choice": " ",
       "trial_txt": "<i>Old</i> (<b>v</b>), <i>Similar</i> (<b>b</b>), or <i>New</i> (<b>n</b>)?",

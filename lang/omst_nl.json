@@ -107,7 +107,7 @@
     "cor_lure": "Goed zo! U heeft <i>exact dezelfde</i> foto niet eerder gezien, dus u heeft correct voor <b>Gelijkaardig</b> gekozen",
     "prompt_test": "Nu is het aan u. Heeft u dit eerder gezien?",
     "side_by_side": "Zoals u ziet, zijn deze objecten gelijkaardig, maar niet exact dezelfde. Voor dit type foto's, zou u <b>Gelijkaardig</b> moeten antwoorden, om aan te geven dat u eerder in deze sessie iets gelijkaardig zag, maar niet identiek dezelfde foto.",
-    "end": "Dit is dus de bedoeling. We gaan nu verder met de echte test. <p><i>Geen zorgen als de foto verdwijnt voordat u geantwoord heeft, tijdens de test. Antwoordt dan gewoon terwijl het scherm leeg is.</i>",
+    "end": "Dit is dus de bedoeling. We gaan nu verder met de echte test. <br><br><i>Geen zorgen als de foto verdwijnt voordat u geantwoord heeft, tijdens de test. Antwoordt dan gewoon terwijl het scherm leeg is.</i>",
     "key": {
       "instr_choice": " ",
       "trial_txt": "<i>Oud</i> (<b>v</b>), <i>Gelijkaardig</i> (<b>b</b>), or <i>Nieuw</i> (<b>n</b>)?",

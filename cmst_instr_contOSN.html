@@ -103,15 +103,17 @@ Revised: November 20, 2019 (CELS) for Cordova
     margin: 0.5em;
   }
 
-  .desktop:not(.tablet) .image-btn-wrapper:hover .image-btn-text {
-    transform: translate(-50%, -40%); 
-  }
+
 
   .image-btn {
     width: 20em;
     height: auto;
     border: none;
     display: block;
+  }
+
+  .smallScreen .image-btn {
+    width: 17.5vw;
   }
 
   .image-btn-text {
@@ -168,13 +170,13 @@ Revised: November 20, 2019 (CELS) for Cordova
   
   .mobile .image-btn-text.kr text,
   .mobile .image-btn-text.nl text{
-    font-size: 1em;
-    stroke-width: 8;
+    font-size: 0.9em;
+    stroke-width: 9;
   }
 
   .mobile .image-btn-text.ru text{
     font-size: 1.2em;
-    stroke-width: 10;
+    stroke-width: 12;
   }
   
   .tablet .image-btn-text.kr text {
@@ -193,9 +195,9 @@ Revised: November 20, 2019 (CELS) for Cordova
 
   .prompt_text {
     font-family: "Comic Sans MS", "Comic Neue", cursive;
-    font-size: 1.5em;
+    font-size: 1.4em;
     color: #5d2b12;
-    font-weight: bold;
+    font-weight: normal;
     line-height: 1.2;
   }
 
@@ -203,14 +205,56 @@ Revised: November 20, 2019 (CELS) for Cordova
     font-size: 2em;
   }
 
+  .mobile .prompt_text.nl {
+    font-size: 1.8em;
+  }
+
+  .mobile .prompt_text.ru {
+    font-size: 1.6em;
+  }
+
   .tablet .prompt_text{
     font-size: 1.2em;
-    font-weight: normal;
+  }
+
+  .smallScreen .prompt_text {
+    font-size: 1.2em;
   }
 
   .tablet .prompt_text.intro {
     font-size: 1.4em;
-    font-weight: normal;
+  }
+
+  .mobile .prompt_text.es.intro,
+  .mobile .prompt_text.nl.intro {
+    font-size: 1.8em;
+  }
+
+  .mobile .prompt_text.ru.intro {
+    font-size: 1.4em;
+  }
+
+  .smallScreen .prompt_text.ru.intro {
+    font-size: 1em;
+  }
+
+  .jspsych-categorize-image-buttons-stimulus {
+    width: 25vw;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .tablet .jspsych-categorize-image-buttons-stimulus {
+    width: 65vw;
+  }
+
+  .mobile .jspsych-categorize-image-buttons-stimulus {
+    width: 75vw;
+  }
+
+  .smallScreen .jspsych-categorize-image-buttons-stimulus {
+    width: 30vw;
   }
 
   </style>
@@ -254,8 +298,8 @@ jatos.onLoad(async function() {
     resp_mode='key';
   }
 
-  var lang='en';
-  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+  var lang='ru';
+  /*if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
   if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
@@ -263,7 +307,7 @@ jatos.onLoad(async function() {
   }
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
-  }
+  }*/
 
   // load honeycomb version of lang file
   console.log('loading json lang: ',lang)
@@ -376,16 +420,22 @@ jatos.onLoad(async function() {
 
     btn.src = pressedSrc;
     wrapper.classList.add('pressed');
+
+    activeBtn = btn;  // remember which button is pressed
   }
 
   function handleRelease(e) {
-    const wrapper = e.target.closest('.image-btn-wrapper');
-    if (!wrapper) return;
-
-    const btn = wrapper.querySelector('.image-btn');
-    btn.src = btn.dataset.orig;
+    if (!activeBtn) {
+      console.log("no active button");
+      return; // nothing to release
+    }
+    const wrapper = activeBtn.closest('.image-btn-wrapper');
+    activeBtn.src = activeBtn.dataset.orig;
     wrapper.classList.remove('pressed');
+
+    activeBtn = null; // reset
   }
+
   //var trial_choices= prompts['k_trial_choices'];  // DELETE THIS
 
   // Default is keyboard here - override if buttons
@@ -412,12 +462,13 @@ function makeCategorizeTrial(imgPath, keyAnswer, buttonAnswer, promptText, incTe
   const maxPromptHeight = 80;
   const trial_choices = isMobile ?
     [prompts[resp_mode]['trial_choices']['old'], 
-    prompts[resp_mode]['trial_choices']['new'], 
-    prompts[resp_mode]['trial_choices']['sim']]
+     prompts[resp_mode]['trial_choices']['new'], 
+     prompts[resp_mode]['trial_choices']['sim']]
     :
     [prompts[resp_mode]['trial_choices']['old'], 
-    prompts[resp_mode]['trial_choices']['sim'], 
-    prompts[resp_mode]['trial_choices']['new']];
+     prompts[resp_mode]['trial_choices']['sim'], 
+     prompts[resp_mode]['trial_choices']['new']];
+
   return {
     type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
     stimulus: imgPath,
@@ -441,35 +492,40 @@ function makeCategorizeTrial(imgPath, keyAnswer, buttonAnswer, promptText, incTe
     `,
     force_correct_button_press: true,
     button_html: trial_choices.map((txt, i) => `
-          <div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_${isMobile ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
-                  class="image-btn">
-            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">${txt}</text>
-            </svg>
-          </div>
-        `),
+      <div class="image-btn-wrapper">
+        <input type="image" 
+               src="img/assets/blank_${isMobile ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
+               class="image-btn">
+        <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+          <text x="50%" y="50%">${txt}</text>
+        </svg>
+      </div>
+    `),
     on_load: function() {
-      document.addEventListener('mousedown', handlePress);
-      document.addEventListener('mouseup', handleRelease);
+      document.addEventListener('mouseover', handlePress, true);
+      document.addEventListener('mouseleave', handleRelease, true);
       document.addEventListener('touchstart', handlePress, { passive: true });
       document.addEventListener('touchend', handleRelease);
+
+      document.addEventListener('mouseup', handleRelease);
     },
 
     on_finish: function() {
-      document.removeEventListener('mousedown', handlePress);
-      document.removeEventListener('mouseup', handleRelease);
+      document.removeEventListener('mouseover', handlePress, true);
+      document.removeEventListener('mouseleave', handleRelease, true);
       document.removeEventListener('touchstart', handlePress);
       document.removeEventListener('touchend', handleRelease);
+
+      document.removeEventListener('mouseup', handleRelease);
     },
-  }
+  };
 }
 
 function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
   return {
     type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
     choices: [buttonLabel],
-    canvas_size: isMobile ? [canvasHeight * 0.6, canvasWidth] : smallScreen ? [canvasHeight * 0.8, canvasWidth] : [canvasHeight, canvasWidth],
+    canvas_size: isMobile ? [canvasHeight * 0.6, canvasWidth] : smallScreen ? [canvasHeight * 0.8, canvasWidth] : isTablet ? [canvasHeight * 0.6, canvasWidth] : [canvasHeight * 0.8, canvasWidth],
     stimulus: function(c) {
       const ctx = c.getContext('2d');
       ctx.fillStyle = '#fff9e0';
@@ -510,7 +566,7 @@ function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
       imgL.src = imgLeft;
       imgR.src = imgRight;
     },
-    prompt: `<p class="prompt_text">${promptText}</p>`,
+    prompt: `<p class="prompt_text" style="margin: 0 0">${promptText}</p>`,
     button_html:           
       `<div class="image-btn-wrapper">
         <input type="image" src="img/assets/blank_green.png"
@@ -520,17 +576,21 @@ function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
         </svg>
       </div>`,
     on_load: function() {
-      document.addEventListener('mousedown', handlePress);
-      document.addEventListener('mouseup', handleRelease);
+      document.addEventListener('mouseover', handlePress, true);
+      document.addEventListener('mouseleave', handleRelease, true);
       document.addEventListener('touchstart', handlePress, { passive: true });
       document.addEventListener('touchend', handleRelease);
+
+      document.addEventListener('mouseup', handleRelease);
     },
 
     on_finish: function() {
-      document.removeEventListener('mousedown', handlePress);
-      document.removeEventListener('mouseup', handleRelease);
+      document.removeEventListener('mouseover', handlePress, true);
+      document.removeEventListener('mouseleave', handleRelease, true);
       document.removeEventListener('touchstart', handlePress);
       document.removeEventListener('touchend', handleRelease);
+
+      document.removeEventListener('mouseup', handleRelease);
     },
   };
 }
@@ -539,28 +599,32 @@ var intro = {
   type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
   choices: [prompts[resp_mode]['instr_choice']],
   button_html:           
-       `<div class="image-btn-wrapper">
-        <input type="image" src="img/assets/blank_green.png"
-              class="image-btn">
-        <svg class="image-btn-text" viewBox="0 0 266 160">
-          <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
-        </svg>
-      </div>`,
+    `<div class="image-btn-wrapper">
+      <input type="image" src="img/assets/blank_green.png"
+            class="image-btn">
+      <svg class="image-btn-text" viewBox="0 0 266 160">
+        <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+      </svg>
+    </div>`,
   on_load: function() {
-    document.addEventListener('mousedown', handlePress);
-    document.addEventListener('mouseup', handleRelease);
+    document.addEventListener('mouseover', handlePress, true);
+    document.addEventListener('mouseleave', handleRelease, true);
     document.addEventListener('touchstart', handlePress, { passive: true });
     document.addEventListener('touchend', handleRelease);
+
+    document.addEventListener('mouseup', handleRelease);
   },
 
   on_finish: function() {
-    document.removeEventListener('mousedown', handlePress);
-    document.removeEventListener('mouseup', handleRelease);
+    document.removeEventListener('mouseover', handlePress, true);
+    document.removeEventListener('mouseleave', handleRelease, true);
     document.removeEventListener('touchstart', handlePress);
     document.removeEventListener('touchend', handleRelease);
+
+    document.removeEventListener('mouseup', handleRelease);
   },
   prompt: `<p class="prompt_text">${prompts[resp_mode]['prompt0']}</p>`,
-  stimulus: `<p class="prompt_text intro">` + prompts['txt0'] + '</p>',
+  stimulus: `<p class="prompt_text intro ${lang}">` + prompts['txt0'] + '</p>',
 }
 
 var new1 = isMobile ?
@@ -731,15 +795,32 @@ var outtro = {
   type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
   choices: [prompts[resp_mode]['instr_choice']],
   prompt: '<p class="prompt_text">' + prompts[resp_mode]['prompt0'] + '</p>',
-  stimulus: prompts['end'], 
+  stimulus: `<p class="prompt_text intro">` + prompts['end'] + '</p>', 
   button_html:           
-        `<div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_green.png"
-                  onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                  onmouseout="this.src='img/assets/blank_green.png'"
-                  class="image-btn" style="mix-blend-mode: multiply;">
-          <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
-        </div>`,
+    `<div class="image-btn-wrapper">
+      <input type="image" src="img/assets/blank_green.png"
+            class="image-btn">
+      <svg class="image-btn-text" viewBox="0 0 266 160">
+        <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+      </svg>
+    </div>`,
+  on_load: function() {
+    document.addEventListener('mouseover', handlePress, true);
+    document.addEventListener('mouseleave', handleRelease, true);
+    document.addEventListener('touchstart', handlePress, { passive: true });
+    document.addEventListener('touchend', handleRelease);
+
+    document.addEventListener('mouseup', handleRelease);
+  },
+
+  on_finish: function() {
+    document.removeEventListener('mouseover', handlePress, true);
+    document.removeEventListener('mouseleave', handleRelease, true);
+    document.removeEventListener('touchstart', handlePress);
+    document.removeEventListener('touchend', handleRelease);
+
+    document.removeEventListener('mouseup', handleRelease);
+  },
 }
 
 var preload = {
