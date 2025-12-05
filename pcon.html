@@ -51,48 +51,30 @@
   .jspsych-btn {
     font-size: 150%;
   }
-  /* Slightly shorter special buttons for laptop-size screens */
-  @media screen and (min-width: 1100px) and (max-width: 1400px) {
-    #button-container .jspsych-btn {
-      height: 2.4em !important; /* down from 3em */
-    }
-  }
 
-  /* For short screens (e.g. 632px tall) */
-  @media screen and (max-height: 700px) {
-    #button-container .jspsych-btn {
-      height: 2.2em !important;
-    }
-  }
   .image-btn-wrapper {
     display: inline-block;
     position: relative;
     margin: 0.5em;
   }
 
-  .desktop .image-btn-wrapper:hover .image-btn-text {
-    transform: translate(-50%, -40%); /* lower by 10% */
-  }
-
   .image-btn {
-    width: 20em;
-    height: auto;
-    border: none;
-    display: block;
-  }
-
-  .mobile .image-btn {
-    width: 25em;
+    width: 15vw;
     height: auto;
     border: none;
     display: block;
   }
 
   .smallScreen .image-btn {
-    width: 15em;
-    height: auto;
-    border: none;
-    display: block;
+    width: 15vw !important;
+  }
+
+  .mobile .image-btn {
+    width: 35vw;
+  }
+
+  .tablet .image-btn {
+    width: 25vw;
   }
 
   .image-btn-text {
@@ -100,75 +82,69 @@
     top: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
-    font-size: 1.5em;
-    color: #fff8d6;
-    font-weight: bold;
-    -webkit-text-stroke: 10px #5d2b12;
-    stroke-linejoin: round;
-    paint-order: stroke fill;
     pointer-events: none;
+    width: 100%;
+    height: auto; /* scales with wrapper if you want */
+  }
+
+  .image-btn-text text {
+    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    font-size: 1.5em;
+    fill: #fff8d6;       /* inner text color */
+    stroke: #5d2b12;     /* outline color */
+    stroke-width: 10;     /* outline thickness */
+    font-weight: bold;
     letter-spacing: 0.08em;
-
-  }
-
-  .image-btn-text.kr,
-  .image-btn-text.ru{
-    font-size: 0.9em;
-    -webkit-text-stroke: 8px #5d2b12;
-  }
-
-  .image-btn-text.nl{
-    font-size: 0.8em;
-  }
-
-  .mobile .image-btn-text {
-    -webkit-text-stroke: 15px #5d2b12;
+    text-anchor: middle;
+    dominant-baseline: middle;
     paint-order: stroke fill;
-    font-size: 2em;
-  }
-
-  .mobile .image-btn-text.nl{
-    font-size: 1em;
-  }
-
-  .mobile .image-btn-text.kr{
-    font-size: 1.4em;
-  }
-
-  .mobile .image-btn-text.ru {
-    -webkit-text-stroke: 10px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 1.2em;
-  }
-
-  .mobile .image-btn-text.es {
-    font-size: 1.8em;
+    stroke-linejoin: round;
+    stroke-linecap: round;
   }
   
-  .smallScreen .image-btn-text {
-    -webkit-text-stroke: 10px #5d2b12;
-    paint-order: stroke fill;
+  .image-btn-wrapper.pressed .image-btn-text{
+    transform: translate(-50%, -40%) !important;
+  }
+
+  .mobile .image-btn-text text{
+    stroke-width: 12;
+    font-size: 1.5em;
+  }
+
+  .image-btn-text.kr text,
+  .image-btn-text.ru text{
+    font-size: 0.9em;
+    stroke-width: 8;
+  }
+
+  .image-btn-text.nl  text{
+    font-size: 0.8em;
+    stroke-width: 8;
+  }
+  
+  .mobile .image-btn-text.kr text {
+    font-size: 0.9em;
+    stroke-width: 9;
+  }
+
+  .mobile .image-btn-text.nl text {
+    font-size: 0.8em;
+    stroke-width: 8;
+  }
+
+  .mobile .image-btn-text.ru text {
+    font-size: 1.0em;
+    stroke-width: 10;
+  }
+  
+  .tablet .image-btn-text.kr text {
     font-size: 1em;
+    stroke-width: 8;
   }
 
-  .smallScreen .image-btn-text.kr{
-    -webkit-text-stroke: 8px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 0.8em;
-  }
-
-  .smallScreen .image-btn-text.nl{
-    -webkit-text-stroke: 6px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 0.6em;
-  }
-
-  .smallScreen .image-btn-text.ru{
-    -webkit-text-stroke: 8px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 0.8em;
-    line-height: 1.5;
+  .tablet .image-btn-text.ru text {
+    font-size: 1.0em;
+    stroke-width: 10;
   }
 
   body {
@@ -177,9 +153,9 @@
 
   .prompt_text {
     font-family: "Comic Sans MS", "Comic Neue", cursive;
-    font-size: 1.3em;
+    font-size: 1.4em;
     color: #5d2b12;
-    font-weight: bold;
+    font-weight: normal;
     line-height: 1.2;
   }
 
@@ -187,41 +163,58 @@
     font-size: 2em;
   }
 
-  .mobile  .prompt_text.ru,
-  .mobile  .prompt_text.nl,
-  .mobile  .prompt_text.es {
+  .mobile .prompt_text.nl {
     font-size: 1.8em;
   }
 
-  .smallScreen  .prompt_text {
-    font-size: 1.3em;
+  .mobile .prompt_text.ru {
+    font-size: 1.6em;
   }
 
-  .smallScreen  .prompt_text.ru,
-  .smallScreen  .prompt_text.nl {
+  .tablet .prompt_text{
+    font-size: 1.2em;
+  }
+
+  .smallScreen .prompt_text {
     font-size: 1em;
   }
 
-  #jspsych-html-button-response-stimulus {
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
-    font-size: 1.5em;
-    color: #5d2b12;
-    line-height: 1.2;
+  .tablet .prompt_text.intro {
+    font-size: 1.4em;
   }
-  
-  .jspsych-categorize-image-buttons-stimulus {
-    width: 15em;
+
+  .mobile .prompt_text.es.intro,
+  .mobile .prompt_text.nl.intro {
+    font-size: 1.8em;
+  }
+
+  .mobile .prompt_text.ru.intro {
+    font-size: 1.8em;
+  }
+
+  .smallScreen .prompt_text.ru.intro {
+    font-size: 0.9em;
+  }
+
+  .smallScreen .jspsych-categorize-image-buttons-stimulus{
+    width: 30vw;
+  }
+
+  #jspsych-animation-image {
+    width: 25vw;
     height: auto;
   }
 
-  .mobile .jspsych-categorize-image-buttons-stimulus {
-    width: 25em;
-    height: auto;
+  .tablet #jspsych-animation-image {
+    width: 50vw;
   }
 
-  .smallScreen .jspsych-categorize-image-buttons-stimulus {
-    width: 10em;
-    height: auto;
+  .mobile #jspsych-animation-image {
+    width: 75vw;
+  }
+
+  .smallScreen #jspsych-animation-image {
+    width: 30vw;
   }
   </style>
 </head>
@@ -303,10 +296,10 @@ jatos.onLoad(async function() {
     resp_mode='key';
   }
 
-  var lang='en';
+  var lang='ru';
   //lang='kor';
   
-  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+  /*if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
   if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
@@ -318,7 +311,7 @@ jatos.onLoad(async function() {
   
   if (jatos.studySessionData['resp_mode'] == 'keyboard') {
     resp_mode='keyboard';
-  }
+  }*/
   var randomize=false;
   if (jatos.studySessionData['pcrand'] == 1) {
     randomize = true;
@@ -377,13 +370,15 @@ jatos.onLoad(async function() {
     }
   });
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile;
+  const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024 && !isMobile;
+  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile && !isTablet;
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .50;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .65;
   const fontScale = isMobile ? 1.5 : 1.0;
-  const stimScale = isMobile ? 2 : smallScreen ? 0.85: 1.0;
+  const stimScale = isMobile ? 0.9 : smallScreen ? 0.85: isTablet ? 0.8 : 0.9;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
   if (smallScreen) {document.body.classList.add('smallScreen');}
+  if (isTablet) {document.body.classList.add('tablet');}
   jsPsych.data.addProperties({
     task: phasename,
     subject: sid,
@@ -404,11 +399,41 @@ jatos.onLoad(async function() {
     ctx.closePath();
   }
 
+  let activeBtn = null;
+
+  function handlePress(e) {
+    const wrapper = e.target.closest('.image-btn-wrapper');
+    if (!wrapper) return;
+
+    const btn = wrapper.querySelector('.image-btn');
+    const origSrc = btn.dataset.orig || btn.src;
+    const pressedSrc = btn.dataset.pressed || origSrc.replace('.png', '_pressed.png');
+
+    btn.dataset.orig = origSrc;
+    btn.dataset.pressed = pressedSrc;
+
+    btn.src = pressedSrc;
+    wrapper.classList.add('pressed');
+
+    activeBtn = btn;  // remember which button is pressed
+  }
+
+  function handleRelease(e) {
+    if (!activeBtn) {
+      return; // nothing to release
+    }
+    const wrapper = activeBtn.closest('.image-btn-wrapper');
+    activeBtn.src = activeBtn.dataset.orig;
+    wrapper.classList.remove('pressed');
+
+    activeBtn = null; // reset
+  }
+
   function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
     return {
       type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
       choices: [buttonLabel],
-      canvas_size: isMobile ? [canvasHeight * 0.6, canvasWidth] : smallScreen ? [canvasHeight * 0.8, canvasWidth] : [canvasHeight, canvasWidth],
+      canvas_size: isMobile ? [canvasHeight * 0.6, canvasWidth] : smallScreen ? [canvasHeight * 0.8, canvasWidth] : [canvasHeight * 0.8, canvasWidth],
       stimulus: function(c) {
         const ctx = c.getContext('2d');
         ctx.fillStyle = '#fff9e0';
@@ -425,8 +450,8 @@ jatos.onLoad(async function() {
         const imgR = new Image();
 
         imgL.onload = imgR.onload = function() {
-          const imgWidth = isMobile ? imgL.width * stimScale * 0.45 : imgL.width * stimScale * 0.9;
-          const imgHeight = isMobile ? imgL.height * stimScale * 0.45: imgL.width * stimScale * 0.9;
+          const imgWidth = imgL.width * stimScale;
+          const imgHeight = imgL.height * stimScale;
           const totalWidth = imgWidth * 2 + gap;
           const x = (c.width - totalWidth) / 2;
           const y = (c.height - imgHeight) / 2;
@@ -449,15 +474,32 @@ jatos.onLoad(async function() {
         imgL.src = imgLeft;
         imgR.src = imgRight;
       },
-      prompt: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='es') ? 0.9 : 1) : 1.3)}em; font-weight: normal;">${promptText}</p>`,
+      prompt: `<p class="prompt_text">${promptText}</p>`,
       button_html:           
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_green.png"
-                  onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                  onmouseout="this.src='img/assets/blank_green.png'"
-                  class="image-btn" style="mix-blend-mode: multiply;">
-          <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
+                class="image-btn">
+          <svg class="image-btn-text" viewBox="0 0 266 160">
+            <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+          </svg>
         </div>`,
+      on_load: function() {
+        document.addEventListener('mouseover', handlePress, true);
+        document.addEventListener('mouseleave', handleRelease, true);
+        document.addEventListener('touchstart', handlePress, { passive: true });
+        document.addEventListener('touchend', handleRelease);
+
+        document.addEventListener('mouseup', handleRelease);
+      },
+
+      on_finish: function() {
+        document.removeEventListener('mouseover', handlePress, true);
+        document.removeEventListener('mouseleave', handleRelease, true);
+        document.removeEventListener('touchstart', handlePress);
+        document.removeEventListener('touchend', handleRelease);
+
+        document.removeEventListener('mouseup', handleRelease);
+      },
     };
   }
   // Setup prompts and response options based on keyboard/button and 2/3 choices
@@ -518,16 +560,33 @@ jatos.onLoad(async function() {
   var instr1_trial = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     choices: [prompts[resp_mode]['instr_choice']],
-    prompt: `<p class="prompt_text"style="font-size: ${isMobile ? 2 : (smallScreen ? 1 : 1.3)}em;"">${prompts[resp_mode]['instr1_prompt']}</p>`,
+    prompt: `<p class="prompt_text">${prompts[resp_mode]['instr1_prompt']}</p>`,
     button_html: 
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_green.png"
-                  onmouseover="this.src='img/assets/blank_green_pressed.png'"
-                  onmouseout="this.src='img/assets/blank_green.png'"
-                  class="image-btn" style="mix-blend-mode: multiply;">
-          <span class="image-btn-text">${prompts[resp_mode]['instr_choice']}</span>
+                class="image-btn">
+          <svg class="image-btn-text" viewBox="0 0 266 160">
+            <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+          </svg>
         </div>`,
-    stimulus: `<p class="prompt_text" style="font-size: ${isMobile ? 1 : (smallScreen ? ((lang=='ru') ? 0.6 : 0.65) : ((lang=='ru') ? 0.85 : 1))}em;font-weight: normal;">` + prompts['instr1_stim'] + '</p>',
+    stimulus: `<p class="prompt_text intro" >` + prompts['instr1_stim'] + '</p>',
+    on_load: function() {
+      document.addEventListener('mouseover', handlePress, true);
+      document.addEventListener('mouseleave', handleRelease, true);
+      document.addEventListener('touchstart', handlePress, { passive: true });
+      document.addEventListener('touchend', handleRelease);
+
+      document.addEventListener('mouseup', handleRelease);
+    },
+
+    on_finish: function() {
+      document.removeEventListener('mouseover', handlePress, true);
+      document.removeEventListener('mouseleave', handleRelease, true);
+      document.removeEventListener('touchstart', handlePress);
+      document.removeEventListener('touchend', handleRelease);
+
+      document.removeEventListener('mouseup', handleRelease);
+    },
   }
 
   var demo1_trial = {
@@ -537,7 +596,7 @@ jatos.onLoad(async function() {
         choices:  "NO_KEYS",
         trial_duration: 1000,
         response_ends_trial: false,
-        stimulus: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='ru') ? 0.6 : 0.65) : ((lang=='ru') ? 0.85 : 1))}em;font-weight: normal;">` + prompts['ready'] + '</p>',
+        stimulus: `<p class="prompt_text" >` + prompts['ready'] + '</p>',
       },
       {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
@@ -561,8 +620,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = stimImg.width * stimScale;
-            const imgHeight = stimImg.height * stimScale;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -589,7 +648,7 @@ jatos.onLoad(async function() {
         sequence_reps: 2,
         frame_time: 200,
         render_on_canvas: true,
-        prompt: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='es') ? 0.9 : 1) : 1.3)}em; font-weight: normal;">${prompts['wait']}</p>`,
+        prompt: `<p class="prompt_text">${prompts['wait']}</p>`,
         on_load: function() {
           const canvas = document.querySelector('canvas');
 
@@ -626,8 +685,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = stimImg.width * stimScale;
-            const imgHeight = stimImg.height * stimScale;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -653,21 +712,38 @@ jatos.onLoad(async function() {
         margin_horizontal: '40px',
         button_html: [
           `<div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_red.png"
-              onmouseover="this.src='img/assets/blank_red_pressed.png'"
-              onmouseout="this.src='img/assets/blank_red.png'"
-              class="image-btn choice" id="btn0">
-            <span class="image-btn-text ${lang}">%choice%</span>
+            <input type="image" src="img/assets/blank_green.png"
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">%choice%</text>
+            </svg>
           </div>`,
 
           `<div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_blue.png"
-              onmouseover="this.src='img/assets/blank_blue_pressed.png'"
-              onmouseout="this.src='img/assets/blank_blue.png'"
-              class="image-btn choice" id="btn2">
-            <span class="image-btn-text ${lang}">%choice%</span>
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">%choice%</text>
+            </svg>
           </div>`,
         ],
+        on_load: function() {
+          document.addEventListener('mouseover', handlePress, true);
+          document.addEventListener('mouseleave', handleRelease, true);
+          document.addEventListener('touchstart', handlePress, { passive: true });
+          document.addEventListener('touchend', handleRelease);
+
+          document.addEventListener('mouseup', handleRelease);
+        },
+
+        on_finish: function() {
+          document.removeEventListener('mouseover', handlePress, true);
+          document.removeEventListener('mouseleave', handleRelease, true);
+          document.removeEventListener('touchstart', handlePress);
+          document.removeEventListener('touchend', handleRelease);
+
+          document.removeEventListener('mouseup', handleRelease);
+        },
       },
     ],
     timeline_variables: [
@@ -688,7 +764,7 @@ jatos.onLoad(async function() {
         choices:  "NO_KEYS",
         trial_duration: 500,
         response_ends_trial: false,
-        stimulus: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='ru') ? 0.6 : 0.65) : ((lang=='ru') ? 0.85 : 1))}em;font-weight: normal;">` + prompts['ready'] + '</p>',
+        stimulus: `<p class="prompt_text">` + prompts['ready'] + '</p>',
       },
       {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
@@ -712,8 +788,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = stimImg.width * stimScale;
-            const imgHeight = stimImg.height * stimScale;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -742,7 +818,7 @@ jatos.onLoad(async function() {
         sequence_reps: 2,
         frame_time: 200,
         render_on_canvas: true,
-        prompt: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='es') ? 0.9 : 1) : 1.3)}em; font-weight: normal;">${prompts['wait']}</p>`,
+        prompt: `<p class="prompt_text">${prompts['wait']}</p>`,
         on_load: function() {
           const canvas = document.querySelector('canvas');
 
@@ -779,8 +855,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = stimImg.width * stimScale;
-            const imgHeight = stimImg.height * stimScale;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -806,21 +882,38 @@ jatos.onLoad(async function() {
         margin_horizontal: '40px',
         button_html: [
           `<div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_red.png"
-              onmouseover="this.src='img/assets/blank_red_pressed.png'"
-              onmouseout="this.src='img/assets/blank_red.png'"
-              class="image-btn choice" id="btn0">
-            <span class="image-btn-text ${lang}">%choice%</span>
+            <input type="image" src="img/assets/blank_green.png"
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">%choice%</text>
+            </svg>
           </div>`,
 
           `<div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_blue.png"
-              onmouseover="this.src='img/assets/blank_blue_pressed.png'"
-              onmouseout="this.src='img/assets/blank_blue.png'"
-              class="image-btn choice" id="btn2">
-            <span class="image-btn-text ${lang}">%choice%</span>
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">%choice%</text>
+            </svg>
           </div>`,
         ],
+        on_load: function() {
+          document.addEventListener('mouseover', handlePress, true);
+          document.addEventListener('mouseleave', handleRelease, true);
+          document.addEventListener('touchstart', handlePress, { passive: true });
+          document.addEventListener('touchend', handleRelease);
+
+          document.addEventListener('mouseup', handleRelease);
+        },
+
+        on_finish: function() {
+          document.removeEventListener('mouseover', handlePress, true);
+          document.removeEventListener('mouseleave', handleRelease, true);
+          document.removeEventListener('touchstart', handlePress);
+          document.removeEventListener('touchend', handleRelease);
+
+          document.removeEventListener('mouseup', handleRelease);
+        },
       },
     ],
     timeline_variables: [
@@ -843,7 +936,7 @@ jatos.onLoad(async function() {
         choices:  "NO_KEYS",
         trial_duration: 500,
         response_ends_trial: false,
-        stimulus: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='ru') ? 0.6 : 0.65) : ((lang=='ru') ? 0.85 : 1))}em;font-weight: normal;">` + prompts['ready'] + '</p>',
+        stimulus: `<p class="prompt_text">` + prompts['ready'] + '</p>',
       },
       {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
@@ -867,8 +960,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = stimImg.width * stimScale;
-            const imgHeight = stimImg.height * stimScale;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -897,8 +990,8 @@ jatos.onLoad(async function() {
         stimuli: noise_sequence,
         sequence_reps: 2,
         frame_time: 200,
-        render_on_canvas: false,
-        prompt: `<p class="prompt_text" style="font-size: ${isMobile ? 2 : (smallScreen ? ((lang=='es') ? 0.9 : 1) : 1.3)}em; font-weight: normal;">${prompts['wait']}</p>`,
+        render_on_canvas: true,
+        prompt: `<p class="prompt_text">${prompts['wait']}</p>`,
         on_load: function() {
           const canvas = document.querySelector('canvas');
 
@@ -936,8 +1029,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = stimImg.width * stimScale;
-            const imgHeight = stimImg.height * stimScale;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -963,22 +1056,37 @@ jatos.onLoad(async function() {
         margin_horizontal: '40px',
         button_html: [
           `<div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_red.png"
-              onmouseover="this.src='img/assets/blank_red_pressed.png'"
-              onmouseout="this.src='img/assets/blank_red.png'"
-              class="image-btn choice" id="btn0">
-            <span class="image-btn-text ${lang}">%choice%</span>
+            <input type="image" src="img/assets/blank_green.png"
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">%choice%</text>
+            </svg>
           </div>`,
 
           `<div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_blue.png"
-              onmouseover="this.src='img/assets/blank_blue_pressed.png'"
-              onmouseout="this.src='img/assets/blank_blue.png'"
-              class="image-btn choice" id="btn2">
-            <span class="image-btn-text ${lang}">%choice%</span>
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">%choice%</text>
+            </svg>
           </div>`,
         ],
+        on_load: function() {
+          document.addEventListener('mouseover', handlePress, true);
+          document.addEventListener('mouseleave', handleRelease, true);
+          document.addEventListener('touchstart', handlePress, { passive: true });
+          document.addEventListener('touchend', handleRelease);
+
+          document.addEventListener('mouseup', handleRelease);
+        },
+
         on_finish: function(data) {
+          document.removeEventListener('mouseover', handlePress, true);
+          document.removeEventListener('mouseleave', handleRelease, true);
+          document.removeEventListener('touchstart', handlePress);
+          document.removeEventListener('touchend', handleRelease);
+
+          document.removeEventListener('mouseup', handleRelease);
           // same = button 0 = 's'
           // different = button 1 = 'd'
           let resp = null;

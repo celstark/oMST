@@ -56,46 +56,6 @@ Revised: November 20, 2019 (CELS) for Cordova
   .jspsych-btn {
     font-size: 150%;
   }
-    
-  /* --- FIX for laptop-size screens --- */
-  @media screen and (min-width: 1100px) and (max-width: 1400px) {
-    .jspsych-display-element {
-      font-size: 175%; /* shrink text slightly */
-    }
-    .jspsych-btn {
-      font-size: 130%;
-      padding: 0.5em 1.2em;
-      margin: 0.3em 0.6em;
-      transform: scale(0.95);
-    }
-    .jspsych-btn, input.image-btn {
-      margin-left: 0.1em !important;
-      margin-right: 0.1em !important;
-    }
-    .jspsych-canvas-button-response-button { 
-      transform: scale(0.75);
-    }
-
-    canvas {
-      max-width: 70vw !important;
-      height: auto !important;
-    }
-  }
-
-  /* Tighten up layout on medium height (short laptop screens) */
-  @media screen and (max-height: 700px) {
-    .jspsych-display-element {
-      font-size: 160%;
-    }
-    .jspsych-btn {
-      margin: 0.2em;
-      padding: 0.4em 1em;
-    }
-    body {
-      transform: scale(0.95);
-      transform-origin: top center;
-    }
-  }
 
   .image-btn-wrapper {
     display: inline-block;
@@ -103,17 +63,23 @@ Revised: November 20, 2019 (CELS) for Cordova
     margin: 0.5em;
   }
 
-
-
   .image-btn {
-    width: 20em;
+    width: 15vw;
     height: auto;
     border: none;
     display: block;
   }
 
   .smallScreen .image-btn {
-    width: 17.5vw;
+    width: 15vw !important;
+  }
+
+  .mobile .image-btn {
+    width: 35vw;
+  }
+
+  .tablet .image-btn {
+    width: 25vw;
   }
 
   .image-btn-text {
@@ -148,13 +114,6 @@ Revised: November 20, 2019 (CELS) for Cordova
   .mobile .image-btn-text text{
     stroke-width: 12;
     font-size: 1.5em;
-  }
-
-  .mobile .image-btn {
-    width: 25em;
-    height: auto;
-    border: none;
-    display: block;
   }
 
   .image-btn-text.kr text,
@@ -218,7 +177,7 @@ Revised: November 20, 2019 (CELS) for Cordova
   }
 
   .smallScreen .prompt_text {
-    font-size: 1.2em;
+    font-size: 1em;
   }
 
   .tablet .prompt_text.intro {
@@ -235,10 +194,10 @@ Revised: November 20, 2019 (CELS) for Cordova
   }
 
   .smallScreen .prompt_text.ru.intro {
-    font-size: 1em;
+    font-size: 0.9em;
   }
 
-  .jspsych-categorize-image-buttons-stimulus {
+  .jspsych-categorize-image-buttons-stimulus{
     width: 25vw;
     height: auto;
     display: block;
@@ -253,7 +212,7 @@ Revised: November 20, 2019 (CELS) for Cordova
     width: 75vw;
   }
 
-  .smallScreen .jspsych-categorize-image-buttons-stimulus {
+  .smallScreen .jspsych-categorize-image-buttons-stimulus{
     width: 30vw;
   }
 
@@ -298,8 +257,8 @@ jatos.onLoad(async function() {
     resp_mode='key';
   }
 
-  var lang='ru';
-  /*if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+  var lang='en';
+  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
   if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
@@ -307,7 +266,7 @@ jatos.onLoad(async function() {
   }
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
-  }*/
+  }
 
   // load honeycomb version of lang file
   console.log('loading json lang: ',lang)
@@ -407,6 +366,8 @@ jatos.onLoad(async function() {
     ctx.closePath();
   }
 
+  let activeBtn = null;
+
   function handlePress(e) {
     const wrapper = e.target.closest('.image-btn-wrapper');
     if (!wrapper) return;
@@ -426,7 +387,6 @@ jatos.onLoad(async function() {
 
   function handleRelease(e) {
     if (!activeBtn) {
-      console.log("no active button");
       return; // nothing to release
     }
     const wrapper = activeBtn.closest('.image-btn-wrapper');

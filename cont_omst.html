@@ -115,47 +115,6 @@
   .jspsych-btn {
     font-size: 150%;
   }
-    
-  /* --- FIX for laptop-size screens --- */
-  @media screen and (min-width: 1100px) and (max-width: 1400px) {
-    .jspsych-display-element {
-      font-size: 175%; /* shrink text slightly */
-    }
-    .jspsych-btn {
-      font-size: 130%;
-      padding: 0.5em 1.2em;
-      margin: 0.3em 0.6em;
-      transform: scale(0.95);
-    }
-    .jspsych-btn, input.image-btn {
-      margin-left: 0.1em !important;
-      margin-right: 0.1em !important;
-    }
-    .jspsych-canvas-button-response-button { 
-      transform: scale(0.75);
-    }
-
-    canvas {
-      max-width: 70vw !important;
-      height: auto !important;
-    }
-  }
-
-  /* Tighten up layout on medium height (short laptop screens) */
-  @media screen and (max-height: 700px) {
-    .jspsych-display-element {
-      font-size: 160%;
-    }
-    .jspsych-btn {
-      margin: 0.2em;
-      padding: 0.4em 1em;
-    }
-    body {
-      transform: scale(0.95);
-      transform-origin: top center;
-    }
-
-  }
 
   .image-btn-wrapper {
     display: inline-block;
@@ -166,14 +125,27 @@
   .desktop .image-btn-wrapper:hover .image-btn-text {
     transform: translate(-50%, -40%); 
   }
-
+  /* image button */
   .image-btn {
-    width: 20em;
+    width: 15vw;
     height: auto;
     border: none;
     display: block;
   }
 
+  .smallScreen .image-btn {
+    width: 15vw;
+  }
+
+  .mobile .image-btn {
+    width: 35vw;
+  }
+
+  .tablet .image-btn {
+    width: 25vw;
+  }
+
+  /* image button text */
   .image-btn-text {
     position: absolute;
     top: 38%;
@@ -206,13 +178,6 @@
   .mobile .image-btn-text text{
     stroke-width: 12;
     font-size: 1.5em;
-  }
-
-  .mobile .image-btn {
-    width: 25em;
-    height: auto;
-    border: none;
-    display: block;
   }
 
   .image-btn-text.kr text,
@@ -251,6 +216,7 @@
     background-color: #fff9e0;
   }
 
+  /* prompt text */
   .prompt_text {
     font-family: "Comic Sans MS", "Comic Neue", cursive;
     font-size: 1.5em;
@@ -618,7 +584,7 @@ jatos.onLoad(async function() {
   else {
     console.log(prompts[resp_mode])
     console.log(prompts[resp_mode]['threechoice']['trial_choices'])
-    var trial_choices= isMobile || isTablet ?
+    var trial_choices= isMobile ?
       [prompts[resp_mode]['threechoice']['trial_choices']['old'], 
       prompts[resp_mode]['threechoice']['trial_choices']['new'], 
       prompts[resp_mode]['threechoice']['trial_choices']['sim']]
@@ -959,7 +925,7 @@ var instr1_trial = {
         clear_canvas: false,
         button_html: trial_choices.map((txt, i) => `
           <div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_${isMobile || isTablet ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
+            <input type="image" src="img/assets/blank_${isMobile ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
                   class="image-btn" style="${isMobile ? 'mix-blend-mode: multiply;' : ''}">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
               <text x="50%" y="50%">${txt}</text>
@@ -969,8 +935,6 @@ var instr1_trial = {
 
         canvas_size: [canvasHeight, canvasWidth],
         trial_duration: (selfpaced == 1 ? null : 2500),
-        margin_horizontal: isMobile ? '20px' : '40px',
-        margin_vertical: isMobile ? '0px' : '20px',
 
         data: jsPsych.timelineVariable('data'),
 
@@ -994,8 +958,8 @@ var instr1_trial = {
           let resp = null;
           if (resp_mode == 'button') {
             if (data.response == 0) { resp = 'o'; }
-            else if (data.response == 2) { resp = isMobile || isTablet  ? 's' : 'n'; }
-            else if (data.response == 1) { resp = isMobile || isTablet ? 'n' : (twochoice == 1 ? 'n' : 's'); }
+            else if (data.response == 2) { resp = isMobile  ? 's' : 'n'; }
+            else if (data.response == 1) { resp = isMobile ? 'n' : (twochoice == 1 ? 'n' : 's'); }
           } else {
             if (data.response == 'v') { resp = 'o'; }
             else if (data.response == 'b') { resp = 's'; }
