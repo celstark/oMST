@@ -49,6 +49,9 @@ Revised: November 20, 2019 (CELS) for Cordova
   <script src="js/plugin-categorize-image-buttons.js"></script>
   <script src="js/jspsych_731/dist/plugin-preload.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&display=swap" rel="stylesheet">
   <style>
   .jspsych-display-element {
     font-size: 200%;
@@ -93,7 +96,7 @@ Revised: November 20, 2019 (CELS) for Cordova
   }
 
   .image-btn-text text {
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    font-family: "Comic Relief", system-ui;
     font-size: 1.5em;
     fill: #fff8d6;       /* inner text color */
     stroke: #5d2b12;     /* outline color */
@@ -153,7 +156,7 @@ Revised: November 20, 2019 (CELS) for Cordova
   }
 
   .prompt_text {
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-family: "Comic Relief", system-ui;
     font-size: 1.4em;
     color: #5d2b12;
     font-weight: normal;
@@ -495,8 +498,6 @@ function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
       const width = c.width;
       const height = c.height;
       ctx.fillRect(0, 0, width, height);
-
-
 
       const imgL = new Image();
       const imgR = new Image();

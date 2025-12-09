@@ -5,8 +5,17 @@
  * experiments look polished without any additional styles.
  */
 
- @import url(https://fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700);
+@font-face {
+  font-family: 'Comic Relief';
+  src: url('fonts/ComicRelief-Regular.woff2') format('woff2');
+  font-weight: 400;
+}
 
+@font-face {
+  font-family: 'Comic Relief';
+  src: url('fonts/ComicRelief-Bold.woff2') format('woff2');
+  font-weight: 700;
+}
 /* Container holding jsPsych content */
 
  .jspsych-display-element {

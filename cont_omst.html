@@ -87,10 +87,14 @@
 -->
 
 <head>
- <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
-        https://fonts.gstatic.com ; 
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; media-src *; 
-      img-src 'self' https://starklab.bio.uci.edu data: content:;">
+<meta http-equiv="Content-Security-Policy"
+      content="
+        default-src 'self' data: gap: 'unsafe-inline' 'unsafe-eval';
+        font-src 'self' blob: data:;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css;
+        img-src 'self' https://starklab.bio.uci.edu data: content:;
+        media-src *;
+      ">
       
   <script type="text/javascript" src="jatos.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
@@ -109,6 +113,7 @@
   <script src="js/jspsych_731/dist/plugin-browser-check.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
+
   .jspsych-display-element {
     font-size: 200%;
   }
@@ -157,7 +162,7 @@
   }
 
   .image-btn-text text {
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    font-family: 'Comic Relief', sans-serif;
     font-size: 1.5em;
     fill: #fff8d6;       /* inner text color */
     stroke: #5d2b12;     /* outline color */
@@ -218,7 +223,7 @@
 
   /* prompt text */
   .prompt_text {
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-family: 'Comic Relief', sans-serif;
     font-size: 1.5em;
     color: #5d2b12;
     font-weight: bold;
@@ -303,11 +308,12 @@ function getID() {
 }
 
 function drawHTMLText(ctx, html, x, y, isMobile, fontSize) {
+
   const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
   let fontStyle = '';
   const letterSpacing = fontSize * 0.08 // change multiplier to change kerning
   const maxWidth = 1.5 * x;
-  const fontFamily = `"Comic Sans MS", "Comic Neue", cursive`;
+  const fontFamily = `"Comic Relief", sans-serif`;
   ctx.textBaseline = 'middle';
   ctx.lineJoin = 'round';
   ctx.lineCap = 'round';
@@ -395,6 +401,14 @@ function drawHTMLText(ctx, html, x, y, isMobile, fontSize) {
       startX += word.width + letterSpacing * word.text.length;
     }
   }
+
+  const textEndY = startY + (lines.length * lineHeight);
+  return {
+    startY: startY - lineHeight / 2,  // Account for middle baseline
+    endY: textEndY + lineHeight / 2,
+    lineHeight: lineHeight,
+    numLines: lines.length
+  };
 }
 
 
@@ -467,6 +481,13 @@ jatos.onLoad(async function() {
     trial_stim[i].image=baseurl+trial_stim[i].image.replace("Set ","Set");
     preload_fnames.push(trial_stim[i].image);
   }
+  console.log("Waiting for Comic Relief to load...");
+  await Promise.all([
+    document.fonts.load('400 40px "Comic Relief"'),
+    document.fonts.load('700 40px "Comic Relief"'),
+    document.fonts.ready
+  ]);
+  console.log("Fonts loaded.");
 
   preload_fnames.push(
     "img/assets/blank_blue.png",
@@ -771,7 +792,7 @@ var instr1_trial = {
           const height = c.height;
           const stimImg = new Image();
           const stimPath = jsPsych.timelineVariable('stimulus');
-          const totalStars = isMobile ? 6 : 6;
+          const totalStars = 6;
           const maxFill = 10; // star1–star10
           const starSize = isMobile ? Math.min(width, height) * 0.15 :
                           isTablet ? Math.min(width, height) * 0.1 :
@@ -803,33 +824,34 @@ var instr1_trial = {
 
             // === Progress info (stars/brain) ===
             const progress = num_correct;
-            if (isMobile){
-              if (lang == 'kr'){
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.165, isMobile, 52);
-              } else if (lang == 'ru' || lang == 'nl'){
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.15, isMobile, 58);
-              }  else if (lang == 'cn'){
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.15, isMobile, 70);
-              } else {
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.2, isMobile, 70);
-              }
+            let textBounds;
+            let promptFontSize;
+            
+            if (isMobile) {
+              if (lang == 'kr') promptFontSize = 52;
+              else if (lang == 'ru' || lang == 'nl') promptFontSize = 58;
+              else if (lang == 'cn') promptFontSize = 70;
+              else promptFontSize = 70;
             } else if (smallScreen) {
-              if (lang == 'nl' || lang == 'ru'){
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 48);
-              } else if (lang == 'kr') {
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 36);
-              } else {
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
-              }
+              if (lang == 'nl' || lang == 'ru') promptFontSize = 48;
+              else if (lang == 'kr') promptFontSize = 36;
+              else promptFontSize = 54;
             } else if (isTablet) {
-              if (lang == 'kr'){
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 42);
-              } else {
-                drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
-              }
+              if (lang == 'kr') promptFontSize = 42;
+              else promptFontSize = 54;
             } else {
-              drawHTMLText(ctx, prompts[resp_mode][choicekey]['trial_prompt'], canvasWidth / 2, height * 0.075, isMobile, 54);
+              promptFontSize = 54;
             }
+
+            const textStartY = isMobile ? height * 0.2 : height * 0.075;
+            textBounds = drawHTMLText(
+              ctx, 
+              prompts[resp_mode][choicekey]['trial_prompt'], 
+              canvasWidth / 2, 
+              textStartY, 
+              isMobile, 
+              promptFontSize
+            );
 
             // Draw stars and brain
             const step = Math.floor((progress % (maxFill*2) + 1) / 2) || 0;
@@ -852,8 +874,6 @@ var instr1_trial = {
               }
 
               const currentStar = starImgs[currentLevel];
-
-              
               const brainW = brain.width * brainScale;
               const brainH = brain.height * brainScale;
               const brainX = isTablet ? width - brainW - 10 : width - brainW - 60;
@@ -883,41 +903,63 @@ var instr1_trial = {
                 }
               }
             }
+            return textBounds;
           }
 
           stimImg.onload = function() {
-            const imgWidth = stimImg.width * stimScale;
-            const imgHeight = stimImg.height * stimScale;
-            const x = (width - imgWidth) / 2;
-            const y = isMobile ? (height - imgHeight) / 2 + 225 : (height - imgHeight) / 2 + 65;
+            const textBounds = drawScene();
+            
+            // *** CALCULATE AVAILABLE SPACE ***
+            const topMargin = 20; // Space below text
+            const bottomMargin = 30; // Space above buttons
+            const imageTopY = textBounds.endY + topMargin;
+            const availableHeight = height - imageTopY - bottomMargin;
+            const availableWidth = width * 0.8; // Leave some horizontal padding
 
+            // *** SCALE IMAGE TO FIT AVAILABLE SPACE ***
+            const imgAspectRatio = stimImg.width / stimImg.height;
+            let scaledWidth, scaledHeight;
+
+            // Try fitting by height first
+            scaledHeight = availableHeight - (2 * framePadding);
+            scaledWidth = scaledHeight * imgAspectRatio;
+
+            // If too wide, fit by width instead
+            if (scaledWidth > availableWidth - (2 * framePadding)) {
+              scaledWidth = availableWidth - (2 * framePadding);
+              scaledHeight = scaledWidth / imgAspectRatio;
+            }
+
+            // *** POSITION IMAGE CENTERED IN AVAILABLE SPACE ***
+            const x = (width - scaledWidth) / 2;
+            const y = imageTopY + (availableHeight - scaledHeight - 2 * framePadding) / 2;
+
+            // Draw frame and image
             ctx.fillStyle = "#ffffff";
             ctx.strokeStyle = "#5d2514";
             ctx.lineWidth = 15;
-            roundRect(ctx, x - framePadding, y - framePadding, imgWidth + 2*framePadding, imgHeight + 2*framePadding, radius);
+            roundRect(ctx, x - framePadding, y - framePadding, scaledWidth + 2*framePadding, scaledHeight + 2*framePadding, radius);
             ctx.fill();
             ctx.stroke();
-            ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
+            ctx.drawImage(stimImg, x, y, scaledWidth, scaledHeight);
+
+            // Store for setTimeout clear
+            stimImg._renderInfo = { x, y, scaledWidth, scaledHeight };
           };
           stimImg.src = stimPath;
 
-          drawScene();
-
           // After stimulus duration, remove only the image + its frame
           setTimeout(() => {
-            const ctx2 = c.getContext('2d');
-            const imgWidth = stimImg.width * stimScale;
-            const imgHeight = stimImg.height * stimScale;
-            const x = (width - imgWidth) / 2;
-            const y = isMobile ? (height - imgHeight) / 2 + 225 : (height - imgHeight) / 2 + 65;
-
-            // Clear the frame + stim image area
-            ctx2.clearRect(
-              x - framePadding - ctx2.lineWidth,
-              y - framePadding - ctx2.lineWidth,
-              imgWidth + 2 * framePadding + ctx2.lineWidth * 2,
-              imgHeight + 2 * framePadding + ctx2.lineWidth * 2
-            );
+            if (stimImg._renderInfo) {
+              const { x, y, scaledWidth, scaledHeight } = stimImg._renderInfo;
+              const ctx2 = c.getContext('2d');
+              ctx2.clearRect(
+                x - framePadding - ctx2.lineWidth,
+                y - framePadding - ctx2.lineWidth,
+                scaledWidth + 2 * framePadding + ctx2.lineWidth * 2,
+                scaledHeight + 2 * framePadding + ctx2.lineWidth * 2
+              );
+            }
           }, STIMULUS_DURATION);
         },
 
@@ -1073,6 +1115,7 @@ var instr1_trial = {
       console.log('FAILED  '+fname)
     },
     on_finish: function(data) {
+      
       console.log('Preload success? ' + data.success)
       console.log('Failed on ' + data.failed_images.length)
     }

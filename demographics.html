@@ -25,57 +25,43 @@
   <script src="js/jspsych_731/dist/plugin-browser-check.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
-    .jspsych-display-element {
-      font-size: 200%;
-    }
-    .jspsych-btn {
-      font-size: 125%;
-    }
-    body {
+  .jspsych-display-element {
+    font-size: 200%;
+  }
+  .jspsych-btn {
+    font-size: 125%;
+  }
+  body {
     background-color: #fff9e0;
   }
-  /* Slightly shorter special buttons for laptop-size screens */
-  @media screen and (min-width: 1100px) and (max-width: 1400px) {
-    #button-container .jspsych-btn {
-      height: 2.4em !important; /* down from 3em */
-    }
+
+  .jspsych-btn {
+    font-size: 150%;
   }
 
-  /* For short screens (e.g. 632px tall) */
-  @media screen and (max-height: 700px) {
-    #button-container .jspsych-btn {
-      height: 2.2em !important;
-    }
-  }
   .image-btn-wrapper {
     display: inline-block;
     position: relative;
     margin: 0.5em;
   }
 
-  .desktop .image-btn-wrapper:hover .image-btn-text {
-    transform: translate(-50%, -40%); /* lower by 10% */
-  }
-
   .image-btn {
-    width: 20em;
-    height: auto;
-    border: none;
-    display: block;
-  }
-
-  .mobile .image-btn {
-    width: 25em;
+    width: 15vw;
     height: auto;
     border: none;
     display: block;
   }
 
   .smallScreen .image-btn {
-    width: 15em;
-    height: auto;
-    border: none;
-    display: block;
+    width: 20vw !important;
+  }
+
+  .mobile .image-btn {
+    width: 35vw;
+  }
+
+  .tablet .image-btn {
+    width: 25vw;
   }
 
   .image-btn-text {
@@ -83,133 +69,123 @@
     top: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
-    font-size: 1.2em;
-    color: #fff8d6;
-    font-weight: bold;
-    -webkit-text-stroke: 10px #5d2b12;
-    stroke-linejoin: round;
-    paint-order: stroke fill;
     pointer-events: none;
+    width: 100%;
+    height: auto; /* scales with wrapper if you want */
+  }
+
+  .image-btn-text text {
+    font-family: 'Comic Relief', sans-serif;
+    font-size: 1.30em;
+    fill: #fff8d6;       /* inner text color */
+    stroke: #5d2b12;     /* outline color */
+    stroke-width: 9;     /* outline thickness */
+    font-weight: bold;
     letter-spacing: 0.08em;
-
-  }
-
-  .image-btn-text.kr,
-  .image-btn-text.ru{
-    font-size: 0.9em;
-    -webkit-text-stroke: 8px #5d2b12;
-  }
-
-  .image-btn-text.nl{
-    font-size: 0.8em;
-  }
-
-  .mobile .image-btn-text {
-    -webkit-text-stroke: 15px #5d2b12;
+    text-anchor: middle;
+    dominant-baseline: middle;
     paint-order: stroke fill;
-    font-size: 1.5em;
-  }
-
-  .mobile .image-btn-text.nl{
-    font-size: 1em;
-  }
-
-  .mobile .image-btn-text.kr{
-    font-size: 1.4em;
-  }
-
-  .mobile .image-btn-text.ru {
-    font-size: 1.2em;
-  }
-
-  .mobile .image-btn-text.es {
-    font-size: 1.8em;
+    stroke-linejoin: round;
+    stroke-linecap: round;
   }
   
-  .smallScreen .image-btn-text {
-    -webkit-text-stroke: 10px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 1em;
+  .image-btn-wrapper.pressed .image-btn-text{
+    transform: translate(-50%, -40%) !important;
   }
 
-  .smallScreen .image-btn-text.kr{
-    -webkit-text-stroke: 8px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 0.8em;
-  }
-
-  .smallScreen .image-btn-text.nl{
-    -webkit-text-stroke: 6px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 0.6em;
-  }
-
-  .smallScreen .image-btn-text.ru{
-    -webkit-text-stroke: 8px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 0.8em;
-    line-height: 1.5;
+  .mobile .image-btn-text text{
+    stroke-width: 11;
+    font-size: 1.3em;
   }
 
   .prompt_text {
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
-    font-size: 2em;
+    font-family: 'Comic Relief', sans-serif;
+    font-size: 1.2em;
     color: #5d2b12;
     font-weight: normal;
     line-height: 1.2;
   }
 
   .mobile  .prompt_text {
-    font-size: 2em;
-  }
-
-  .mobile  .prompt_text.ru,
-  .mobile  .prompt_text.nl,
-  .mobile  .prompt_text.es {
-    font-size: 1.8em;
-  }
-
-  .smallScreen  .prompt_text {
-    font-size: 1.3em;
-  }
-
-  .smallScreen  .prompt_text.ru,
-  .smallScreen  .prompt_text.nl {
     font-size: 1em;
   }
 
   #jspsych-html-button-response-stimulus {
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-family: 'Comic Relief', sans-serif;
     font-size: 1.5em;
     color: #5d2b12;
     line-height: 1.2;
-  }
-  
-  .jspsych-categorize-image-buttons-stimulus {
-    width: 15em;
-    height: auto;
-  }
-
-  .mobile .jspsych-categorize-image-buttons-stimulus {
-    width: 25em;
-    height: auto;
-  }
-
-  .smallScreen .jspsych-categorize-image-buttons-stimulus {
-    width: 10em;
-    height: auto;
   }
 
   .no-default-btn .jspsych-btn {
     display: none !important;
   }
 
-  .mobile input[type="radio"] {
-    width: 2.4em;
-    height: 2.4em;
-    vertical-align: middle;
+  input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #fff8d6;
+    width: 22px;
+    height: 22px;
+    border: 3px solid #5d2b12;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
   }
+
+  input[type="radio"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: #5d2b12;
+    border-radius: 50%;
+  }
+
+  .mobile input[type="radio"] {
+    width: 30px;
+    height: 30px;
+    border: 4px solid #5d2b12;
+  }
+
+  .mobile input[type="radio"]:checked::after {
+    width: 17px;
+    height: 17px;
+  }
+
+  .jspsych-display-element input[type="text"] {
+    height: 24px;
+    width: 240px;
+    font-size: 22px;
+    color: #5d2b12;
+    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    border: 2px solid #5d2b12;
+    border-radius: 4px;
+    vertical-align: middle;
+    line-height: 1.2;
+  }
+
+  .jspsych-display-element input[type="text"]:focus {
+    border: 2px solid #5d2b12 !important;
+    border-color: #5d2b12 !important;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  .jspsych-display-element input[type="text"]:focus-visible {
+    border: 2px solid #5d2b12 !important;
+    border-color: #5d2b12 !important;
+  }
+
+  .mobile.jspsych-display-element input[type="text"] {
+    height: 48px;
+    font-size: 44px;
+  }
+
 
   </style>
 </head>
@@ -218,7 +194,15 @@
 </body>
 <script>
 const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024 && !isMobile;
+const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile && !isTablet;
+const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
+const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .65;
+const fontScale = isMobile ? 1.5 : 1.0;
+const stimScale = isMobile ? 0.9 : smallScreen ? 0.85: isTablet ? 0.8 : 0.9;
 document.body.classList.add(isMobile ? 'mobile' : 'desktop');
+if (smallScreen) {document.body.classList.add('smallScreen');}
+if (isTablet) {document.body.classList.add('tablet');}
 function getID() {
   // Try to get a reasonable ID code for this person
   // URL > studySession > workerID
@@ -313,7 +297,7 @@ jatos.onLoad(async function() {
 
   var demogform = {
     type: jsPsychSurveyHtmlForm,
-    preamble: prompts['preamble'],
+    preamble: `<p class="prompt_text ${lang}">${prompts['preamble']}</p>`,
     css_classes: ['no-default-btn'],
   html: function() {
       const fontSize = isMobile ? '48px' : '24px';
@@ -321,25 +305,25 @@ jatos.onLoad(async function() {
 
       return `
         <div style="text-align: left; font-size: ${fontSize}; line-height: 110%">
-          <p><b>${prompts['age']}</b> 
-            <input name="age" type="text" required style="height: ${height}; font-size: ${fontSize};" />
+          <p class="prompt_text ${lang}"><b>${prompts['age']}</b> 
+            <input class="age_input" name="age" type="text" required />
           </p>
 
-          <p><b>${prompts['gender']['prompt']}</b><br>
+          <p class="prompt_text ${lang}"><b>${prompts['gender']['prompt']}</b><br>
             <input type="radio" id="male" name="gender" value="male" style="margin-left: 50px" required>
             <label for="male">${prompts['gender']['m']}</label><br>
             <input type="radio" id="female" name="gender" value="female" style="margin-left: 50px">
             <label for="female">${prompts['gender']['f']}</label>
           </p>
 
-          <p><b>${prompts['ethnicity']['prompt']}</b><br>
+          <p class="prompt_text ${lang}"><b>${prompts['ethnicity']['prompt']}</b><br>
             <input type="radio" id="hispanic" name="ethnicity" value="hispanic" style="margin-left: 50px" required>
             <label for="hispanic">${prompts['ethnicity']['h']}</label><br>
             <input type="radio" id="nonhispanic" name="ethnicity" value="nonhispanic" style="margin-left: 50px">
             <label for="nonhispanic">${prompts['ethnicity']['nh']}</label>
           </p>
 
-          <p><b>${prompts['race']['prompt']}</b><br>
+          <p class="prompt_text ${lang}"><b>${prompts['race']['prompt']}</b><br>
             <input type="radio" id="nativeamerican" name="race" value="nativeamerican" style="margin-left: 50px" required>
             <label for="nativeamerican">${prompts['race']['ai']}</label><br>
             <input type="radio" id="asian" name="race" value="asian" style="margin-left: 50px">
@@ -354,7 +338,7 @@ jatos.onLoad(async function() {
             <label for="more">${prompts['race']['m']}</label>
           </p>
 
-          <p><b>${prompts['handedness']['prompt']}</b><br>
+          <p class="prompt_text ${lang}"><b>${prompts['handedness']['prompt']}</b><br>
             <input type="radio" id="left" name="handedness" value="left" style="margin-left: 50px" required>
             <label for="left">${prompts['handedness']['l']}</label><br>
             <input type="radio" id="right" name="handedness" value="right" style="margin-left: 50px">
@@ -364,15 +348,12 @@ jatos.onLoad(async function() {
           </p>
         </div>
 
-        <div style="text-align:center; margin-top:20px;">
-          <div class="image-btn-wrapper">
-            <input type="image"
-              src="img/assets/blank_green.png"
-              onmouseover="this.src='img/assets/blank_green_pressed.png'"
-              onmouseout="this.src='img/assets/blank_green.png'"
-              class="image-btn">
-            <span class="image-btn-text">Continue</span>
-          </div>
+        <div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_green.png"
+                class="image-btn" id="id_continue_btn">
+          <svg class="image-btn-text" viewBox="0 0 266 160">
+            <text x="50%" y="50%">Continue</text>
+          </svg>
         </div>
       `;
     },
@@ -386,13 +367,55 @@ jatos.onLoad(async function() {
       e.preventDefault();  // prevent weird image input default
       form.requestSubmit(); // properly submit the form
     });
+
+    document.addEventListener('mouseover', handlePress, true);
+    document.addEventListener('mouseleave', handleRelease, true);
+    document.addEventListener('touchstart', handlePress, { passive: true });
+    document.addEventListener('touchend', handleRelease);
+    document.addEventListener('mouseup', handleRelease);
   },
 
   on_finish: function(data) {
+    document.removeEventListener('mouseover', handlePress, true);
+    document.removeEventListener('mouseleave', handleRelease, true);
+    document.removeEventListener('touchstart', handlePress);
+    document.removeEventListener('touchend', handleRelease);
+    document.removeEventListener('mouseup', handleRelease);
+
     console.log(data.response);
   }
   }
-  
+
+  let activeBtn = null;
+
+  function handlePress(e) {
+    const wrapper = e.target.closest('.image-btn-wrapper');
+    if (!wrapper) return;
+
+    const btn = wrapper.querySelector('.image-btn');
+    const origSrc = btn.dataset.orig || btn.src;
+    const pressedSrc = btn.dataset.pressed || origSrc.replace('.png', '_pressed.png');
+
+    btn.dataset.orig = origSrc;
+    btn.dataset.pressed = pressedSrc;
+
+    btn.src = pressedSrc;
+    wrapper.classList.add('pressed');
+
+    activeBtn = btn;  // remember which button is pressed
+  }
+
+  function handleRelease(e) {
+    if (!activeBtn) {
+      return; // nothing to release
+    }
+    const wrapper = activeBtn.closest('.image-btn-wrapper');
+    activeBtn.src = activeBtn.dataset.orig;
+    wrapper.classList.remove('pressed');
+
+    activeBtn = null; // reset
+  }
+
   var timeline = [browserinfo, demogform];
   jsPsych.run(timeline);
 

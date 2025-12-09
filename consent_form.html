@@ -13,51 +13,36 @@
   <title>Consent Form</title>
 </head>
 <style>
-  body {
-    background-color: #fff9e0;
+  .jspsych-display-element {
+    font-size: 200%;
   }
-  /* Slightly shorter special buttons for laptop-size screens */
-  @media screen and (min-width: 1100px) and (max-width: 1400px) {
-    #button-container .jspsych-btn {
-      height: 2.4em !important; /* down from 3em */
-    }
+  .jspsych-btn {
+    font-size: 150%;
   }
 
-  /* For short screens (e.g. 632px tall) */
-  @media screen and (max-height: 700px) {
-    #button-container .jspsych-btn {
-      height: 2.2em !important;
-    }
-  }
   .image-btn-wrapper {
     display: inline-block;
     position: relative;
     margin: 0.5em;
   }
 
-  .desktop .image-btn-wrapper:hover .image-btn-text {
-    transform: translate(-50%, -40%); /* lower by 10% */
-  }
-
   .image-btn {
-    width: 20em;
-    height: auto;
-    border: none;
-    display: block;
-  }
-
-  .mobile .image-btn {
-    width: 25em;
+    width: 15vw;
     height: auto;
     border: none;
     display: block;
   }
 
   .smallScreen .image-btn {
-    width: 15em;
-    height: auto;
-    border: none;
-    display: block;
+    width: 20vw !important;
+  }
+
+  .mobile .image-btn {
+    width: 35vw;
+  }
+
+  .tablet .image-btn {
+    width: 25vw;
   }
 
   .image-btn-text {
@@ -65,99 +50,122 @@
     top: 38%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
-    font-size: 1.5em;
-    color: #fff8d6;
-    font-weight: bold;
-    -webkit-text-stroke: 10px #5d2b12;
-    stroke-linejoin: round;
-    paint-order: stroke fill;
     pointer-events: none;
-    letter-spacing: 0.08em;
-
+    width: 100%;
+    height: auto; /* scales with wrapper if you want */
   }
 
-  .image-btn-text.cn {
-    font-size: 2.5em;
-  }
-
-  .image-btn-text.es {
+  .image-btn-text text {
+    font-family: 'Comic Relief', sans-serif;
     font-size: 2.0em;
-  }
-
-  .image-btn-text.kr{
-    font-size: 1.85em;
-  }
-
-  .image-btn-text.ru{
-    font-size: 1.85em;
-    -webkit-text-stroke: 8px #5d2b12;
-  }
-
-  .image-btn-text.nl{
-    font-size: 0.8em;
-  }
-
-  .mobile .image-btn-text {
-    -webkit-text-stroke: 16px #5d2b12;
+    fill: #fff8d6;       /* inner text color */
+    stroke: #5d2b12;     /* outline color */
+    stroke-width: 10;     /* outline thickness */
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    text-anchor: middle;
+    dominant-baseline: middle;
     paint-order: stroke fill;
-    font-size: 2.4em;
-  }
-
-  .mobile .image-btn-text.cn{
-    font-size: 3em;
-  }
-
-  .mobile .image-btn-text.nl{
-    font-size: 2.4em;
-  }
-
-  .mobile .image-btn-text.kr{
-    font-size: 2.4em;
-    -webkit-text-stroke: 14px #5d2b12;
-  }
-
-  .mobile .image-btn-text.ru {
-    -webkit-text-stroke: 14px #5d2b12;
-    font-size: 2.5em;
-  }
-
-  .mobile .image-btn-text.es {
-    font-size: 2.8em;
+    stroke-linejoin: round;
+    stroke-linecap: round;
   }
   
-  .smallScreen .image-btn-text {
-    -webkit-text-stroke: 7px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 1.4em;
+  .image-btn-wrapper.pressed .image-btn-text{
+    transform: translate(-50%, -40%) !important;
   }
 
-  .smallScreen .image-btn-text.kr{
-    -webkit-text-stroke: 8px #5d2b12;
-    paint-order: stroke fill;
+  .mobile .image-btn-text text{
+    stroke-width: 14;
+    font-size: 2.5em;
+  }
+
+  .image-btn-text.kr text,
+  .image-btn-text.ru text{
+    font-size: 2em;
+    stroke-width: 10;
+  }
+
+  .image-btn-text.nl  text{
+    font-size: 2em;
+    stroke-width: 10;
+  }
+  
+  .mobile .image-btn-text.kr text {
+    font-size: 2em;
+    stroke-width: 12;
+  }
+
+  .mobile .image-btn-text.nl text {
     font-size: 0.8em;
+    stroke-width: 8;
   }
 
-  .smallScreen .image-btn-text.nl{
-    -webkit-text-stroke: 6px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 0.6em;
+  .mobile .image-btn-text.ru text {
+    font-size: 2.0em;
+    stroke-width: 12;
+  }
+  
+  .tablet .image-btn-text.kr text {
+    font-size: 2.0em;
+    stroke-width: 10;
   }
 
-  .smallScreen .image-btn-text.ru{
-    -webkit-text-stroke: 7px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 1.75em;
+  .tablet .image-btn-text.ru text {
+    font-size: 2.0em;
+    stroke-width: 10;
   }
 
-  .smallScreen .image-btn-text.cn{
-    -webkit-text-stroke: 7px #5d2b12;
-    paint-order: stroke fill;
-    font-size: 1.75em;
+  body {
+    background-color: #fff9e0;
   }
 
   .prompt_text {
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-family: 'Comic Relief', sans-serif;
+    font-size: 2.6em;
+    color: #5d2b12;
+    font-weight: normal;
+    line-height: 1.2;
+  }
+
+  .mobile  .prompt_text {
+    font-size: 3em;
+  }
+
+  .mobile .prompt_text.nl {
+    font-size: 1.8em;
+  }
+
+  .mobile .prompt_text.ru {
+    font-size: 1.6em;
+  }
+
+  .tablet .prompt_text{
+    font-size: 1.2em;
+  }
+
+  .smallScreen .prompt_text {
+    font-size: 2.6em;
+  }
+
+  .tablet .prompt_text.intro {
+    font-size: 2.6em;
+  }
+
+  .mobile .prompt_text.es.intro,
+  .mobile .prompt_text.nl.intro {
+    font-size: 1.8em;
+  }
+
+  .mobile .prompt_text.ru.intro {
+    font-size: 1.8em;
+  }
+
+  .smallScreen .prompt_text.ru.intro {
+    font-size: 0.9em;
+  }
+
+  .prompt_text {
+    font-family: 'Comic Relief', sans-serif;
     font-size: 2em;
     color: #5d2b12;
     font-weight: normal;
@@ -184,25 +192,14 @@
   }
 
   #jspsych-html-button-response-stimulus {
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-family: 'Comic Relief', sans-serif;
     font-size: 1.5em;
     color: #5d2b12;
     line-height: 1.2;
   }
-  
-  .jspsych-categorize-image-buttons-stimulus {
-    width: 15em;
-    height: auto;
-  }
 
-  .mobile .jspsych-categorize-image-buttons-stimulus {
-    width: 25em;
-    height: auto;
-  }
-
-  .smallScreen .jspsych-categorize-image-buttons-stimulus {
-    width: 10em;
-    height: auto;
+  .tablet #consenttext {
+    font-size: 1.8em;
   }
 </style>
 
@@ -232,13 +229,16 @@ function waitFor(conditionFunction) {
   return new Promise(poll)
 }
 const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile;
+const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024 && !isMobile;
+const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile && !isTablet;
 const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .50;
+const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .65;
 const fontScale = isMobile ? 1.5 : 1.0;
-const stimScale = isMobile ? 2 : smallScreen ? 0.85: 1.0;
+const stimScale = isMobile ? 0.9 : smallScreen ? 0.85: isTablet ? 0.8 : 0.9;
 document.body.classList.add(isMobile ? 'mobile' : 'desktop');
 if (smallScreen) {document.body.classList.add('smallScreen');}
+if (isTablet) {document.body.classList.add('tablet');}
+
 jatos.onLoad(async function () {
   var sid = getID();
   console.log('In consent, sid= ' + sid);
@@ -290,32 +290,77 @@ jatos.onLoad(async function () {
   var buttonsDiv = document.createElement('div');
   buttonsDiv.id = 'buttons';
   buttonsDiv.style.display = 'flex';
-  buttonsDiv.style.justifyContent = 'center'; // aligns with consent text
+  buttonsDiv.style.justifyContent = 'center';
   buttonsDiv.style.gap = '40px';
   buttonsDiv.style.marginTop = '20px';
   buttonsDiv.innerHTML = `
-    <div id="agreeButtonWrapper" class="image-btn-wrapper">
+    <div class="image-btn-wrapper" id="agreeButtonWrapper">
       <input type="image" src="img/assets/blank_green.png"
-             onmouseover="this.src='img/assets/blank_green_pressed.png'"
-             onmouseout="this.src='img/assets/blank_green.png'"
-             class="image-btn">
-      <span class="image-btn-text ${lang}">${prompts['buttons']['agree']}</span>
+            class="image-btn">
+      <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+        <text x="50%" y="50%">${prompts['buttons']['agree']}</text>
+      </svg>
     </div>
 
-    <div id="cancelButtonWrapper" class="image-btn-wrapper">
+    <div class="image-btn-wrapper" id="cancelButtonWrapper">
       <input type="image" src="img/assets/blank_red.png"
-             onmouseover="this.src='img/assets/blank_red_pressed.png'"
-             onmouseout="this.src='img/assets/blank_red.png'"
-             class="image-btn">
-      <span class="image-btn-text ${lang}">${prompts['buttons']['cancel']}</span>
+            class="image-btn">
+      <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+        <text x="50%" y="50%">${prompts['buttons']['cancel']}</text>
+      </svg>
     </div>
   `;
-  document.getElementById('consenttext').after(buttonsDiv);
+  document.body.appendChild(buttonsDiv);
 
-  // Agree button click
+  // ---------------------------------------------------------------------
+  // Press / Release logic (works for both buttons)
+  // ---------------------------------------------------------------------
+
+  let activeBtn = null;
+
+  function handlePress(e) {
+    const wrapper = e.target.closest('.image-btn-wrapper');
+    if (!wrapper) return;
+
+    const btn = wrapper.querySelector('.image-btn');
+    const origSrc = btn.dataset.orig || btn.src;
+    const pressedSrc = btn.dataset.pressed || origSrc.replace('.png', '_pressed.png');
+
+    btn.dataset.orig = origSrc;
+    btn.dataset.pressed = pressedSrc;
+
+    btn.src = pressedSrc;
+    wrapper.classList.add('pressed');
+
+    activeBtn = btn;
+  }
+
+  function handleRelease() {
+    if (!activeBtn) return;
+
+    const wrapper = activeBtn.closest('.image-btn-wrapper');
+    activeBtn.src = activeBtn.dataset.orig;
+    wrapper.classList.remove('pressed');
+    activeBtn = null;
+  }
+
+  // Attach listeners to BOTH wrappers
+  const wrappers = document.querySelectorAll('.image-btn-wrapper');
+  wrappers.forEach(wrapper => {
+    wrapper.addEventListener('mouseenter', handlePress, true);
+    wrapper.addEventListener('mouseleave', handleRelease, true);
+    wrapper.addEventListener('touchstart', handlePress, { passive: true });
+    wrapper.addEventListener('touchend', handleRelease);
+  });
+  document.addEventListener('mouseup', handleRelease);
+
+  // ---------------------------------------------------------------------
+  // Click actions
+  // ---------------------------------------------------------------------
   document.getElementById('agreeButtonWrapper').addEventListener('click', function() {
+    // (your agree logic unchanged)
     let date = new Date();
-    let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate()) +
+    let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() +
                 "-" + date.getHours() + "-" + date.getMinutes();
     jatos.batchSession.add("/" + sid + "/-", "ConsentAgreed_" + dcode);
     var expdata = "Consent given, ID=" + sid + " URL ID=" + jatos.urlQueryParameters.sid;
@@ -323,26 +368,27 @@ jatos.onLoad(async function () {
     var order=jatos.studySessionData["order"];
     jatos.studySessionData["taskindex"] += 1;
 
-    if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) {
-      if (typeof jatos.urlQueryParameters.sid === 'undefined' ||
-          typeof jatos.urlQueryParameters.sona === 'undefined' ||
-          typeof jatos.studyJsonInput['experiment_id'] === 'undefined' ||
-          typeof jatos.studyJsonInput['credit_token'] === 'undefined') {
+    if (!order || order.length == jatos.studySessionData["taskindex"]) {
+      if (!jatos.urlQueryParameters.sid ||
+          !jatos.urlQueryParameters.sona ||
+          !jatos.studyJsonInput['experiment_id'] ||
+          !jatos.studyJsonInput['credit_token']) {
         jatos.submitResultData(expdata,jatos.endStudy);
       } else {
         var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
-                     '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
+                    '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
         jatos.endStudyAndRedirect(redirect,expdata);
       }
     } else {
-      jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
+      jatos.submitResultData(expdata, () =>
+        jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]])
+      );
     }
   });
 
-  // Cancel button click
   document.getElementById('cancelButtonWrapper').addEventListener('click', function() {
     let date = new Date();
-    let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate()) +
+    let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() +
                 "-" + date.getHours() + "-" + date.getMinutes();
     jatos.batchSession.add("/" + sid + "/-", "ConsentNOTAgreed_" + dcode);
     jatos.abortStudy("Consent not given.");
