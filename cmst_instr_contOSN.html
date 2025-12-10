@@ -51,7 +51,6 @@ Revised: November 20, 2019 (CELS) for Cordova
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&display=swap" rel="stylesheet">
   <style>
   .jspsych-display-element {
     font-size: 200%;
@@ -157,68 +156,44 @@ Revised: November 20, 2019 (CELS) for Cordova
 
   .prompt_text {
     font-family: "Comic Relief", system-ui;
-    font-size: 1.4em;
     color: #5d2b12;
     font-weight: normal;
     line-height: 1.2;
   }
 
-  .mobile  .prompt_text {
-    font-size: 2em;
-  }
+  /* Add to your stylesheet */
+.jspsych-content {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  align-items: center;
+  justify-content: space-around;
+}
 
-  .mobile .prompt_text.nl {
-    font-size: 1.8em;
-  }
+.jspsych-categorize-image-buttons-stimulus {
+  flex-shrink: 0;
+  margin: 10px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  .mobile .prompt_text.ru {
-    font-size: 1.6em;
-  }
+.prompt-container {
+  flex-grow: 1;
+  width: 100%;
+  min-height: 30px;
+}
 
-  .tablet .prompt_text{
-    font-size: 1.2em;
-  }
-
-  .smallScreen .prompt_text {
-    font-size: 1em;
-  }
-
-  .tablet .prompt_text.intro {
-    font-size: 1.4em;
-  }
-
-  .mobile .prompt_text.es.intro,
-  .mobile .prompt_text.nl.intro {
-    font-size: 1.8em;
-  }
-
-  .mobile .prompt_text.ru.intro {
-    font-size: 1.4em;
-  }
-
-  .smallScreen .prompt_text.ru.intro {
-    font-size: 0.9em;
-  }
-
-  .jspsych-categorize-image-buttons-stimulus{
-    width: 25vw;
-    height: auto;
-    display: block;
-    margin: 0 auto;
-  }
-
-  .tablet .jspsych-categorize-image-buttons-stimulus {
-    width: 65vw;
-  }
-
-  .mobile .jspsych-categorize-image-buttons-stimulus {
-    width: 75vw;
-  }
-
-  .smallScreen .jspsych-categorize-image-buttons-stimulus{
-    width: 30vw;
-  }
-
+.prompt_text {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  line-height: 1.3;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
   </style>
 </head>
 <script>
@@ -399,6 +374,274 @@ jatos.onLoad(async function() {
     activeBtn = null; // reset
   }
 
+  function fitTextToContainer(element, containerHeight, minSize = 12, maxSize = 48) {
+    let fontSize = maxSize;
+    element.style.fontSize = fontSize + 'px';
+    
+    // Binary search for the right size
+    let low = minSize;
+    let high = maxSize;
+    
+    while (low <= high) {
+      fontSize = Math.floor((low + high) / 2);
+      element.style.fontSize = fontSize + 'px';
+      
+      if (element.scrollHeight <= containerHeight) {
+        low = fontSize + 1;
+      } else {
+        high = fontSize - 1;
+      }
+    }
+    
+    // Set to the largest size that fits
+    element.style.fontSize = high + 'px';
+    return high;
+  }
+
+  function fitTrialToScreen() {
+    const container = document.querySelector('.jspsych-content');
+    if (!container) return;
+    
+    const totalHeight = window.visualViewport ? 
+      window.visualViewport.height : window.innerHeight;
+    const totalWidth = window.visualViewport ? 
+      window.visualViewport.width : window.innerWidth;
+    
+    // Get the three main sections
+    const promptContainer = document.querySelector('.prompt-container');
+    const stimulusContainer = document.querySelector('.jspsych-categorize-image-buttons-stimulus');
+    const buttonContainer = document.querySelector('#jspsych-categorize-image-buttons-response-btngroup');
+    
+    if (!promptContainer || !stimulusContainer || !buttonContainer) return;
+    
+    console.log('Total height:', totalHeight);
+    console.log('Device type - isMobile:', isMobile, 'isTablet:', isTablet, 'smallScreen:', smallScreen, 'desktop:', !smallScreen && !isMobile && !isTablet);
+    
+    // MOBILE: Buttons stacked (2 top, 1 bottom), vertical layout
+    if (isMobile) {
+      const buttonHeight = buttonContainer.offsetHeight;
+      console.log('Button height:', buttonHeight);
+      
+      // Stimulus should be square at 90vw
+      const stimulusSize = totalWidth * 0.90;
+      console.log('Stimulus size:', stimulusSize);
+      
+      // Remaining space for prompt
+      const margin = 40;
+      const promptHeight = totalHeight - stimulusSize - buttonHeight - margin;
+      console.log('Prompt height:', promptHeight);
+      
+      // Ensure prompt has minimum viable space
+      if (promptHeight < 30) {
+        console.warn('Prompt space too small, adjusting layout');
+        const adjustedStimSize = totalHeight - buttonHeight - 60 - margin;
+        stimulusContainer.style.width = adjustedStimSize + 'px';
+        stimulusContainer.style.height = adjustedStimSize + 'px';
+        promptContainer.style.height = '60px';
+      } else {
+        stimulusContainer.style.width = stimulusSize + 'px';
+        stimulusContainer.style.height = stimulusSize + 'px';
+        stimulusContainer.style.maxWidth = stimulusSize + 'px';
+        stimulusContainer.style.maxHeight = stimulusSize + 'px';
+        promptContainer.style.height = promptHeight + 'px';
+      }
+    } 
+    // TABLET, LAPTOP, DESKTOP: Buttons in a row, horizontal layout
+    else {
+      const buttonHeight = buttonContainer.offsetHeight;
+      console.log('Button height (horizontal):', buttonHeight);
+      
+      // For horizontal layouts, buttons take less height but more width
+      // We want the image to be reasonable size, not blown out
+      
+      // Calculate available space for stimulus + prompt
+      const margin = 60; // More margin for desktop
+      const availableHeight = totalHeight - buttonHeight - margin;
+      
+      // Determine stimulus size based on device
+      let maxStimulusPercent;
+      if (smallScreen) {
+        maxStimulusPercent = 0.75;
+      } else if (isTablet) {
+        maxStimulusPercent = 0.80;
+      } else {
+        maxStimulusPercent = 0.70;
+      } 
+      console.log(availableHeight);
+      const stimulusAllocation = availableHeight * maxStimulusPercent;
+      const promptAllocation = availableHeight * (1 - maxStimulusPercent);
+      
+      console.log('Stimulus allocation:', stimulusAllocation);
+      console.log('Prompt allocation:', promptAllocation);
+      
+      // Size stimulus as square, but constrained by both height and reasonable width
+      let stimulusSize = Math.min(
+        stimulusAllocation,           // Don't exceed allocated height
+        totalWidth * 0.80,            // Don't exceed 80% of screen width
+        totalHeight * 0.70            // Don't exceed 70% of screen height
+      );
+      
+      console.log('Final stimulus size:', stimulusSize);
+      
+      stimulusContainer.style.width = stimulusSize + 'px';
+      stimulusContainer.style.height = stimulusSize + 'px';
+      stimulusContainer.style.maxWidth = stimulusSize + 'px';
+      stimulusContainer.style.maxHeight = stimulusSize + 'px';
+      stimulusContainer.style.margin = '40px auto'; // Center it
+      
+      // Prompt gets remaining space
+      const actualPromptHeight = totalHeight - stimulusSize - buttonHeight - margin;
+      promptContainer.style.height = actualPromptHeight + 'px';
+      console.log('Actual prompt height:', actualPromptHeight);
+    }
+    
+    // Style prompt container (same for all devices)
+    promptContainer.style.display = 'flex';
+    promptContainer.style.alignItems = 'center';
+    promptContainer.style.justifyContent = 'center';
+    promptContainer.style.overflow = 'hidden';
+    promptContainer.style.padding = '10px';
+    promptContainer.style.boxSizing = 'border-box';
+    
+    // Style stimulus to maintain square aspect ratio
+    const img = stimulusContainer.querySelector('img') || stimulusContainer;
+    if (img) {
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'contain';
+    }
+    
+    // FIT TEXT TO PROMPT CONTAINER
+    const promptText = promptContainer.querySelector('.prompt_text');
+    if (promptText && typeof fitTextToContainer === 'function') {
+      const containerHeight = promptContainer.offsetHeight;
+      
+      // Adjust font size ranges based on device
+      let minFontSize, maxFontSize;
+      if (isMobile) {
+        minFontSize = 36;
+        maxFontSize = 72;
+      } else if (isTablet) {
+        minFontSize = 40;
+        maxFontSize = 80;
+      } else if (smallScreen) {
+        minFontSize = 44;
+        maxFontSize = 88;
+      } else { // desktop
+        minFontSize = 32;
+        maxFontSize = 64;
+      }
+      
+      const actualPromptHeight = containerHeight - 20;
+      fitTextToContainer(promptText, actualPromptHeight, minFontSize, maxFontSize);
+    }
+  }
+
+  function calculateSideBySideCanvasSize() {
+    const totalWidth = window.visualViewport ? 
+      window.visualViewport.width : window.innerWidth;
+    
+    // Define horizontal space allocation for each device type
+    let widthPercent;
+    if (isMobile) {
+      widthPercent = 0.90; // 90% of screen width
+    } else if (isTablet) {
+      widthPercent = 0.80; // 80% of screen width
+    } else if (smallScreen) {
+      widthPercent = 0.70; // 70% of screen width
+    } else { // desktop
+      widthPercent = 0.60; // 60% of screen width
+    }
+    
+    // Calculate canvas width
+    const canvasWidth = totalWidth * widthPercent;
+    
+    // Calculate canvas height (2:1 ratio - width:height)
+    // Since we have 2 square images side by side, the canvas is 2x wider than tall
+    // So height = width / 2
+    const canvasHeight = canvasWidth / 1.8; // 2.2 accounts for gap between images
+    
+    console.log('Canvas size calculated:', {
+      device: isMobile ? 'mobile' : isTablet ? 'tablet' : smallScreen ? 'laptop' : 'desktop',
+      widthPercent,
+      canvasWidth,
+      canvasHeight
+    });
+    
+    // jsPsych canvas_size is [height, width]
+    return [Math.floor(canvasHeight), Math.floor(canvasWidth)];
+  }
+
+  function fitSideBySideToScreen() {
+    const container = document.querySelector('.jspsych-content');
+    if (!container) return;
+    
+    const totalHeight = window.visualViewport ? 
+      window.visualViewport.height : window.innerHeight;
+    
+    // Find the actual elements
+    const canvasStimulusContainer = document.querySelector('.jspsych-canvas-button-response-stimulus');
+    const buttonContainer = document.querySelector('.jspsych-canvas-button-response-btngroup');
+    const promptText = document.querySelector('.prompt_text');
+    
+    if (!canvasStimulusContainer || !buttonContainer) {
+      console.warn('Side-by-side elements not found');
+      if(!canvasStimulusContainer){
+        console.warn("stim not found");
+      }
+      return;
+    }
+    
+    console.log('Fitting side-by-side prompt text');
+    
+    // Measure actual heights
+    const canvasHeight = canvasStimulusContainer.offsetHeight;
+    const buttonHeight = buttonContainer.offsetHeight;
+    const margin = isMobile ? 40 : 60;
+    
+    // Calculate remaining space for prompt
+    const promptHeight = totalHeight - canvasHeight - buttonHeight - margin;
+    
+    console.log('Space allocation:', {
+      totalHeight,
+      canvasHeight,
+      buttonHeight,
+      promptHeight,
+      margin
+    });
+    
+    // Style and fit prompt text
+    if (promptText && promptHeight > 20) {
+      promptText.style.height = Math.max(promptHeight, 40) + 'px';
+      promptText.style.display = 'flex';
+      promptText.style.alignItems = 'center';
+      promptText.style.justifyContent = 'center';
+      promptText.style.overflow = 'hidden';
+      promptText.style.padding = '10px';
+      promptText.style.boxSizing = 'border-box';
+      promptText.style.margin = '0 auto';
+      
+      // Fit text to available space
+      if (typeof fitTextToContainer === 'function') {
+        let minFontSize, maxFontSize;
+        if (isMobile) {
+          minFontSize = 36;
+          maxFontSize = 72;
+        } else if (isTablet) {
+          minFontSize = 40;
+          maxFontSize = 80;
+        } else if (smallScreen) {
+          minFontSize = 44;
+          maxFontSize = 88;
+        } else { // desktop
+          minFontSize = 48;
+          maxFontSize = 96;
+        }
+        fitTextToContainer(promptText, promptHeight - 20, minFontSize, maxFontSize);
+      }
+    }
+  }
+
   //var trial_choices= prompts['k_trial_choices'];  // DELETE THIS
 
   // Default is keyboard here - override if buttons
@@ -421,140 +664,292 @@ jatos.onLoad(async function() {
   //console.log(prompts['k_trial_choices'][0], prompts['k_trial_choices'][1], prompts['k_trial_choices'][2])
 
 
-function makeCategorizeTrial(imgPath, keyAnswer, buttonAnswer, promptText, incText, corText) {
-  const maxPromptHeight = 80;
-  const trial_choices = isMobile ?
-    [prompts[resp_mode]['trial_choices']['old'], 
-     prompts[resp_mode]['trial_choices']['new'], 
-     prompts[resp_mode]['trial_choices']['sim']]
-    :
-    [prompts[resp_mode]['trial_choices']['old'], 
-     prompts[resp_mode]['trial_choices']['sim'], 
-     prompts[resp_mode]['trial_choices']['new']];
+  function makeCategorizeTrial(imgPath, keyAnswer, buttonAnswer, promptText, incText, corText) {
+    const trial_choices = isMobile ?
+      [prompts[resp_mode]['trial_choices']['old'], 
+      prompts[resp_mode]['trial_choices']['new'], 
+      prompts[resp_mode]['trial_choices']['sim']]
+      :
+      [prompts[resp_mode]['trial_choices']['old'], 
+      prompts[resp_mode]['trial_choices']['sim'], 
+      prompts[resp_mode]['trial_choices']['new']];
 
-  return {
-    type: (resp_mode == 'button' ? jsPsychCategorizeImageButtons : jsPsychCategorizeImage),
-    stimulus: imgPath,
-    key_answer: keyAnswer,
-    button_answer: buttonAnswer,
-    choices: trial_choices,
-    prompt: `
-      <div class="prompt-container" style="height: ${maxPromptHeight}px;">
-        <p class="prompt prompt_text ${lang}" style="font-weight: normal;">${promptText}</p>
-      </div>
-    `,
-    incorrect_text: `
-      <div class="prompt-container" style="height: ${maxPromptHeight}px;">
-        <p class="prompt prompt_text ${lang}" style="font-weight: normal;color: red;">${incText}</p>
-      </div>
-    `,
-    correct_text: `
-      <div class="prompt-container" style="height: ${maxPromptHeight}px;">
-        <p class="prompt prompt_text ${lang}" style="font-weight: normal;color: green;">${corText}</p>
-      </div>
-    `,
-    force_correct_button_press: true,
-    button_html: trial_choices.map((txt, i) => `
-      <div class="image-btn-wrapper">
-        <input type="image" 
-               src="img/assets/blank_${isMobile ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
-               class="image-btn">
-        <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-          <text x="50%" y="50%">${txt}</text>
-        </svg>
-      </div>
-    `),
-    on_load: function() {
-      document.addEventListener('mouseover', handlePress, true);
-      document.addEventListener('mouseleave', handleRelease, true);
-      document.addEventListener('touchstart', handlePress, { passive: true });
-      document.addEventListener('touchend', handleRelease);
+    return {
+      type: jsPsychCategorizeImageButtons,
+      stimulus: imgPath,
+      key_answer: keyAnswer,
+      button_answer: buttonAnswer,
+      choices: trial_choices,
+      prompt: `
+        <div class="prompt-container">
+          <p class="prompt prompt_text ${lang}" style="font-weight: normal;">${promptText}</p>
+        </div>
+      `,
+      
+      // Set feedback to empty - we'll handle it ourselves
+      incorrect_text: '',
+      correct_text: '',
+      
+      force_correct_button_press: true,
+      button_html: trial_choices.map((txt, i) => `
+        <div class="image-btn-wrapper">
+          <input type="image" 
+                src="img/assets/blank_${isMobile ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
+                class="image-btn"
+                data-choice="${i}"
+                data-correct="${i === buttonAnswer}">
+          <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+            <text x="50%" y="50%">${txt}</text>
+          </svg>
+        </div>
+      `),
+      
+      on_load: function() {
+        requestAnimationFrame(() => {
+          fitTrialToScreen();
+        });
 
-      document.addEventListener('mouseup', handleRelease);
-    },
-
-    on_finish: function() {
-      document.removeEventListener('mouseover', handlePress, true);
-      document.removeEventListener('mouseleave', handleRelease, true);
-      document.removeEventListener('touchstart', handlePress);
-      document.removeEventListener('touchend', handleRelease);
-
-      document.removeEventListener('mouseup', handleRelease);
-    },
-  };
-}
-
-function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
-  return {
-    type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
-    choices: [buttonLabel],
-    canvas_size: isMobile ? [canvasHeight * 0.6, canvasWidth] : smallScreen ? [canvasHeight * 0.8, canvasWidth] : isTablet ? [canvasHeight * 0.6, canvasWidth] : [canvasHeight * 0.8, canvasWidth],
-    stimulus: function(c) {
-      const ctx = c.getContext('2d');
-      ctx.fillStyle = '#fff9e0';
-      const gap = 60; // spacing between the two images
-      const framePadding = 20;
-      const radius = 25;
-      const width = c.width;
-      const height = c.height;
-      ctx.fillRect(0, 0, width, height);
-
-      const imgL = new Image();
-      const imgR = new Image();
-
-      imgL.onload = imgR.onload = function() {
-        const imgWidth = imgL.width * stimScale;
-        const imgHeight = imgL.height * stimScale;
-        const totalWidth = imgWidth * 2 + gap;
-        const x = (c.width - totalWidth) / 2;
-        const y = (c.height - imgHeight) / 2;
-
-        // draw function for each image
-        function drawFramedImage(img, x) {
-          ctx.fillStyle = '#ffffff';
-          ctx.strokeStyle = '#5d2514';
-          ctx.lineWidth = 15;
-          roundRect(ctx, x - framePadding, y - framePadding,
-                  imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
-          ctx.fill();
-          ctx.stroke();
-          ctx.drawImage(img, x, y, imgWidth, imgHeight);
+        // Track state
+        let hasRespondedIncorrectly = false;
+        let isProcessingResponse = false;
+        const trialStartTime = performance.now();
+        
+        // Get all buttons and the container
+        const buttonContainer = document.querySelector('#jspsych-categorize-image-buttons-response-btngroup');
+        const buttons = document.querySelectorAll('.image-btn');
+        
+        // Custom feedback function that doesn't redraw
+        function showCustomFeedback(correct, text) {
+          const promptContainer = document.querySelector('.prompt-container');
+          if (!promptContainer) return;
+          
+          // FIX: Remove the newlines and indentation that cause whitespace
+          promptContainer.innerHTML = `<p class="prompt prompt_text ${lang}" style="font-weight: normal; color: ${correct ? 'green' : 'red'};">${text}</p>`;
+          
+          // FIT THE TEXT
+          requestAnimationFrame(() => {
+            const promptText = promptContainer.querySelector('.prompt_text');
+            if (promptText && typeof fitTextToContainer === 'function') {
+              const containerHeight = promptContainer.offsetHeight;
+              let minFontSize, maxFontSize;
+              if (isMobile) {
+                minFontSize = 36;
+                maxFontSize = 72;
+              } else if (isTablet) {
+                minFontSize = 40;
+                maxFontSize = 80;
+              } else if (smallScreen) {
+                minFontSize = 44;
+                maxFontSize = 88;
+              } else { // desktop
+                minFontSize = 32;
+                maxFontSize = 64;
+              }
+              fitTextToContainer(promptText, containerHeight - 20, minFontSize, maxFontSize);
+            }
+          });
         }
-        drawFramedImage(imgL, x);
-        drawFramedImage(imgR, x + imgWidth + gap);
-      };
 
-      imgL.src = imgLeft;
-      imgR.src = imgRight;
-    },
-    prompt: `<p class="prompt_text" style="margin: 0 0">${promptText}</p>`,
-    button_html:           
-      `<div class="image-btn-wrapper">
-        <input type="image" src="img/assets/blank_green.png"
-              class="image-btn">
-        <svg class="image-btn-text" viewBox="0 0 266 160">
-          <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
-        </svg>
-      </div>`,
-    on_load: function() {
-      document.addEventListener('mouseover', handlePress, true);
-      document.addEventListener('mouseleave', handleRelease, true);
-      document.addEventListener('touchstart', handlePress, { passive: true });
-      document.addEventListener('touchend', handleRelease);
+        // Clone buttons to strip their event listeners
+        buttons.forEach((btn) => {
+          const newBtn = btn.cloneNode(true);
+          btn.parentNode.replaceChild(newBtn, btn);
+        });
+        
+        // Add handlers to the clean buttons
+        const cleanButtons = document.querySelectorAll('.image-btn');
+        
+        cleanButtons.forEach((btn) => {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
+            
+            // Prevent multiple simultaneous clicks
+            if (isProcessingResponse) {
+              return false;
+            }
+            
+            const isCorrect = btn.dataset.correct === 'true';
+            const choiceIndex = parseInt(btn.dataset.choice);
+            
+            // CASE 1: First click is incorrect
+            if (!hasRespondedIncorrectly && !isCorrect) {
+              isProcessingResponse = true;
+              hasRespondedIncorrectly = true;
+              
+              // Show incorrect feedback with proper sizing
+              showCustomFeedback(false, incText);
+              
+              // Allow clicks again after feedback is shown
+              setTimeout(() => {
+                isProcessingResponse = false;
+              }, 100);
+              
+              return false;
+            }
+            
+            // CASE 2: Already responded incorrectly, clicking another incorrect button
+            if (hasRespondedIncorrectly && !isCorrect) {
+              return false;
+            }
+            
+            // CASE 3: Clicking correct button (either first try or after incorrect)
+            if (isCorrect) {
+              isProcessingResponse = true;
+              
+              // Show correct feedback
+              showCustomFeedback(true, corText);
+              
+              // Wait a moment, then end trial
+              setTimeout(() => {
+                // Clean up event listeners
+                document.removeEventListener('mouseover', handlePress, true);
+                document.removeEventListener('mouseleave', handleRelease, true);
+                document.removeEventListener('touchstart', handlePress);
+                document.removeEventListener('touchend', handleRelease);
+                document.removeEventListener('mouseup', handleRelease);
+                
+                // Finish trial with jsPsych
+                const rt = performance.now() - trialStartTime;
+                jsPsych.finishTrial({
+                  stimulus: imgPath,
+                  response: choiceIndex,
+                  correct: !hasRespondedIncorrectly, // Only correct if they got it on first try
+                  rt: rt,
+                  button_answer: buttonAnswer,
+                  got_it_wrong_first: hasRespondedIncorrectly
+                });
+              }, 1500); // Show correct feedback for 1.5 seconds
+              
+              return false;
+            }
+            
+          }, true); // Use capture phase
+        });
+        
+        // Prevent jsPsych from interfering
+        // Override innerHTML setter on the display element to block redraws
+        const displayElement = document.querySelector('.jspsych-content');
+        const originalInnerHTMLDescriptor = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+        
+        Object.defineProperty(displayElement, 'innerHTML', {
+          set: function(value) {
+            // Block any attempts to redraw after initial load
+            console.log('🛑 Blocked jsPsych redraw attempt');
+            return;
+          },
+          get: function() {
+            return originalInnerHTMLDescriptor.get.call(this);
+          },
+          configurable: true
+        });
 
-      document.addEventListener('mouseup', handleRelease);
-    },
+        document.addEventListener('mouseover', handlePress, true);
+        document.addEventListener('mouseleave', handleRelease, true);
+        document.addEventListener('touchstart', handlePress, { passive: true });
+        document.addEventListener('touchend', handleRelease);
+        document.addEventListener('mouseup', handleRelease);
+      },
 
-    on_finish: function() {
-      document.removeEventListener('mouseover', handlePress, true);
-      document.removeEventListener('mouseleave', handleRelease, true);
-      document.removeEventListener('touchstart', handlePress);
-      document.removeEventListener('touchend', handleRelease);
+      on_finish: function(data) {
+        // Restore innerHTML setter
+        const displayElement = document.querySelector('.jspsych-content');
+        if (displayElement) {
+          delete displayElement.innerHTML;
+        }
+        
+        // Clean up any remaining listeners
+        document.removeEventListener('mouseover', handlePress, true);
+        document.removeEventListener('mouseleave', handleRelease, true);
+        document.removeEventListener('touchstart', handlePress);
+        document.removeEventListener('touchend', handleRelease);
+        document.removeEventListener('mouseup', handleRelease);
+      },
+    };
+  }
 
-      document.removeEventListener('mouseup', handleRelease);
-    },
-  };
-}
+  function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
+    return {
+      type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
+      choices: [buttonLabel],
+      canvas_size: calculateSideBySideCanvasSize(), // Calculate based on horizontal allocation
+      stimulus: function(c) {
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#fff9e0';
+        const gap = 60; // spacing between the two images
+        const framePadding = 20;
+        const radius = 25;
+        const width = c.width;
+        const height = c.height;
+        ctx.fillRect(0, 0, width, height);
+
+        const imgL = new Image();
+        const imgR = new Image();
+
+        imgL.onload = imgR.onload = function() {
+          // Calculate image size to fit within canvas
+          // Two images side by side with a gap
+          const availableWidth = (width - gap - framePadding * 4) / 2;
+          const availableHeight = height - framePadding * 2;
+          
+          // Use the smaller dimension to ensure images fit
+          const imgSize = Math.min(availableWidth, availableHeight);
+          
+          const imgWidth = imgSize;
+          const imgHeight = imgSize;
+          const totalWidth = imgWidth * 2 + gap;
+          const x = (width - totalWidth) / 2;
+          const y = (height - imgHeight) / 2;
+
+          // draw function for each image
+          function drawFramedImage(img, xPos) {
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#5d2514';
+            ctx.lineWidth = 15;
+            roundRect(ctx, xPos - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            ctx.fill();
+            ctx.stroke();
+            ctx.drawImage(img, xPos, y, imgWidth, imgHeight);
+          }
+          drawFramedImage(imgL, x);
+          drawFramedImage(imgR, x + imgWidth + gap);
+        };
+
+        imgL.src = imgLeft;
+        imgR.src = imgRight;
+      },
+      prompt: `<p class="prompt_text" style="margin: 0;">${promptText}</p>`,
+      button_html:           
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_green.png"
+                class="image-btn">
+          <svg class="image-btn-text" viewBox="0 0 266 160">
+            <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+          </svg>
+        </div>`,
+      on_load: function() {
+        requestAnimationFrame(() => {
+          fitSideBySideToScreen();
+        });
+        
+        document.addEventListener('mouseover', handlePress, true);
+        document.addEventListener('mouseleave', handleRelease, true);
+        document.addEventListener('touchstart', handlePress, { passive: true });
+        document.addEventListener('touchend', handleRelease);
+        document.addEventListener('mouseup', handleRelease);
+      },
+
+      on_finish: function() {
+        document.removeEventListener('mouseover', handlePress, true);
+        document.removeEventListener('mouseleave', handleRelease, true);
+        document.removeEventListener('touchstart', handlePress);
+        document.removeEventListener('touchend', handleRelease);
+        document.removeEventListener('mouseup', handleRelease);
+      },
+    };
+  }
 
 var intro = {
   type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
@@ -799,7 +1194,7 @@ var preload = {
   }
 }
 
-var  timeline = [preload, intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro];
+var  timeline = [preload, side_by_side1, intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro];
 jsPsych.run(timeline);
     
   
