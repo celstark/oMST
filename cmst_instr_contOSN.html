@@ -48,6 +48,7 @@ Revised: November 20, 2019 (CELS) for Cordova
   <script src="js/jspsych_731/dist/plugin-categorize-image.js"></script>
   <script src="js/plugin-categorize-image-buttons.js"></script>
   <script src="js/jspsych_731/dist/plugin-preload.js"></script>
+  <script src="js/jspsych_731/dist/plugin-fullscreen.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -165,8 +166,8 @@ Revised: November 20, 2019 (CELS) for Cordova
 .jspsych-content {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  width: 100vw;
+  height: 100svh;
+  width: 100svw;
   overflow: hidden;
   align-items: center;
   justify-content: space-around;
@@ -193,6 +194,8 @@ Revised: November 20, 2019 (CELS) for Cordova
   line-height: 1.3;
   white-space: pre-wrap;
   word-wrap: break-word;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none; 
 }
   </style>
 </head>
@@ -374,38 +377,61 @@ jatos.onLoad(async function() {
     activeBtn = null; // reset
   }
 
-  function fitTextToContainer(element, containerHeight, minSize = 12, maxSize = 48) {
-    let fontSize = maxSize;
-    element.style.fontSize = fontSize + 'px';
+  function fitTextToContainer(element, maxHeight, minSize = 12, maxSize = 48) {
+    console.log(`Fitting to ${maxHeight}px, range ${minSize}-${maxSize}`);
     
-    // Binary search for the right size
+    // DISABLE iOS text size adjustment
+    element.style.webkitTextSizeAdjust = 'none';
+    element.style.textSizeAdjust = 'none';
+
     let low = minSize;
     let high = maxSize;
+    let bestFit = minSize;
+    
+    const originalHeight = element.style.height;
+    const originalOverflow = element.style.overflow;
+    const originalLineHeight = element.style.lineHeight; // Save original
+    
+    element.style.height = 'auto';
+    element.style.overflow = 'visible';
+    element.style.lineHeight = '1.2'; // ← FIX: Force consistent line-height
     
     while (low <= high) {
-      fontSize = Math.floor((low + high) / 2);
+      const fontSize = Math.floor((low + high) / 2);
       element.style.fontSize = fontSize + 'px';
       
-      if (element.scrollHeight <= containerHeight) {
+      void element.offsetWidth;
+      const naturalHeight = element.offsetHeight;
+      
+      console.log(`  Testing ${fontSize}px: natural height = ${naturalHeight}px (max: ${maxHeight}px)`);
+      
+      if (naturalHeight <= maxHeight) {
+        bestFit = fontSize;
         low = fontSize + 1;
       } else {
         high = fontSize - 1;
       }
     }
     
-    // Set to the largest size that fits
-    element.style.fontSize = high + 'px';
-    return high;
+    element.style.fontSize = bestFit + 'px';
+    console.log(`  Final: ${bestFit}px`);
+    
+    element.style.height = originalHeight;
+    element.style.overflow = originalOverflow;
+    // Don't restore line-height - keep it at 1.2
+    
+    return bestFit;
   }
 
   function fitTrialToScreen() {
     const container = document.querySelector('.jspsych-content');
     if (!container) return;
     
-    const totalHeight = window.visualViewport ? 
-      window.visualViewport.height : window.innerHeight;
+    const totalHeight = window.offsetHeight ? 
+      window.offsetHeight : window.innerHeight;
     const totalWidth = window.visualViewport ? 
       window.visualViewport.width : window.innerWidth;
+
     
     // Get the three main sections
     const promptContainer = document.querySelector('.prompt-container');
@@ -500,7 +526,8 @@ jatos.onLoad(async function() {
     promptContainer.style.alignItems = 'center';
     promptContainer.style.justifyContent = 'center';
     promptContainer.style.overflow = 'hidden';
-    promptContainer.style.padding = '10px';
+    promptContainer.style.padding = '10px 20px';
+    promptContainer.style.margin = '10 auto';
     promptContainer.style.boxSizing = 'border-box';
     
     // Style stimulus to maintain square aspect ratio
@@ -514,26 +541,25 @@ jatos.onLoad(async function() {
     // FIT TEXT TO PROMPT CONTAINER
     const promptText = promptContainer.querySelector('.prompt_text');
     if (promptText && typeof fitTextToContainer === 'function') {
-      const containerHeight = promptContainer.offsetHeight;
+      const promptHeight = promptContainer.offsetHeight;
       
       // Adjust font size ranges based on device
       let minFontSize, maxFontSize;
       if (isMobile) {
         minFontSize = 36;
-        maxFontSize = 72;
+        maxFontSize = 96;
       } else if (isTablet) {
         minFontSize = 40;
         maxFontSize = 80;
       } else if (smallScreen) {
-        minFontSize = 44;
-        maxFontSize = 88;
+        minFontSize = 32;
+        maxFontSize = 64;
       } else { // desktop
         minFontSize = 32;
         maxFontSize = 64;
       }
       
-      const actualPromptHeight = containerHeight - 20;
-      fitTextToContainer(promptText, actualPromptHeight, minFontSize, maxFontSize);
+      fitTextToContainer(promptText, promptHeight - 20, minFontSize, maxFontSize);
     }
   }
 
@@ -548,9 +574,9 @@ jatos.onLoad(async function() {
     } else if (isTablet) {
       widthPercent = 0.80; // 80% of screen width
     } else if (smallScreen) {
-      widthPercent = 0.70; // 70% of screen width
+      widthPercent = 0.50; // 70% of screen width
     } else { // desktop
-      widthPercent = 0.60; // 60% of screen width
+      widthPercent = 0.40; // 60% of screen width
     }
     
     // Calculate canvas width
@@ -576,19 +602,16 @@ jatos.onLoad(async function() {
     const container = document.querySelector('.jspsych-content');
     if (!container) return;
     
-    const totalHeight = window.visualViewport ? 
-      window.visualViewport.height : window.innerHeight;
+    const totalHeight = window.offsetHeight ? 
+      window.offsetHeight : window.innerHeight;
     
-    // Find the actual elements
-    const canvasStimulusContainer = document.querySelector('.jspsych-canvas-button-response-stimulus');
-    const buttonContainer = document.querySelector('.jspsych-canvas-button-response-btngroup');
-    const promptText = document.querySelector('.prompt_text');
+    // Find the actual elements (using ID selectors, not class!)
+    const canvasStimulusContainer = document.querySelector('#jspsych-canvas-button-response-stimulus');
+    const buttonContainer = document.querySelector('#jspsych-canvas-button-response-btngroup');
+    const promptContainer = document.querySelector('.prompt_text');
     
     if (!canvasStimulusContainer || !buttonContainer) {
       console.warn('Side-by-side elements not found');
-      if(!canvasStimulusContainer){
-        console.warn("stim not found");
-      }
       return;
     }
     
@@ -611,38 +634,145 @@ jatos.onLoad(async function() {
     });
     
     // Style and fit prompt text
-    if (promptText && promptHeight > 20) {
-      promptText.style.height = Math.max(promptHeight, 40) + 'px';
-      promptText.style.display = 'flex';
-      promptText.style.alignItems = 'center';
-      promptText.style.justifyContent = 'center';
-      promptText.style.overflow = 'hidden';
-      promptText.style.padding = '10px';
-      promptText.style.boxSizing = 'border-box';
-      promptText.style.margin = '0 auto';
+    if (promptContainer && promptHeight > 20) {
+      const finalHeight = Math.max(promptHeight, 40) + 'px';
+
+      promptContainer.style.height = finalHeight + 'px';
+      promptContainer.style.overflow = 'hidden';
+      promptContainer.style.boxSizing = 'border-box';
+      promptContainer.style.margin = '10 auto';
+      promptContainer.style.textAlign = 'center';
+      promptContainer.style.justifyContent = 'space-between';
+      promptContainer.style.padding = '10px 20px'
       
       // Fit text to available space
       if (typeof fitTextToContainer === 'function') {
         let minFontSize, maxFontSize;
         if (isMobile) {
-          minFontSize = 36;
-          maxFontSize = 72;
-        } else if (isTablet) {
-          minFontSize = 40;
-          maxFontSize = 80;
-        } else if (smallScreen) {
-          minFontSize = 44;
-          maxFontSize = 88;
-        } else { // desktop
-          minFontSize = 48;
-          maxFontSize = 96;
-        }
-        fitTextToContainer(promptText, promptHeight - 20, minFontSize, maxFontSize);
+            minFontSize = 36;
+            maxFontSize = 96;
+          } else if (isTablet) {
+            minFontSize = 40;
+            maxFontSize = 80;
+          } else if (smallScreen) {
+            minFontSize = 32;
+            maxFontSize = 64;
+          } else { // desktop
+            minFontSize = 32;
+            maxFontSize = 64;
+          }
+        fitTextToContainer(promptContainer, promptHeight * 0.85, minFontSize, maxFontSize);
       }
     }
   }
 
-  //var trial_choices= prompts['k_trial_choices'];  // DELETE THIS
+  function fitIntroOutroToScreen() {
+    const container = document.querySelector('.jspsych-content');
+    if (!container) return;
+    
+    const totalHeight = window.visualViewport ? 
+      window.visualViewport.height : window.innerHeight;
+    
+    const stimulusContainer = document.querySelector('.intro') || document.querySelector('#jspsych-html-button-response-stimulus .prompt_text');
+    const buttonContainer = document.querySelector('#jspsych-html-button-response-btngroup') || document.querySelector('.jspsych-btn');
+    const promptContainer = document.querySelector('.jspsych-content > p.prompt_text:not(.intro)');
+    
+    if (!stimulusContainer || !buttonContainer) {
+      console.warn('Intro/outro elements not found');
+      return;
+    }
+    
+    const buttonHeight = buttonContainer.offsetHeight;
+    const margin = isMobile ? 60 : 80;
+    const availableHeight = totalHeight - buttonHeight - margin;
+    const stimulusAllocation = availableHeight * 0.90;
+    const promptAllocation = availableHeight * 0.10;
+    
+    console.log('Available space:', {
+      totalHeight,
+      buttonHeight,
+      margin,
+      availableHeight,
+      stimulusAllocation
+    });
+    
+    // Style STIMULUS - but don't set fixed height yet
+    if (stimulusContainer) {
+      stimulusContainer.style.overflow = 'visible'; // Critical for measurement
+      stimulusContainer.style.height = 'auto'; // Let it size naturally
+      stimulusContainer.style.boxSizing = 'border-box';
+      stimulusContainer.style.margin = '0 auto';
+      stimulusContainer.style.textAlign = 'center';
+      stimulusContainer.style.padding = '20px';
+      stimulusContainer.style.maxWidth = isMobile ? '90%' : isTablet ? '80%' : '70%';
+      
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          let minFontSize, maxFontSize;
+          if (isMobile) {
+            minFontSize = 32;
+            maxFontSize = 960;
+          } else if (isTablet) {
+            minFontSize = 36;
+            maxFontSize = 960;
+          } else if (smallScreen) {
+            minFontSize = 40;
+            maxFontSize = 800;
+          } else {
+            minFontSize = 44;
+            maxFontSize = 880;
+          }
+          
+          const finalSize = fitTextToContainer(
+            stimulusContainer, 
+            stimulusAllocation, 
+            minFontSize, 
+            maxFontSize
+          );
+          
+          console.log('Stimulus fitted to:', finalSize);
+          
+          // Now apply final styling
+          stimulusContainer.style.height = stimulusAllocation + 'px';
+          stimulusContainer.style.overflow = 'hidden';
+        });
+      });
+    }
+    
+    // Similar for prompt
+    if (promptContainer && promptAllocation > 20) {
+      promptContainer.style.overflow = 'visible';
+      promptContainer.style.height = 'auto';
+      promptContainer.style.boxSizing = 'border-box';
+      promptContainer.style.margin = '0 auto';
+      promptContainer.style.textAlign = 'center';
+      promptContainer.style.padding = '10px 20px';
+      
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          let minFontSize, maxFontSize;
+          if (isMobile) {
+            minFontSize = 24;
+            maxFontSize = 48;
+          } else if (isTablet) {
+            minFontSize = 28;
+            maxFontSize = 56;
+          } else if (smallScreen) {
+            minFontSize = 28;
+            maxFontSize = 56;
+          } else {
+            minFontSize = 32;
+            maxFontSize = 64;
+          }
+          
+          fitTextToContainer(promptContainer, promptAllocation, minFontSize, maxFontSize);
+          
+          promptContainer.style.height = promptAllocation + 'px';
+          promptContainer.style.overflow = 'hidden';
+        });
+      });
+    }
+  }
 
   // Default is keyboard here - override if buttons
   //var instr_choice=[' ']; // 32 is space
@@ -734,13 +864,13 @@ jatos.onLoad(async function() {
               let minFontSize, maxFontSize;
               if (isMobile) {
                 minFontSize = 36;
-                maxFontSize = 72;
+                maxFontSize = 96;
               } else if (isTablet) {
                 minFontSize = 40;
                 maxFontSize = 80;
               } else if (smallScreen) {
-                minFontSize = 44;
-                maxFontSize = 88;
+                minFontSize = 32;
+                maxFontSize = 64;
               } else { // desktop
                 minFontSize = 32;
                 maxFontSize = 64;
@@ -963,6 +1093,9 @@ var intro = {
       </svg>
     </div>`,
   on_load: function() {
+    requestAnimationFrame(() => {
+      fitIntroOutroToScreen();
+    });
     document.addEventListener('mouseover', handlePress, true);
     document.addEventListener('mouseleave', handleRelease, true);
     document.addEventListener('touchstart', handlePress, { passive: true });
@@ -1161,6 +1294,9 @@ var outtro = {
       </svg>
     </div>`,
   on_load: function() {
+    requestAnimationFrame(() => {
+      fitIntroOutroToScreen();
+    });
     document.addEventListener('mouseover', handlePress, true);
     document.addEventListener('mouseleave', handleRelease, true);
     document.addEventListener('touchstart', handlePress, { passive: true });
@@ -1194,11 +1330,12 @@ var preload = {
   }
 }
 
-var  timeline = [preload, side_by_side1, intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro];
+var  timeline = [preload, intro, new1, new2, new3, repeat1, lure1, side_by_side1, new4, new5, repeat2, lure2, side_by_side2, outtro];
 jsPsych.run(timeline);
     
   
 });
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
 </html>
