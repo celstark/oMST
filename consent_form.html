@@ -6,74 +6,14 @@
 
 -->
 <head>
-  <link rel="stylesheet" href="css/consent_form.css" />
+  <link rel="stylesheet" href="css/jspsych.css"></link>
   <script type="text/javascript" src="jatos.js"></script>
   <script src="js/jquery-3.1.1.min.js"></script>
+  <script src="helpers.js"></script>
   <meta charset="UTF-8" />
   <title>Consent Form</title>
 </head>
 <style>
-  .jspsych-display-element {
-    font-size: 200%;
-  }
-  .jspsych-btn {
-    font-size: 150%;
-  }
-
-  .image-btn-wrapper {
-    display: inline-block;
-    position: relative;
-    margin: 0.5em;
-  }
-
-  .image-btn {
-    width: 15vw;
-    height: auto;
-    border: none;
-    display: block;
-  }
-
-  .smallScreen .image-btn {
-    width: 20vw !important;
-  }
-
-  .mobile .image-btn {
-    width: 35vw;
-  }
-
-  .tablet .image-btn {
-    width: 25vw;
-  }
-
-  .image-btn-text {
-    position: absolute;
-    top: 38%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    width: 100%;
-    height: auto; /* scales with wrapper if you want */
-  }
-
-  .image-btn-text text {
-    font-family: 'Comic Relief', sans-serif;
-    font-size: 2.0em;
-    fill: #fff8d6;       /* inner text color */
-    stroke: #5d2b12;     /* outline color */
-    stroke-width: 10;     /* outline thickness */
-    font-weight: bold;
-    letter-spacing: 0.08em;
-    text-anchor: middle;
-    dominant-baseline: middle;
-    paint-order: stroke fill;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-  }
-  
-  .image-btn-wrapper.pressed .image-btn-text{
-    transform: translate(-50%, -40%) !important;
-  }
-
   .mobile .image-btn-text text{
     stroke-width: 14;
     font-size: 2.5em;
@@ -115,16 +55,8 @@
     stroke-width: 10;
   }
 
-  body {
-    background-color: #fff9e0;
-  }
-
   .prompt_text {
-    font-family: 'Comic Relief', sans-serif;
-    font-size: 2.6em;
-    color: #5d2b12;
-    font-weight: normal;
-    line-height: 1.2;
+    font-size: 2em;
   }
 
   .mobile  .prompt_text {
@@ -162,14 +94,6 @@
 
   .smallScreen .prompt_text.ru.intro {
     font-size: 0.9em;
-  }
-
-  .prompt_text {
-    font-family: 'Comic Relief', sans-serif;
-    font-size: 2em;
-    color: #5d2b12;
-    font-weight: normal;
-    line-height: 1.2;
   }
 
   .mobile  .prompt_text {
@@ -315,34 +239,6 @@ jatos.onLoad(async function () {
   // ---------------------------------------------------------------------
   // Press / Release logic (works for both buttons)
   // ---------------------------------------------------------------------
-
-  let activeBtn = null;
-
-  function handlePress(e) {
-    const wrapper = e.target.closest('.image-btn-wrapper');
-    if (!wrapper) return;
-
-    const btn = wrapper.querySelector('.image-btn');
-    const origSrc = btn.dataset.orig || btn.src;
-    const pressedSrc = btn.dataset.pressed || origSrc.replace('.png', '_pressed.png');
-
-    btn.dataset.orig = origSrc;
-    btn.dataset.pressed = pressedSrc;
-
-    btn.src = pressedSrc;
-    wrapper.classList.add('pressed');
-
-    activeBtn = btn;
-  }
-
-  function handleRelease() {
-    if (!activeBtn) return;
-
-    const wrapper = activeBtn.closest('.image-btn-wrapper');
-    activeBtn.src = activeBtn.dataset.orig;
-    wrapper.classList.remove('pressed');
-    activeBtn = null;
-  }
 
   // Attach listeners to BOTH wrappers
   const wrappers = document.querySelectorAll('.image-btn-wrapper');

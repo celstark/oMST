@@ -19,6 +19,7 @@
 /* Container holding jsPsych content */
 
  .jspsych-display-element {
+   font-size: 200%;
    display: flex;
    flex-direction: column;
    overflow-y: auto;
@@ -50,14 +51,6 @@
    align-items: center;
  }
 
-/* fonts and type */
-
-.jspsych-display-element {
-  font-family: 'Open Sans', 'Arial', sans-serif;
-  font-size: 18px;
-  line-height: 1.6em;
-}
-
 /* Form elements like input fields and buttons */
 
 .jspsych-display-element input[type="text"] {
@@ -65,49 +58,91 @@
   font-size: 14px;
 }
 
-/* borrowing Bootstrap style for btn elements, but combining styles a bit */
-.jspsych-btn {
+.image-btn-wrapper {
   display: inline-block;
-  padding: 6px 12px;
-  margin: 0px;
-  font-size: 14px;
-  font-weight: 400;
-  font-family: 'Open Sans', 'Arial', sans-serif;
-  cursor: pointer;
-  line-height: 1.4;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  background-image: none;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  color: #ffffff;
-  background-color: #1a3f20;
-  border-color: #ccc;
-  box-shadow: inset 0 0 0 .15em #ccc, 0 0 0 .25em #1a3f20;
-
+  position: relative;
+  margin: 0.5em;
 }
 
-.desktop .jspsych-btn {
-  height: 2em;
-  width: 8em;
+.image-btn {
+  width: 15vw;
+  height: auto;
+  border: none;
+  display: block;
+  /* Remove tap highlight */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  
+  /* Remove touch delay */
+  touch-action: manipulation;
+  
+  /* Prevent text selection */
+  -webkit-user-select: none;
+  user-select: none;
+  
+  /* Prevent callout menu on long press */
+  -webkit-touch-callout: none;
 }
 
-.mobile .jspsych-btn{
-  height: 3em;
-  width: 5em;
+.smallScreen .image-btn {
+  width: 20vw !important;
 }
 
-.jspsych-btn:hover {
-  filter: brightness(85%);
-  border-color: #aaa;
+.mobile .image-btn {
+  width: 35vw;
 }
 
-.jspsych-btn:disabled {
-  background-color: #eee;
-  color: #aaa;
-  border-color: #ccc;
-  cursor: not-allowed;
+.tablet .image-btn {
+  width: 25vw;
+}
+
+.image-btn-wrapper.pressed .image-btn-text{
+  transform: translate(-50%, -40%) !important;
+}
+
+.image-btn-text {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  width: 100%;
+  height: auto;
+}
+
+.image-btn-text text {
+  font-family: 'Comic Relief', sans-serif;
+  font-size: 2.6em;
+  fill: #fff8d6;       /* inner text color */
+  stroke: #5d2b12;     /* outline color */
+  stroke-width: 10;     /* outline thickness */
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  paint-order: stroke fill;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.prompt_text {
+  font-family: "Comic Relief", system-ui;
+  color: #5d2b12;
+  font-weight: normal;
+  line-height: 1.2;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none; 
+}
+
+body {
+  background-color: #fff9e0;
+}
+
+.jspsych-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 /* jsPsych progress bar */
@@ -175,37 +210,9 @@
   font-size: 48px;
 }
 
-/* --- FIX for laptop-size screens --- */
-@media screen and (min-width: 1100px) and (max-width: 1400px) {
-  .jspsych-display-element {
-    font-size: 175%; /* shrink text slightly */
-  }
-  .jspsych-btn {
-    font-size: 130%;
-    padding: 0.5em 1.2em;
-    margin: 0.3em 0.6em;
-    transform: scale(0.95);
-  }
-  canvas {
-    max-width: 70vw !important;
-    height: auto !important;
-  }
-}
-
-/* Tighten up layout on medium height (short laptop screens) */
-@media screen and (max-height: 700px) {
-  .jspsych-display-element {
-    font-size: 160%;
-  }
-  .jspsych-btn {
-    margin: 0.2em;
-    padding: 0.35em 1.1em;
-    transform: scale(0.9);
-  }
-  
-  body {
-    transform: scale(0.95);
-    transform-origin: top center;
-  }
+#consenttext {
+  font-family: 'Open Sans', 'Arial', sans-serif;
+  text-align: 'left';
+  color: #666;
 }
 

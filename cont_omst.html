@@ -111,73 +111,11 @@
   <script src="js/jspsych_731/dist/plugin-video-keyboard-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-preload.js"></script>
   <script src="js/jspsych_731/dist/plugin-browser-check.js"></script>
+  <script src="helpers.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
-
-  .jspsych-display-element {
-    font-size: 200%;
-  }
-  .jspsych-btn {
-    font-size: 150%;
-  }
-
-  .image-btn-wrapper {
-    display: inline-block;
-    position: relative;
-    margin: 0.5em;
-  }
-
-  .desktop .image-btn-wrapper:hover .image-btn-text {
-    transform: translate(-50%, -40%); 
-  }
-  /* image button */
-  .image-btn {
-    width: 15vw;
-    height: auto;
-    border: none;
-    display: block;
-  }
-
-  .smallScreen .image-btn {
-    width: 15vw;
-  }
-
-  .mobile .image-btn {
-    width: 35vw;
-  }
-
-  .tablet .image-btn {
-    width: 25vw;
-  }
-
-  /* image button text */
-  .image-btn-text {
-    position: absolute;
-    top: 38%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    width: 100%;
-    height: auto; /* scales with wrapper if you want */
-  }
-
   .image-btn-text text {
-    font-family: 'Comic Relief', sans-serif;
     font-size: 1.5em;
-    fill: #fff8d6;       /* inner text color */
-    stroke: #5d2b12;     /* outline color */
-    stroke-width: 10;     /* outline thickness */
-    font-weight: bold;
-    letter-spacing: 0.08em;
-    text-anchor: middle;
-    dominant-baseline: middle;
-    paint-order: stroke fill;
-    stroke-linejoin: round;
-    stroke-linecap: round;
-  }
-  
-  .image-btn-wrapper.pressed .image-btn-text{
-    transform: translate(-50%, -40%) !important;
   }
 
   .mobile .image-btn-text text{
@@ -217,17 +155,8 @@
     stroke-width: 10;
   }
 
-  body {
-    background-color: #fff9e0;
-  }
-
-  /* prompt text */
   .prompt_text {
-    font-family: 'Comic Relief', sans-serif;
     font-size: 1.5em;
-    color: #5d2b12;
-    font-weight: bold;
-    line-height: 1.2;
   }
 
   .mobile  .prompt_text {
@@ -527,8 +456,8 @@ jatos.onLoad(async function() {
 
   // START OF CODE THAT SHOULD BE CONSTANT REGARDLESS OF JATOS / CORDOVA
   const phasename='oMSTCont';
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024 && !isMobile;
+  const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024;
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent) && !isTablet;
   const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile && !isTablet;
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
   const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .65;
@@ -803,20 +732,6 @@ var instr1_trial = {
           const framePadding = 20;
           const radius = 25;
           const brainScale = isTablet ? 0.15 : 0.2;
-
-          function roundRect(ctx, x, y, w, h, r) {
-            ctx.beginPath();
-            ctx.moveTo(x + r, y);
-            ctx.lineTo(x + w - r, y);
-            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-            ctx.lineTo(x + w, y + h - r);
-            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-            ctx.lineTo(x + r, y + h);
-            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-            ctx.lineTo(x, y + r);
-            ctx.quadraticCurveTo(x, y, x + r, y);
-            ctx.closePath();
-          }
 
           function drawScene() {
             ctx.fillStyle = "#fff9e0";

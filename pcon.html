@@ -43,63 +43,11 @@
   <script src="js/jspsych_731/dist/plugin-canvas-button-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-animation.js"></script>
   <script src="js/jspsych_731/dist/plugin-preload.js"></script>
+  <script src="helpers.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <style>
-  .jspsych-display-element {
-    font-size: 200%;
-  }
-  .jspsych-btn {
-    font-size: 150%;
-  }
-
-  .image-btn-wrapper {
-    display: inline-block;
-    position: relative;
-    margin: 0.5em;
-  }
-
-  .image-btn {
-    width: 15vw;
-    height: auto;
-    border: none;
-    display: block;
-  }
-
-  .smallScreen .image-btn {
-    width: 15vw !important;
-  }
-
-  .mobile .image-btn {
-    width: 35vw;
-  }
-
-  .tablet .image-btn {
-    width: 25vw;
-  }
-
-  .image-btn-text {
-    position: absolute;
-    top: 38%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    width: 100%;
-    height: auto; /* scales with wrapper if you want */
-  }
-
   .image-btn-text text {
-    font-family: 'Comic Relief', sans-serif;
     font-size: 1.5em;
-    fill: #fff8d6;       /* inner text color */
-    stroke: #5d2b12;     /* outline color */
-    stroke-width: 10;     /* outline thickness */
-    font-weight: bold;
-    letter-spacing: 0.08em;
-    text-anchor: middle;
-    dominant-baseline: middle;
-    paint-order: stroke fill;
-    stroke-linejoin: round;
-    stroke-linecap: round;
   }
   
   .image-btn-wrapper.pressed .image-btn-text{
@@ -147,16 +95,8 @@
     stroke-width: 10;
   }
 
-  body {
-    background-color: #fff9e0;
-  }
-
   .prompt_text {
-    font-family: 'Comic Relief', sans-serif;
     font-size: 1.4em;
-    color: #5d2b12;
-    font-weight: normal;
-    line-height: 1.2;
   }
 
   .mobile  .prompt_text {
@@ -215,6 +155,21 @@
 
   .smallScreen #jspsych-animation-image {
     width: 30vw;
+  }
+
+  .jspsych-content {
+    height: 100svh;
+    width: 100svw;
+    justify-content: center;
+  }
+
+  .jspsych-content.start {
+    justify-content: space-around !important;
+    opacity: 0;
+  }
+
+  .jspsych-content.ready {
+    opacity: 1;
   }
   </style>
 </head>
@@ -296,10 +251,9 @@ jatos.onLoad(async function() {
     resp_mode='key';
   }
 
-  var lang='ru';
-  //lang='kor';
+  var lang='en';
   
-  /*if (typeof jatos.studySessionData['lang'] !== 'undefined') {
+  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
   }
   if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
@@ -311,7 +265,7 @@ jatos.onLoad(async function() {
   
   if (jatos.studySessionData['resp_mode'] == 'keyboard') {
     resp_mode='keyboard';
-  }*/
+  }
   var randomize=false;
   if (jatos.studySessionData['pcrand'] == 1) {
     randomize = true;
@@ -369,8 +323,8 @@ jatos.onLoad(async function() {
       }
     }
   });
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024 && !isMobile;
+  const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024;
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent) && !isTablet;
   const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile && !isTablet;
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
   const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .65;
@@ -384,50 +338,6 @@ jatos.onLoad(async function() {
     subject: sid,
     randomize: randomize
 });
-
-  function roundRect(ctx, x, y, w, h, r) {
-    ctx.beginPath();
-    ctx.moveTo(x + r, y);
-    ctx.lineTo(x + w - r, y);
-    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-    ctx.lineTo(x + w, y + h - r);
-    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-    ctx.lineTo(x + r, y + h);
-    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-    ctx.lineTo(x, y + r);
-    ctx.quadraticCurveTo(x, y, x + r, y);
-    ctx.closePath();
-  }
-
-  let activeBtn = null;
-
-  function handlePress(e) {
-    const wrapper = e.target.closest('.image-btn-wrapper');
-    if (!wrapper) return;
-
-    const btn = wrapper.querySelector('.image-btn');
-    const origSrc = btn.dataset.orig || btn.src;
-    const pressedSrc = btn.dataset.pressed || origSrc.replace('.png', '_pressed.png');
-
-    btn.dataset.orig = origSrc;
-    btn.dataset.pressed = pressedSrc;
-
-    btn.src = pressedSrc;
-    wrapper.classList.add('pressed');
-
-    activeBtn = btn;  // remember which button is pressed
-  }
-
-  function handleRelease(e) {
-    if (!activeBtn) {
-      return; // nothing to release
-    }
-    const wrapper = activeBtn.closest('.image-btn-wrapper');
-    activeBtn.src = activeBtn.dataset.orig;
-    wrapper.classList.remove('pressed');
-
-    activeBtn = null; // reset
-  }
 
   function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
     return {
@@ -484,21 +394,11 @@ jatos.onLoad(async function() {
           </svg>
         </div>`,
       on_load: function() {
-        document.addEventListener('mouseover', handlePress, true);
-        document.addEventListener('mouseleave', handleRelease, true);
-        document.addEventListener('touchstart', handlePress, { passive: true });
-        document.addEventListener('touchend', handleRelease);
-
-        document.addEventListener('mouseup', handleRelease);
+        setupButtonListeners();
       },
 
       on_finish: function() {
-        document.removeEventListener('mouseover', handlePress, true);
-        document.removeEventListener('mouseleave', handleRelease, true);
-        document.removeEventListener('touchstart', handlePress);
-        document.removeEventListener('touchend', handleRelease);
-
-        document.removeEventListener('mouseup', handleRelease);
+        cleanupButtonListeners();
       },
     };
   }
@@ -571,21 +471,18 @@ jatos.onLoad(async function() {
         </div>`,
     stimulus: `<p class="prompt_text intro" >` + prompts['instr1_stim'] + '</p>',
     on_load: function() {
-      document.addEventListener('mouseover', handlePress, true);
-      document.addEventListener('mouseleave', handleRelease, true);
-      document.addEventListener('touchstart', handlePress, { passive: true });
-      document.addEventListener('touchend', handleRelease);
-
-      document.addEventListener('mouseup', handleRelease);
+      const contentDiv = document.querySelector('.jspsych-content');
+      if (contentDiv) {
+        contentDiv.classList.add('start');
+      }
+      requestAnimationFrame(() => {
+        fitIntroOutroToScreen(isMobile, isTablet, smallScreen);
+      });
+      setupButtonListeners();
     },
 
     on_finish: function() {
-      document.removeEventListener('mouseover', handlePress, true);
-      document.removeEventListener('mouseleave', handleRelease, true);
-      document.removeEventListener('touchstart', handlePress);
-      document.removeEventListener('touchend', handleRelease);
-
-      document.removeEventListener('mouseup', handleRelease);
+      cleanupButtonListeners();
     },
   }
 
@@ -597,6 +494,12 @@ jatos.onLoad(async function() {
         trial_duration: 1000,
         response_ends_trial: false,
         stimulus: `<p class="prompt_text" >` + prompts['ready'] + '</p>',
+        on_load: function() {
+          const contentDiv = document.querySelector('.jspsych-content');
+          if (contentDiv) {
+            contentDiv.classList.remove('start');
+          }
+        }
       },
       {
         //type: (resp_mode == 'button' ? jsPsychImageButtonResponse : jsPsychImageKeyboardResponse),
@@ -728,21 +631,11 @@ jatos.onLoad(async function() {
           </div>`,
         ],
         on_load: function() {
-          document.addEventListener('mouseover', handlePress, true);
-          document.addEventListener('mouseleave', handleRelease, true);
-          document.addEventListener('touchstart', handlePress, { passive: true });
-          document.addEventListener('touchend', handleRelease);
-
-          document.addEventListener('mouseup', handleRelease);
+          setupButtonListeners();
         },
 
         on_finish: function() {
-          document.removeEventListener('mouseover', handlePress, true);
-          document.removeEventListener('mouseleave', handleRelease, true);
-          document.removeEventListener('touchstart', handlePress);
-          document.removeEventListener('touchend', handleRelease);
-
-          document.removeEventListener('mouseup', handleRelease);
+          cleanupButtonListeners();
         },
       },
     ],
@@ -898,21 +791,11 @@ jatos.onLoad(async function() {
           </div>`,
         ],
         on_load: function() {
-          document.addEventListener('mouseover', handlePress, true);
-          document.addEventListener('mouseleave', handleRelease, true);
-          document.addEventListener('touchstart', handlePress, { passive: true });
-          document.addEventListener('touchend', handleRelease);
-
-          document.addEventListener('mouseup', handleRelease);
+          setupButtonListeners();
         },
 
         on_finish: function() {
-          document.removeEventListener('mouseover', handlePress, true);
-          document.removeEventListener('mouseleave', handleRelease, true);
-          document.removeEventListener('touchstart', handlePress);
-          document.removeEventListener('touchend', handleRelease);
-
-          document.removeEventListener('mouseup', handleRelease);
+          cleanupButtonListeners();
         },
       },
     ],
@@ -1072,21 +955,11 @@ jatos.onLoad(async function() {
           </div>`,
         ],
         on_load: function() {
-          document.addEventListener('mouseover', handlePress, true);
-          document.addEventListener('mouseleave', handleRelease, true);
-          document.addEventListener('touchstart', handlePress, { passive: true });
-          document.addEventListener('touchend', handleRelease);
-
-          document.addEventListener('mouseup', handleRelease);
+          setupButtonListeners();
         },
 
         on_finish: function(data) {
-          document.removeEventListener('mouseover', handlePress, true);
-          document.removeEventListener('mouseleave', handleRelease, true);
-          document.removeEventListener('touchstart', handlePress);
-          document.removeEventListener('touchend', handleRelease);
-
-          document.removeEventListener('mouseup', handleRelease);
+          cleanupButtonListeners();
           // same = button 0 = 's'
           // different = button 1 = 'd'
           let resp = null;
