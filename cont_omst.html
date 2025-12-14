@@ -163,6 +163,9 @@
     font-size: 2em;
   }
   
+  .smallScreen .prompt_text {
+    font-size: 1em;
+  }
   </style>
 </head>
 <body></body>
@@ -315,7 +318,7 @@ function drawHTMLText(ctx, html, x, y, isMobile, fontSize) {
       else if (word.text.includes('Similar') || word.text.includes('相近') || word.text.includes('비슷한') || word.text.includes('Gelijkaardig') || word.text.includes('Похожее')) fillColor = '#d3f5a6';
       else if (word.text.includes('New') || word.text.includes('Nuevo') || word.text.includes('新') || word.text.includes('새로운') || word.text.includes('Nieuw') || word.text.includes('Новое')) fillColor = '#b4d8ff';
 
-      ctx.lineWidth = isMobile ? 15 : 12;
+      ctx.lineWidth = isMobile ? 15 : smallScreen ? 8 : 12;
       ctx.strokeStyle = '#5d2b12';
       ctx.fillStyle = fillColor;
 
@@ -456,11 +459,12 @@ jatos.onLoad(async function() {
 
   // START OF CODE THAT SHOULD BE CONSTANT REGARDLESS OF JATOS / CORDOVA
   const phasename='oMSTCont';
-  const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024;
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent) && !isTablet;
-  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile && !isTablet;
+  const device = getDeviceType();
+  const isMobile = device[0];
+  const isTablet = device[1];
+  const smallScreen = device[2];
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .65;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .65;
   const fontScale = isMobile ? 1.5 : 1.0;
   const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
@@ -596,6 +600,12 @@ var instr1_trial = {
       } else {
         drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 96);
       }
+    } else if (isTablet) {
+      if (['kr', 'nl', 'ru'].includes(lang)) {
+        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.1, isMobile, 64);
+      } else {
+        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.1, isMobile, 64);
+      }
     } else {
       if (['kr', 'nl', 'ru'].includes(lang)) {
         drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
@@ -619,7 +629,7 @@ var instr1_trial = {
   margin_horizontal: isMobile ? '20px' : '40px',
   margin_vertical: '20px',
   prompt: '<p class="prompt_text">' + prompts[resp_mode]['instr_prompt'] + '</p>',
-  canvas_size: smallScreen ? [canvasHeight * 0.7, canvasWidth] : [canvasHeight * 0.8, canvasWidth],
+  canvas_size: smallScreen ? [canvasHeight * 0.6, canvasWidth] : [canvasHeight * 0.8, canvasWidth],
 
   // After button HTML is rendered, attach proper event listeners
   on_load: function() {
@@ -724,14 +734,14 @@ var instr1_trial = {
           const totalStars = 6;
           const maxFill = 10; // star1–star10
           const starSize = isMobile ? Math.min(width, height) * 0.15 :
-                          isTablet ? Math.min(width, height) * 0.1 :
+                          isTablet ? Math.min(width, height) * 0.12 :
                           Math.min(width, height) * 0.15;
           const spacing = isMobile ?  starSize * 0.15 :
-                          isTablet ? starSize * 0.1 :
+                          isTablet ? starSize * 0.2 :
                           starSize * 0.25;
           const framePadding = 20;
           const radius = 25;
-          const brainScale = isTablet ? 0.15 : 0.2;
+          const brainScale = isTablet ? 0.15 : smallScreen ? 0.15 : 0.2;
 
           function drawScene() {
             ctx.fillStyle = "#fff9e0";
@@ -748,17 +758,17 @@ var instr1_trial = {
               else if (lang == 'cn') promptFontSize = 70;
               else promptFontSize = 70;
             } else if (smallScreen) {
-              if (lang == 'nl' || lang == 'ru') promptFontSize = 48;
-              else if (lang == 'kr') promptFontSize = 36;
-              else promptFontSize = 54;
+              if (lang == 'nl' || lang == 'ru') promptFontSize = 36;
+              else if (lang == 'kr') promptFontSize = 28;
+              else promptFontSize = 40;
             } else if (isTablet) {
-              if (lang == 'kr') promptFontSize = 42;
-              else promptFontSize = 54;
+              if (lang == 'kr') promptFontSize = 38;
+              else promptFontSize = 48;
             } else {
-              promptFontSize = 54;
+              promptFontSize = 42;
             }
 
-            const textStartY = isMobile ? height * 0.2 : height * 0.075;
+            const textStartY = isMobile ? height * 0.2 : isTablet ? height * 0.08 : smallScreen ? height * 0.08 : height * 0.04;
             textBounds = drawHTMLText(
               ctx, 
               prompts[resp_mode][choicekey]['trial_prompt'], 
@@ -775,24 +785,27 @@ var instr1_trial = {
             const currentLevel = Math.min(fillLevel, 10);
 
             if (!isMobile){
-              const leftX = isTablet ? 10 : 40;
-              const leftStartY = height * 0.25;
+              const leftX = isTablet ? 20 : 40;
+              const leftStartY = isTablet ? textBounds.endY + 60 : height * 0.25;
 
               for (let i = 0; i < fullStars; i++) {
                 const star = starImgs[10];
-                const posY = isTablet ? leftStartY + (i%6) * (starSize + spacing) : leftStartY + (i%2) * (starSize + spacing);
+                const posY = isTablet ? leftStartY + i * (starSize + spacing) : leftStartY + (i%2) * (starSize + spacing);
                 star.onload = function() {
-                  if (isTablet) ctx.drawImage(star, leftX + (Math.floor(i/6) * (starSize + spacing)), posY, starSize, starSize);
+                  if (isTablet) ctx.drawImage(star, leftX, posY, starSize, starSize);
                   else ctx.drawImage(star, leftX + (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
                 };
-                if (star.complete) isTablet ? ctx.drawImage(star, leftX+ (Math.floor(i/6) * (starSize + spacing)), posY, starSize, starSize) : ctx.drawImage(star, leftX+ (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
+                if (star.complete) {
+                  if (isTablet) ctx.drawImage(star, leftX, posY, starSize, starSize);
+                  else ctx.drawImage(star, leftX + (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
+                }
               }
 
               const currentStar = starImgs[currentLevel];
               const brainW = brain.width * brainScale;
               const brainH = brain.height * brainScale;
-              const brainX = isTablet ? width - brainW - 10 : width - brainW - 60;
-              const brainY = height * 0.55;
+              const brainX = width - brainW - (isTablet ? 20 : 60);
+              const brainY = isTablet ? textBounds.endY + 60 : height * 0.55;
               ctx.drawImage(brain, brainX, brainY, brainW, brainH);
 
               const activeStarScale = 1.75;
@@ -825,11 +838,15 @@ var instr1_trial = {
             const textBounds = drawScene();
             
             // *** CALCULATE AVAILABLE SPACE ***
-            const topMargin = 20; // Space below text
+            const topMargin = isTablet ? 30 : 15; // Space below text (reduced for desktop/laptop)
             const bottomMargin = 30; // Space above buttons
             const imageTopY = textBounds.endY + topMargin;
             const availableHeight = height - imageTopY - bottomMargin;
-            const availableWidth = width * 0.8; // Leave some horizontal padding
+            
+            // For tablet: leave space for stars on left and brain on right
+            const leftReserved = isTablet ? starSize + 60 : 0;
+            const rightReserved = isTablet ? (brain.width * brainScale) + 60 : 0;
+            const availableWidth = isTablet ? width - leftReserved - rightReserved : width * 0.8; // Increased from 0.8 to 0.85
 
             // *** SCALE IMAGE TO FIT AVAILABLE SPACE ***
             const imgAspectRatio = stimImg.width / stimImg.height;
@@ -846,7 +863,7 @@ var instr1_trial = {
             }
 
             // *** POSITION IMAGE CENTERED IN AVAILABLE SPACE ***
-            const x = (width - scaledWidth) / 2;
+            const x = isTablet ? leftReserved + (availableWidth - scaledWidth) / 2 : (width - scaledWidth) / 2;
             const y = imageTopY + (availableHeight - scaledHeight - 2 * framePadding) / 2;
 
             // Draw frame and image

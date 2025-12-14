@@ -211,3 +211,44 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
         });
     }
 }
+
+function getDeviceType() {
+  const width = window.screen.width;
+  const height = window.screen.height;
+  const isPortrait = height > width;
+  const screenSize = Math.max(width, height);
+  const mobile = [true, false, false];
+  const tablet = [false, true, false];
+  const laptop = [false, false, true];
+  const desktop = [false, false, false];
+  
+  console.log("width " + width);
+  if (width < 768) {
+    return mobile;
+  }
+
+  if (screenSize >= 768 && screenSize < 1024) {
+    return tablet;
+  }
+
+  if (screenSize >= 1024 && screenSize < 1366) {
+    // If portrait orientation, likely a tablet (even if large)
+    if (isPortrait) {
+      return tablet;
+    } else {
+      return laptop;
+    }
+  }
+  
+  // Laptop range
+  if (screenSize >= 1366 && screenSize < 1920) {
+    return isPortrait ? tablet : laptop;
+  }
+  
+  // Desktop (large screens, almost always landscape)
+  if (screenSize >= 1920) {
+    return desktop;
+  }
+  
+  return "unknown";
+}
