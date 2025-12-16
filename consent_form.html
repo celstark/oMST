@@ -12,7 +12,40 @@
   <script src="helpers.js"></script>
   <meta charset="UTF-8" />
   <title>Consent Form</title>
-</head>
+  <link
+    rel="preload"
+    href="img/assets/blank_green.png"
+    as="image"
+  />
+  <link
+    rel="preload"
+    href="img/assets/blank_green_pressed.png"
+    as="image"
+  />
+    <link
+    rel="preload"
+    href="img/assets/blank_red.png"
+    as="image"
+  />
+  <link
+    rel="preload"
+    href="img/assets/blank_red_pressed.png"
+    as="image"
+  />
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Bold.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
 <style>
   .mobile .image-btn-text text{
     stroke-width: 14;
@@ -126,7 +159,7 @@
     font-size: 1.8em;
   }
 </style>
-
+</head>
 <body>
 
 <script type="text/javascript">
@@ -152,13 +185,16 @@ function waitFor(conditionFunction) {
   }
   return new Promise(poll)
 }
-const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024 && !isMobile;
-const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile && !isTablet;
+const device = getDeviceType();
+console.log("have device " + device);
+const isMobile = device[0];
+const isTablet = device[1];
+const smallScreen = device[2];
+console.log("smallScreen " + smallScreen);
 const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .65;
+const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
 const fontScale = isMobile ? 1.5 : 1.0;
-const stimScale = isMobile ? 0.9 : smallScreen ? 0.85: isTablet ? 0.8 : 0.9;
+const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
 document.body.classList.add(isMobile ? 'mobile' : 'desktop');
 if (smallScreen) {document.body.classList.add('smallScreen');}
 if (isTablet) {document.body.classList.add('tablet');}

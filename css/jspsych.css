@@ -125,6 +125,13 @@
   stroke-linecap: round;
 }
 
+.mobile .image-btn-text text{
+  stroke-width: 12;
+  font-size: 2.2em;
+  letter-spacing: 0.12em;
+}
+
+
 .prompt_text {
   font-family: "Comic Relief", system-ui;
   color: #5d2b12;
@@ -212,7 +219,7 @@ body {
 
 #consenttext {
   font-family: 'Open Sans', 'Arial', sans-serif;
-  text-align: 'left';
+  text-align: left;
   color: #666;
 }
 

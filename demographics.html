@@ -21,10 +21,35 @@
   <script type="text/javascript" src="js/index.js"></script>
   <script src="js/jspsych_731/dist/jspsych.js"></script>
   <script src="js/jspsych_731/dist/plugin-survey-html-form.js"></script>
+  <script src="js/jspsych_731/dist/plugin-preload.js"></script>
   <script src="js/jquery-3.1.1.min.js"></script>
   <script src="js/jspsych_731/dist/plugin-browser-check.js"></script>
   <script src="helpers.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
+  <link
+    rel="preload"
+    href="img/assets/blank_green.png"
+    as="image"
+  />
+  <link
+    rel="preload"
+    href="img/assets/blank_green_pressed.png"
+    as="image"
+  />  
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Bold.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
   <style>
   .image-btn-text text {
     font-size: 1.30em;
@@ -119,6 +144,9 @@
     font-size: 44px;
   }
 
+  .jspsych-content {
+    align-items: stretch;
+  }
 
   </style>
 </head>
@@ -126,13 +154,16 @@
 
 </body>
 <script>
-const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024 && !isMobile;
-const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile && !isTablet;
+const device = getDeviceType();
+console.log("have device " + device);
+const isMobile = device[0];
+const isTablet = device[1];
+const smallScreen = device[2];
+console.log("smallScreen " + smallScreen);
 const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .65;
+const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
 const fontScale = isMobile ? 1.5 : 1.0;
-const stimScale = isMobile ? 0.9 : smallScreen ? 0.85: isTablet ? 0.8 : 0.9;
+const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
 document.body.classList.add(isMobile ? 'mobile' : 'desktop');
 if (smallScreen) {document.body.classList.add('smallScreen');}
 if (isTablet) {document.body.classList.add('tablet');}
@@ -290,27 +321,48 @@ jatos.onLoad(async function() {
         </div>
       `;
     },
-  on_load: function() {
-    // grab the form element
-    const form = document.querySelector('form');
-    // grab the custom button input
-    const btn = form.querySelector('.image-btn-wrapper input');
+    on_load: function() {
+      // grab the form element
+      const form = document.querySelector('form');
+      // grab the custom button input
+      const btn = form.querySelector('.image-btn-wrapper input');
 
-    btn.addEventListener('click', e => {
-      e.preventDefault();  // prevent weird image input default
-      form.requestSubmit(); // properly submit the form
-    });
+      btn.addEventListener('click', e => {
+        e.preventDefault();  // prevent weird image input default
+        form.requestSubmit(); // properly submit the form
+      });
 
-    setupButtonListeners();
-  },
+      setupButtonListeners();
+    },
 
-  on_finish: function(data) {
-    cleanupButtonListeners();
-    console.log(data.response);
+    on_finish: function(data) {
+      cleanupButtonListeners();
+      console.log(data.response);
+    }
   }
+
+  const preload_fnames = new Array(2);
+  preload_fnames.push(
+    "img/assets/blank_green.png",
+    "img/assets/blank_green_pressed.png"
+  );
+
+  var preload = {
+    type: jsPsychPreload,
+    images: preload_fnames, // since we use a timeline variable, we can't use the simple "trials"
+    show_progress_bar: true,
+    show_detailed_erros: true,
+    continue_after_error: true,
+    on_error: function(fname) {
+      console.log('FAILED  '+fname)
+    },
+    on_finish: function(data) {
+      console.log('Preload success? ' + data.success)
+      console.log('Failed on ' + data.failed_images.length)
+    }
   }
 
-  var timeline = [browserinfo, demogform];
+  var timeline = [preload, browserinfo, demogform];
   jsPsych.run(timeline);
 
   

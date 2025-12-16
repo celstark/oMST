@@ -239,112 +239,6 @@ function getID() {
   return sid
 }
 
-function drawHTMLText(ctx, html, x, y, isMobile, fontSize) {
-
-  const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
-  let fontStyle = '';
-  const letterSpacing = fontSize * 0.08 // change multiplier to change kerning
-  const maxWidth = 1.5 * x;
-  const fontFamily = `"Comic Relief", sans-serif`;
-  ctx.textBaseline = 'middle';
-  ctx.lineJoin = 'round';
-  ctx.lineCap = 'round';
-
-  // Split into words, keeping HTML tags
-  let words = [];
-  for (let part of parts) {
-    if (part.startsWith('<')) {
-      words.push(part);
-    } else {
-      part.split(' ').forEach((word, i, arr) => {
-        words.push(word + (i < arr.length - 1 ? ' ' : ''));
-      });
-    }
-  }
-
-  let lines = [];
-  let currentLine = [];
-  let currentLineWidth = 0;
-
-  for (let word of words) {
-    if (word === '<i>') { fontStyle = 'italic '; continue; }
-    if (word === '</i>') { fontStyle = ''; continue; }
-    if (word === '<b>') { fontStyle = 'bold '; continue; }
-    if (word === '</b>') { fontStyle = ''; continue; }
-
-    ctx.font = `${fontStyle}bold ${fontSize}px ${fontFamily}`;
-    const wordWidth = ctx.measureText(word).width;
-
-    const wordObj = { text: word, font: ctx.font, width: wordWidth };
-
-    if (currentLineWidth + wordWidth > maxWidth) {
-      // Trim trailing space
-      if (currentLine.length && currentLine[currentLine.length - 1].text.endsWith(' ')) {
-        currentLine[currentLine.length - 1].text =
-          currentLine[currentLine.length - 1].text.trimEnd();
-        currentLine[currentLine.length - 1].width =
-          ctx.measureText(currentLine[currentLine.length - 1].text).width;
-      }
-
-      lines.push(currentLine);
-
-      // Start new line
-      const trimmedWord = word.trimStart();
-      currentLine = trimmedWord ? [{ text: trimmedWord, font: ctx.font, width: ctx.measureText(trimmedWord).width }] : [];
-      currentLineWidth = trimmedWord ? ctx.measureText(trimmedWord).width : 0;
-    } else {
-      currentLine.push({ text: word, font: ctx.font, width: wordWidth });
-      currentLineWidth += wordWidth;
-    }
-  }
-  if (currentLine.length) lines.push(currentLine);
-
-  // Draw each line with kerning
-  const lineHeight = fontSize * 1.2;
-  const startY = y;
-
-  for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
-    const lineCharCount = line.reduce((sum, w) => sum + w.text.length, 0);
-    const lineWidth = line.reduce((sum, w) => sum + w.width, 0) + letterSpacing * lineCharCount;
-    let startX = x - lineWidth / 2;
-
-    for (let word of line) {
-      ctx.font = word.font;
-
-      // Determine word color
-      let fillColor = '#fff8d6';
-      if (word.text.includes('Old') || word.text.includes('Viejo') || word.text.includes('旧') || word.text.includes('이전') || word.text.includes('Oud') || word.text.includes('Старое')) fillColor = '#f9b8d0';
-      else if (word.text.includes('Similar') || word.text.includes('相近') || word.text.includes('비슷한') || word.text.includes('Gelijkaardig') || word.text.includes('Похожее')) fillColor = '#d3f5a6';
-      else if (word.text.includes('New') || word.text.includes('Nuevo') || word.text.includes('新') || word.text.includes('새로운') || word.text.includes('Nieuw') || word.text.includes('Новое')) fillColor = '#b4d8ff';
-
-      ctx.lineWidth = isMobile ? 15 : smallScreen ? 8 : 12;
-      ctx.strokeStyle = '#5d2b12';
-      ctx.fillStyle = fillColor;
-
-      // Draw word character by character with spacing
-      let charX = startX;
-      for (let char of word.text) {
-        ctx.strokeText(char, charX, startY + i * lineHeight);
-        ctx.fillText(char, charX, startY + i * lineHeight);
-        charX += ctx.measureText(char).width + letterSpacing;
-      }
-
-      startX += word.width + letterSpacing * word.text.length;
-    }
-  }
-
-  const textEndY = startY + (lines.length * lineHeight);
-  return {
-    startY: startY - lineHeight / 2,  // Account for middle baseline
-    endY: textEndY + lineHeight / 2,
-    lineHeight: lineHeight,
-    numLines: lines.length
-  };
-}
-
-
-
 jatos.onLoad(async function() {
   baseurl='https://starklab.bio.uci.edu/mst/'; // How we'll get images, videos, etc.  Set to empty string to use local folders
   //baseurl=''; // How we'll get images, videos, etc.  Set to empty string to use local folders
@@ -408,7 +302,7 @@ jatos.onLoad(async function() {
   await waitFor(_ => trial_stim !== null);
   console.log('we are set')
   console.log(trial_stim.length)
-  const preload_fnames = new Array(trial_stim.length)
+  const preload_fnames = new Array(trial_stim.length);
   for (var i=0; i<trial_stim.length; i++) {  // Make our Set X_rs be SetX_rs
     trial_stim[i].image=baseurl+trial_stim[i].image.replace("Set ","Set");
     preload_fnames.push(trial_stim[i].image);
@@ -430,7 +324,7 @@ jatos.onLoad(async function() {
     "img/assets/blank_red_pressed.png",
     "img/assets/brain.png",
     ...Array.from({length: 11}, (_, i) => `img/assets/star${i}.png`)
-  )
+  );
 
 
   
@@ -456,15 +350,119 @@ jatos.onLoad(async function() {
   console.log(json_prompts['task']['name'])
   let prompts=json_prompts['cont'] // Load in this phase's section
 
+  function drawHTMLText(ctx, html, x, y, isMobile, fontSize) {
+    const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
+    let fontStyle = '';
+    const letterSpacing = fontSize * 0.12 // change multiplier to change kerning
+    const maxWidth = 1.5 * x;
+    const fontFamily = `"Comic Relief", sans-serif`;
+    ctx.textBaseline = 'middle';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    // Split into words, keeping HTML tags
+    let words = [];
+    for (let part of parts) {
+      if (part.startsWith('<')) {
+        words.push(part);
+      } else {
+        part.split(' ').forEach((word, i, arr) => {
+          words.push(word + (i < arr.length - 1 ? ' ' : ''));
+        });
+      }
+    }
+
+    let lines = [];
+    let currentLine = [];
+    let currentLineWidth = 0;
+
+    for (let word of words) {
+      if (word === '<i>') { fontStyle = 'italic '; continue; }
+      if (word === '</i>') { fontStyle = ''; continue; }
+      if (word === '<b>') { fontStyle = 'bold '; continue; }
+      if (word === '</b>') { fontStyle = ''; continue; }
+
+      ctx.font = `${fontStyle}bold ${fontSize}px ${fontFamily}`;
+      const wordWidth = ctx.measureText(word).width;
+
+      const wordObj = { text: word, font: ctx.font, width: wordWidth };
+
+      if (currentLineWidth + wordWidth > maxWidth) {
+        // Trim trailing space
+        if (currentLine.length && currentLine[currentLine.length - 1].text.endsWith(' ')) {
+          currentLine[currentLine.length - 1].text =
+            currentLine[currentLine.length - 1].text.trimEnd();
+          currentLine[currentLine.length - 1].width =
+            ctx.measureText(currentLine[currentLine.length - 1].text).width;
+        }
+
+        lines.push(currentLine);
+
+        // Start new line
+        const trimmedWord = word.trimStart();
+        currentLine = trimmedWord ? [{ text: trimmedWord, font: ctx.font, width: ctx.measureText(trimmedWord).width }] : [];
+        currentLineWidth = trimmedWord ? ctx.measureText(trimmedWord).width : 0;
+      } else {
+        currentLine.push({ text: word, font: ctx.font, width: wordWidth });
+        currentLineWidth += wordWidth;
+      }
+    }
+    if (currentLine.length) lines.push(currentLine);
+
+    // Draw each line with kerning
+    const lineHeight = fontSize * 1.2;
+    const startY = y;
+
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
+      const lineCharCount = line.reduce((sum, w) => sum + w.text.length, 0);
+      const lineWidth = line.reduce((sum, w) => sum + w.width, 0) + letterSpacing * lineCharCount;
+      let startX = x - lineWidth / 2;
+
+      for (let word of line) {
+        ctx.font = word.font;
+
+        // Determine word color
+        let fillColor = '#fff8d6';
+        if (word.text.includes('Old') || word.text.includes('Viejo') || word.text.includes('旧') || word.text.includes('이전') || word.text.includes('Oud') || word.text.includes('Старое')) fillColor = '#f9b8d0';
+        else if (word.text.includes('Similar') || word.text.includes('相近') || word.text.includes('비슷한') || word.text.includes('Gelijkaardig') || word.text.includes('Похожее')) fillColor = '#d3f5a6';
+        else if (word.text.includes('New') || word.text.includes('Nuevo') || word.text.includes('新') || word.text.includes('새로운') || word.text.includes('Nieuw') || word.text.includes('Новое')) fillColor = '#b4d8ff';
+
+        ctx.lineWidth = isMobile ? 15 : smallScreen ? 8 : 12;
+        ctx.strokeStyle = '#5d2b12';
+        ctx.fillStyle = fillColor;
+
+        // Draw word character by character with spacing
+        let charX = startX;
+        for (let char of word.text) {
+          ctx.strokeText(char, charX, startY + i * lineHeight);
+          ctx.fillText(char, charX, startY + i * lineHeight);
+          charX += ctx.measureText(char).width + letterSpacing;
+        }
+
+        startX += word.width + letterSpacing * word.text.length;
+      }
+    }
+
+    const textEndY = startY + (lines.length * lineHeight);
+    return {
+      startY: startY - lineHeight / 2,  // Account for middle baseline
+      endY: textEndY + lineHeight / 2,
+      lineHeight: lineHeight,
+      numLines: lines.length
+    };
+  }
 
   // START OF CODE THAT SHOULD BE CONSTANT REGARDLESS OF JATOS / CORDOVA
   const phasename='oMSTCont';
   const device = getDeviceType();
+  console.log("have device " + device);
   const isMobile = device[0];
   const isTablet = device[1];
   const smallScreen = device[2];
+  console.log("smallScreen " + smallScreen);
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .65;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
   const fontScale = isMobile ? 1.5 : 1.0;
   const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
@@ -629,47 +627,15 @@ var instr1_trial = {
   margin_horizontal: isMobile ? '20px' : '40px',
   margin_vertical: '20px',
   prompt: '<p class="prompt_text">' + prompts[resp_mode]['instr_prompt'] + '</p>',
-  canvas_size: smallScreen ? [canvasHeight * 0.6, canvasWidth] : [canvasHeight * 0.8, canvasWidth],
+  canvas_size: isMobile ? [canvasHeight * 0.8, canvasWidth] : isTablet ? [canvasHeight * 0.8, canvasWidth] : smallScreen ? [canvasHeight * 0.6, canvasWidth] : [canvasHeight * 0.65, canvasWidth],
 
   // After button HTML is rendered, attach proper event listeners
   on_load: function() {
-    const wrapper = document.querySelector('.image-btn-wrapper');
-    const btn = wrapper.querySelector('.image-btn');
-    const origSrc = btn.src;
-    const pressedSrc = origSrc.replace('.png', '_pressed.png');
+    setupButtonListeners();
+  },
 
-    // Desktop hover effect
-    wrapper.addEventListener('mouseenter', () => {
-      btn.src = pressedSrc;
-      wrapper.classList.add('pressed');
-    });
-    wrapper.addEventListener('mouseup', () => {
-      btn.src = origSrc;
-      wrapper.classList.remove('pressed');
-    });
-    wrapper.addEventListener('mouseleave', () => {
-      btn.src = origSrc;
-      wrapper.classList.remove('pressed');
-    });
-
-    // Mobile touch effect
-    btn.addEventListener('touchstart', () => {
-      btn.src = pressedSrc;
-      wrapper.classList.add('pressed');
-    });
-    btn.addEventListener('touchend', () => {
-      requestAnimationFrame(() => {
-        btn.src = origSrc;
-        wrapper.classList.remove('pressed');
-      });
-    });
-
-    btn.addEventListener('touchcancel', () => {
-      requestAnimationFrame(() => {
-        btn.src = origSrc;
-        wrapper.classList.remove('pressed');
-      });
-    });
+  on_finish: function() {
+    cleanupButtonListeners();
   }
 };
   

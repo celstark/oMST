@@ -250,5 +250,5 @@ function getDeviceType() {
     return desktop;
   }
   
-  return "unknown";
+  return desktop;
 }
