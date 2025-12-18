@@ -142,7 +142,7 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
         stimulusContainer.style.margin = '0 auto';
         stimulusContainer.style.textAlign = 'center';
         stimulusContainer.style.padding = '20px';
-        stimulusContainer.style.maxWidth = isMobile ? '90%' : isTablet ? '80%' : '70%';
+        stimulusContainer.style.maxWidth = isMobile ? '90%' : isTablet ? '90%' : '70%';
         
         requestAnimationFrame(() => {
         requestAnimationFrame(() => {
@@ -163,7 +163,7 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
             
             const finalSize = fitTextToContainer(
                 stimulusContainer, 
-                stimulusAllocation, 
+                stimulusAllocation - 40, 
                 minFontSize, 
                 maxFontSize
             );
@@ -216,39 +216,74 @@ function getDeviceType() {
   const width = window.screen.width;
   const height = window.screen.height;
   const isPortrait = height > width;
+  
+  // Calculate aspect ratio (always longer side / shorter side)
+  const aspectRatio = Math.max(width, height) / Math.min(width, height);
+  
   const screenSize = Math.max(width, height);
   const mobile = [true, false, false];
   const tablet = [false, true, false];
   const laptop = [false, false, true];
   const desktop = [false, false, false];
   
-  console.log("width " + width);
-  if (width < 768) {
-    return mobile;
+  console.log("width: " + width);
+  console.log("height: " + height);
+  console.log("aspect ratio: " + aspectRatio.toFixed(2));
+  
+  // Very large screens are desktops
+  if (screenSize >= 1920) {
+    console.log("desktop");
+    return desktop;
   }
-
-  if (screenSize >= 768 && screenSize < 1024) {
-    return tablet;
+  
+  // Laptop range (typically 13-15 inch displays)
+  if (screenSize >= 1366 && screenSize < 1920) {
+    // Large tablets in portrait can reach this size, use aspect ratio
+    if (isPortrait && aspectRatio >= 1.3 && aspectRatio <= 1.6) {
+      console.log("tablet (large)");
+      return tablet;
+    }
+    console.log("laptop");
+    return laptop;
   }
-
+  
+  // Medium screens (tablets vs small laptops)
   if (screenSize >= 1024 && screenSize < 1366) {
-    // If portrait orientation, likely a tablet (even if large)
     if (isPortrait) {
+      console.log("tablet");
       return tablet;
     } else {
+      console.log("laptop");
       return laptop;
     }
   }
   
-  // Laptop range
-  if (screenSize >= 1366 && screenSize < 1920) {
-    return isPortrait ? tablet : laptop;
+  // Small to medium screens - THIS IS THE KEY RANGE
+  // Use aspect ratio to distinguish phones from tablets
+  if (screenSize >= 768 && screenSize < 1024) {
+    // Phones have more elongated screens (taller/narrower)
+    // aspectRatio >= 1.7 suggests a phone
+    if (aspectRatio >= 1.7) {
+      console.log("mobile (large phone)");
+      return mobile;
+    } else {
+      console.log("tablet (small)");
+      return tablet;
+    }
   }
   
-  // Desktop (large screens, almost always landscape)
-  if (screenSize >= 1920) {
-    return desktop;
+  // Smaller screens - but check aspect ratio still
+  if (screenSize < 768) {
+    // Small tablets might be here with squarer aspect ratios
+    if (aspectRatio < 1.5 && screenSize >= 600) {
+      console.log("tablet (very small)");
+      return tablet;
+    }
+    console.log("mobile");
+    return mobile;
   }
   
+  // Fallback
+  console.log("desktop");
   return desktop;
 }

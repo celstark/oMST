@@ -120,7 +120,7 @@
     width: 240px;
     font-size: 22px;
     color: #5d2b12;
-    font-family: "Comic Sans MS", "Comic Neue", cursive;
+    font-family: 'Comic Relief', sans-serif;
     border: 2px solid #5d2b12;
     border-radius: 4px;
     vertical-align: middle;
@@ -341,28 +341,7 @@ jatos.onLoad(async function() {
     }
   }
 
-  const preload_fnames = new Array(2);
-  preload_fnames.push(
-    "img/assets/blank_green.png",
-    "img/assets/blank_green_pressed.png"
-  );
-
-  var preload = {
-    type: jsPsychPreload,
-    images: preload_fnames, // since we use a timeline variable, we can't use the simple "trials"
-    show_progress_bar: true,
-    show_detailed_erros: true,
-    continue_after_error: true,
-    on_error: function(fname) {
-      console.log('FAILED  '+fname)
-    },
-    on_finish: function(data) {
-      console.log('Preload success? ' + data.success)
-      console.log('Failed on ' + data.failed_images.length)
-    }
-  }
-
-  var timeline = [preload, browserinfo, demogform];
+  var timeline = [browserinfo, demogform];
   jsPsych.run(timeline);
 
   

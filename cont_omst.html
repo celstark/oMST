@@ -113,6 +113,20 @@
   <script src="js/jspsych_731/dist/plugin-browser-check.js"></script>
   <script src="helpers.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Bold.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
   <style>
   .image-btn-text text {
     font-size: 1.5em;
@@ -353,7 +367,7 @@ jatos.onLoad(async function() {
   function drawHTMLText(ctx, html, x, y, isMobile, fontSize) {
     const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
     let fontStyle = '';
-    const letterSpacing = fontSize * 0.12 // change multiplier to change kerning
+    const letterSpacing = fontSize * 0.08 // change multiplier to change kerning
     const maxWidth = 1.5 * x;
     const fontFamily = `"Comic Relief", sans-serif`;
     ctx.textBaseline = 'middle';
@@ -768,16 +782,17 @@ var instr1_trial = {
               }
 
               const currentStar = starImgs[currentLevel];
+              const activeStarScale = 1.75;
+              const activeStarSize = starSize * activeStarScale;
               const brainW = brain.width * brainScale;
               const brainH = brain.height * brainScale;
               const brainX = width - brainW - (isTablet ? 20 : 60);
-              const brainY = isTablet ? textBounds.endY + 60 : height * 0.55;
-              ctx.drawImage(brain, brainX, brainY, brainW, brainH);
-
-              const activeStarScale = 1.75;
-              const activeStarSize = starSize * activeStarScale;
+              const brainY = isTablet ? textBounds.endY + 2*activeStarSize : height * 0.55;
+              
               const starX = brainX + brainW / 2 - activeStarSize / 2;
               const starY = brainY - activeStarSize * 1.2;
+
+              ctx.drawImage(brain, brainX, brainY, brainW, brainH);
               currentStar.onload = function() { ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize); };
               if (currentStar.complete) ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize);
             

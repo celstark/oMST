@@ -57,10 +57,10 @@
       "m": "혼혈인 아니면 다름"
     },
     "handedness": {
-      "prompt": "Handedness:",
-      "l": "Left",
-      "r": "Right",
-      "a": "Ambidextrous"
+      "prompt": "우세손:",
+      "l": "왼손잡이",
+      "r": "오른손잡이",
+      "a": "양손잡이"
     }
   },
   "pcon": {
