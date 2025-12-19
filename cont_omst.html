@@ -150,7 +150,7 @@
   
   .mobile .image-btn-text.kr text,
   .mobile .image-btn-text.nl text{
-    font-size: 1em;
+    font-size: 0.8em;
     stroke-width: 8;
   }
 
@@ -160,7 +160,7 @@
   }
   
   .tablet .image-btn-text.kr text {
-    font-size: 1em;
+    font-size: .8em;
     stroke-width: 8;
   }
 
@@ -765,7 +765,7 @@ var instr1_trial = {
             const currentLevel = Math.min(fillLevel, 10);
 
             if (!isMobile){
-              const leftX = isTablet ? 20 : 40;
+              const leftX = isTablet ? 20 : smallScreen ? 10 : 40;
               const leftStartY = isTablet ? textBounds.endY + 60 : height * 0.25;
 
               for (let i = 0; i < fullStars; i++) {
@@ -922,6 +922,8 @@ var instr1_trial = {
           }
           data.correct = resp == data.correct_response;
           if(data.correct) {
+            num_correct += 1;
+          } else {
             num_correct += 1;
           }
           

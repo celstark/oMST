@@ -60,6 +60,7 @@
     crossorigin
   />
   <style>
+    
   .image-btn-text text {
     font-size: 1.5em;
   }
@@ -73,7 +74,10 @@
     font-size: 1.5em;
   }
 
-  .image-btn-text.kr text,
+  .image-btn-text.kr text {
+    font-size: 1.2em;
+    stroke-width: 10;
+  }
   .image-btn-text.ru text{
     font-size: 0.9em;
     stroke-width: 8;
@@ -83,10 +87,14 @@
     font-size: 0.8em;
     stroke-width: 8;
   }
+
+  .mobile .image-btn-text.es text {
+    font-size: 1.4em;
+  }
   
   .mobile .image-btn-text.kr text {
-    font-size: 0.9em;
-    stroke-width: 9;
+    font-size: 1.2em;
+    stroke-width: 12;
   }
 
   .mobile .image-btn-text.nl text {
@@ -95,59 +103,22 @@
   }
 
   .mobile .image-btn-text.ru text {
-    font-size: 1.0em;
-    stroke-width: 10;
+    font-size: .8em;
+    stroke-width: 8;
   }
   
   .tablet .image-btn-text.kr text {
-    font-size: 1em;
-    stroke-width: 8;
-  }
-
-  .tablet .image-btn-text.ru text {
-    font-size: 1.0em;
+    font-size: 1.2em;
     stroke-width: 10;
   }
 
-  .prompt_text {
-    font-size: 1.4em;
+  .tablet .image-btn-text.ru text {
+    font-size: 0.8em;
+    stroke-width: 8;
   }
 
-  .mobile  .prompt_text {
+  .mobile .prompt_text {
     font-size: 2em;
-  }
-
-  .mobile .prompt_text.nl {
-    font-size: 1.8em;
-  }
-
-  .mobile .prompt_text.ru {
-    font-size: 1.6em;
-  }
-
-  .tablet .prompt_text{
-    font-size: 1.2em;
-  }
-
-  .smallScreen .prompt_text {
-    font-size: 1em;
-  }
-
-  .tablet .prompt_text.intro {
-    font-size: 1.4em;
-  }
-
-  .mobile .prompt_text.es.intro,
-  .mobile .prompt_text.nl.intro {
-    font-size: 1.8em;
-  }
-
-  .mobile .prompt_text.ru.intro {
-    font-size: 1.8em;
-  }
-
-  .smallScreen .prompt_text.ru.intro {
-    font-size: 0.9em;
   }
 
   .smallScreen .jspsych-categorize-image-buttons-stimulus{
@@ -337,13 +308,16 @@ jatos.onLoad(async function() {
       }
     }
   });
-  const isTablet = window.innerWidth >= 600 && window.innerWidth <= 1024;
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent) && !isTablet;
-  const smallScreen = window.innerHeight <= 800 && window.innerWidth <= 1440 && !isMobile && !isTablet;
+  const device = getDeviceType();
+  console.log("have device " + device);
+  const isMobile = device[0];
+  const isTablet = device[1];
+  const smallScreen = device[2];
+  console.log("smallScreen " + smallScreen);
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.8 : window.innerHeight * .65;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
   const fontScale = isMobile ? 1.5 : 1.0;
-  const stimScale = isMobile ? 0.9 : smallScreen ? 0.85: isTablet ? 0.8 : 0.9;
+  const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
   if (smallScreen) {document.body.classList.add('smallScreen');}
   if (isTablet) {document.body.classList.add('tablet');}
@@ -357,7 +331,7 @@ jatos.onLoad(async function() {
     return {
       type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
       choices: [buttonLabel],
-      canvas_size: isMobile ? [canvasHeight * 0.6, canvasWidth] : smallScreen ? [canvasHeight * 0.8, canvasWidth] : [canvasHeight * 0.8, canvasWidth],
+      canvas_size: calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen), // Calculate based on horizontal allocation
       stimulus: function(c) {
         const ctx = c.getContext('2d');
         ctx.fillStyle = '#fff9e0';
@@ -368,28 +342,34 @@ jatos.onLoad(async function() {
         const height = c.height;
         ctx.fillRect(0, 0, width, height);
 
-
-
         const imgL = new Image();
         const imgR = new Image();
 
         imgL.onload = imgR.onload = function() {
-          const imgWidth = imgL.width * stimScale;
-          const imgHeight = imgL.height * stimScale;
+          // Calculate image size to fit within canvas
+          // Two images side by side with a gap
+          const availableWidth = (width - gap - framePadding * 4) / 2;
+          const availableHeight = height - framePadding * 2;
+          
+          // Use the smaller dimension to ensure images fit
+          const imgSize = Math.min(availableWidth, availableHeight);
+          
+          const imgWidth = imgSize;
+          const imgHeight = imgSize;
           const totalWidth = imgWidth * 2 + gap;
-          const x = (c.width - totalWidth) / 2;
-          const y = (c.height - imgHeight) / 2;
+          const x = (width - totalWidth) / 2;
+          const y = (height - imgHeight) / 2;
 
           // draw function for each image
-          function drawFramedImage(img, x) {
+          function drawFramedImage(img, xPos) {
             ctx.fillStyle = '#ffffff';
             ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            roundRect(ctx, x - framePadding, y - framePadding,
+            roundRect(ctx, xPos - framePadding, y - framePadding,
                     imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
             ctx.fill();
             ctx.stroke();
-            ctx.drawImage(img, x, y, imgWidth, imgHeight);
+            ctx.drawImage(img, xPos, y, imgWidth, imgHeight);
           }
           drawFramedImage(imgL, x);
           drawFramedImage(imgR, x + imgWidth + gap);
@@ -398,7 +378,7 @@ jatos.onLoad(async function() {
         imgL.src = imgLeft;
         imgR.src = imgRight;
       },
-      prompt: `<p class="prompt_text">${promptText}</p>`,
+      prompt: `<p class="prompt_text" style="margin: 0;">${promptText}</p>`,
       button_html:           
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_green.png"
@@ -408,6 +388,10 @@ jatos.onLoad(async function() {
           </svg>
         </div>`,
       on_load: function() {
+        requestAnimationFrame(() => {
+          fitSideBySideToScreen(isMobile, isTablet, smallScreen);
+        });
+        
         setupButtonListeners();
       },
 
@@ -566,6 +550,24 @@ jatos.onLoad(async function() {
         frame_time: 200,
         render_on_canvas: true,
         prompt: `<p class="prompt_text">${prompts['wait']}</p>`,
+        on_start: function(trial) {
+          // Preload all animation frames before starting
+          return new Promise((resolve) => {
+            let loadedCount = 0;
+            const totalImages = trial.stimuli.length;
+            
+            trial.stimuli.forEach(src => {
+              const img = new Image();
+              img.onload = () => {
+                loadedCount++;
+                if (loadedCount === totalImages) {
+                  resolve();
+                }
+              };
+              img.src = src;
+            });
+          });
+        },
         on_load: function() {
           const canvas = document.querySelector('canvas');
 

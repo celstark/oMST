@@ -32,9 +32,12 @@ Revised: November 20, 2019 (CELS) for Cordova
  -->
 
 <head>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' 'unsafe-eval' 
     https://fonts.gstatic.com http://www.stark-labs.com/exp/jsPsych/mobile_cMST/append_log.php http://www.stark-labs.com/exp/jsPsych/mobile_cMST/write_data_file.php; 
-    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; media-src *; 
+    script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net;
+    connect-src 'self' https://cdn.jsdelivr.net http://www.stark-labs.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; 
+    media-src *; 
     img-src 'self' data: content:;">
 
   <script type="text/javascript" src="jatos.js"></script>
@@ -76,17 +79,26 @@ Revised: November 20, 2019 (CELS) for Cordova
   
   .mobile .image-btn-text.kr text,
   .mobile .image-btn-text.nl text{
-    font-size: 0.9em;
-    stroke-width: 9;
+    font-size: 0.8em;
+    stroke-width: 8;
   }
 
   .mobile .image-btn-text.ru text{
     font-size: 1.2em;
     stroke-width: 12;
   }
+    
+  .tablet .image-btn-text text {
+    font-size: 1.5em;
+  }
   
   .tablet .image-btn-text.kr text {
     font-size: 1em;
+    stroke-width: 8;
+  }
+ 
+  .tablet .image-btn-text.nl text {
+    font-size: .9em;
     stroke-width: 8;
   }
 
@@ -408,110 +420,6 @@ jatos.onLoad(async function() {
     }
   }
 
-  function calculateSideBySideCanvasSize() {
-    const totalWidth = window.visualViewport ? 
-      window.visualViewport.width : window.innerWidth;
-    
-    // Define horizontal space allocation for each device type
-    let widthPercent;
-    if (isMobile) {
-      widthPercent = 0.90; // 90% of screen width
-    } else if (isTablet) {
-      widthPercent = 0.80; // 80% of screen width
-    } else if (smallScreen) {
-      widthPercent = 0.50; // 70% of screen width
-    } else { // desktop
-      widthPercent = 0.40; // 60% of screen width
-    }
-    
-    // Calculate canvas width
-    const canvasWidth = totalWidth * widthPercent;
-    
-    // Calculate canvas height (2:1 ratio - width:height)
-    // Since we have 2 square images side by side, the canvas is 2x wider than tall
-    // So height = width / 2
-    const canvasHeight = canvasWidth / 1.8;
-    
-    console.log('Canvas size calculated:', {
-      device: isMobile ? 'mobile' : isTablet ? 'tablet' : smallScreen ? 'laptop' : 'desktop',
-      widthPercent,
-      canvasWidth,
-      canvasHeight
-    });
-    
-    // jsPsych canvas_size is [height, width]
-    return [Math.floor(canvasHeight), Math.floor(canvasWidth)];
-  }
-
-  function fitSideBySideToScreen() {
-    const container = document.querySelector('.jspsych-content');
-    if (!container) return;
-    
-    const totalHeight = window.offsetHeight ? 
-      window.offsetHeight : window.innerHeight;
-    
-    // Find the actual elements (using ID selectors, not class!)
-    const canvasStimulusContainer = document.querySelector('#jspsych-canvas-button-response-stimulus');
-    const buttonContainer = document.querySelector('#jspsych-canvas-button-response-btngroup');
-    const promptContainer = document.querySelector('.prompt_text');
-    
-    if (!canvasStimulusContainer || !buttonContainer) {
-      console.warn('Side-by-side elements not found');
-      return;
-    }
-    
-    console.log('Fitting side-by-side prompt text');
-    
-    // Measure actual heights
-    const canvasHeight = canvasStimulusContainer.offsetHeight;
-    const buttonHeight = buttonContainer.offsetHeight;
-    const margin = isMobile ? 40 : 60;
-    
-    // Calculate remaining space for prompt
-    const promptHeight = totalHeight - canvasHeight - buttonHeight - margin;
-    
-    console.log('Space allocation:', {
-      totalHeight,
-      canvasHeight,
-      buttonHeight,
-      promptHeight,
-      margin
-    });
-    
-    // Style and fit prompt text
-    if (promptContainer && promptHeight > 20) {
-      const finalHeight = Math.max(promptHeight, 40) + 'px';
-
-      promptContainer.style.height = finalHeight + 'px';
-      promptContainer.style.overflow = 'hidden';
-      promptContainer.style.boxSizing = 'border-box';
-      promptContainer.style.margin = '10 auto';
-      promptContainer.style.textAlign = 'center';
-      promptContainer.style.justifyContent = 'space-between';
-      promptContainer.style.padding = '10px 20px'
-      
-      // Fit text to available space
-      if (typeof fitTextToContainer === 'function') {
-        let minFontSize, maxFontSize;
-        if (isMobile) {
-            minFontSize = 36;
-            maxFontSize = 96;
-          } else if (isTablet) {
-            minFontSize = 40;
-            maxFontSize = 80;
-          } else if (smallScreen) {
-            minFontSize = 32;
-            maxFontSize = 64;
-          } else { // desktop
-            minFontSize = 32;
-            maxFontSize = 64;
-          }
-        fitTextToContainer(promptContainer, promptHeight * 0.85, minFontSize, maxFontSize);
-        container.classList.add('ready');
-      }
-    }
-  }
-
   // Default is keyboard here - override if buttons
   //var instr_choice=[' ']; // 32 is space
   //var instr_txt='<i>spacebar</i>'; //
@@ -728,7 +636,7 @@ jatos.onLoad(async function() {
     return {
       type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
       choices: [buttonLabel],
-      canvas_size: calculateSideBySideCanvasSize(), // Calculate based on horizontal allocation
+      canvas_size: calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen), // Calculate based on horizontal allocation
       stimulus: function(c) {
         const ctx = c.getContext('2d');
         ctx.fillStyle = '#fff9e0';
@@ -786,7 +694,7 @@ jatos.onLoad(async function() {
         </div>`,
       on_load: function() {
         requestAnimationFrame(() => {
-          fitSideBySideToScreen();
+          fitSideBySideToScreen(isMobile, isTablet, smallScreen);
         });
         
         setupButtonListeners();
