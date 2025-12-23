@@ -1,0 +1,6 @@
+Text + brain getting refreshed on low end devices in const_omst
+clipping after italicized character in cont_omst
+Dutch consent form not translated
+Continue and OK buttons not translated
+Short blank screen between tasks
+incorrect answers incrementing stars on cont_omst (intended for testing)

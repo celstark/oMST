@@ -56,7 +56,22 @@ Revised: November 20, 2019 (CELS) for Cordova
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Bold.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
   <style>
+    
   .image-btn-text text {
     font-size: 1.6em;
   }
@@ -139,6 +154,14 @@ Revised: November 20, 2019 (CELS) for Cordova
     line-height: 1.3;
     white-space: pre-wrap;
     word-wrap: break-word;
+  }
+
+  .jspsych-content {
+    visibility: hidden !important;
+  }
+
+  .jspsych-content.ready {
+    visibility: visible !important;
   }
   </style>
 </head>
@@ -377,7 +400,7 @@ jatos.onLoad(async function() {
       console.log('Actual prompt height:', actualPromptHeight);
     }
     
-    // Style prompt container (same for all devices)
+    // Style prompt container
     promptContainer.style.display = 'flex';
     promptContainer.style.alignItems = 'center';
     promptContainer.style.justifyContent = 'center';
@@ -909,6 +932,8 @@ var outtro = {
       </svg>
     </div>`,
   on_load: function() {
+    const container = document.querySelector('.jspsych-content');
+    container.classList.remove('ready');
     requestAnimationFrame(() => {
       fitIntroOutroToScreen(isMobile, isTablet, smallScreen);
     });

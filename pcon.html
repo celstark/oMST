@@ -148,14 +148,14 @@
     justify-content: center;
   }
 
-  .jspsych-content.start {
-    justify-content: space-around !important;
-    opacity: 0;
+  .jspsych-content {
+    visibility: hidden !important;
   }
 
   .jspsych-content.ready {
-    opacity: 1;
+    visibility: visible !important;
   }
+
   </style>
 </head>
 <body></body>
@@ -388,6 +388,7 @@ jatos.onLoad(async function() {
           </svg>
         </div>`,
       on_load: function() {
+
         requestAnimationFrame(() => {
           fitSideBySideToScreen(isMobile, isTablet, smallScreen);
         });
@@ -441,7 +442,11 @@ jatos.onLoad(async function() {
     'img/pcon023a.jpg','img/pcon023b.jpg', 
     'img/pcon024a.jpg','img/pcon024b.jpg', 
     'img/pcon025a.jpg','img/pcon025b.jpg', 
-    'img/pcon027a.jpg','img/pcon027a.jpg' ], 
+    'img/pcon027a.jpg','img/pcon027a.jpg',
+    "img/assets/blank_blue.png",
+    "img/assets/blank_blue_pressed.png",
+    "img/assets/blank_green.png",
+    "img/assets/blank_green_pressed.png" ], 
     show_progress_bar: true,
     show_detailed_erros: true,
     continue_after_error: true,
@@ -458,7 +463,6 @@ jatos.onLoad(async function() {
   var instr1_trial = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     choices: [prompts[resp_mode]['instr_choice']],
-    prompt: `<p class="prompt_text">${prompts[resp_mode]['instr1_prompt']}</p>`,
     button_html: 
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_green.png"
@@ -467,21 +471,19 @@ jatos.onLoad(async function() {
             <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
           </svg>
         </div>`,
-    stimulus: `<p class="prompt_text intro" >` + prompts['instr1_stim'] + '</p>',
     on_load: function() {
-      const contentDiv = document.querySelector('.jspsych-content');
-      if (contentDiv) {
-        contentDiv.classList.add('start');
-      }
       requestAnimationFrame(() => {
         fitIntroOutroToScreen(isMobile, isTablet, smallScreen);
       });
       setupButtonListeners();
     },
-
     on_finish: function() {
       cleanupButtonListeners();
     },
+
+    prompt: `<p class="prompt_text">${prompts[resp_mode]['instr1_prompt']}</p>`,
+    stimulus: `<p class="prompt_text intro" >` + prompts['instr1_stim'] + '</p>',
+
   }
 
   var demo1_trial = {
@@ -999,7 +1001,7 @@ jatos.onLoad(async function() {
       { img1: 'img/pcon001a.jpg', img2: 'img/pcon001b.jpg', cresp: 'd'},
       { img1: 'img/pcon002a.jpg', img2: 'img/pcon002a.jpg', cresp: 's'},
       { img1: 'img/pcon003a.jpg', img2: 'img/pcon003a.jpg', cresp: 's'},
-      { img1: 'img/pcon004a.jpg', img2: 'img/pcon004b.jpg', cresp: 'd'},
+      /*{ img1: 'img/pcon004a.jpg', img2: 'img/pcon004b.jpg', cresp: 'd'},
       { img1: 'img/pcon005a.jpg', img2: 'img/pcon005a.jpg', cresp: 's'},
       { img1: 'img/pcon006a.jpg', img2: 'img/pcon006a.jpg', cresp: 's'},
       { img1: 'img/pcon007a.jpg', img2: 'img/pcon007a.jpg', cresp: 's'},
@@ -1023,7 +1025,7 @@ jatos.onLoad(async function() {
       { img1: 'img/pcon025a.jpg', img2: 'img/pcon025b.jpg', cresp: 'd'},
       //{ img1: 'img/pcon026a.jpg', img2: 'img/pcon026b.jpg', cresp: 'd'},
       { img1: 'img/pcon027a.jpg', img2: 'img/pcon027a.jpg', cresp: 's'},     
-      //{ img1: 'img/pcon028a.jpg', img2: 'img/pcon028a.jpg', cresp: 's'},
+      //{ img1: 'img/pcon028a.jpg', img2: 'img/pcon028a.jpg', cresp: 's'},*/
     ],
     randomize_order: randomize
   }

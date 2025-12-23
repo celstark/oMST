@@ -476,7 +476,7 @@ jatos.onLoad(async function() {
   const smallScreen = device[2];
   console.log("smallScreen " + smallScreen);
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .70;
   const fontScale = isMobile ? 1.5 : 1.0;
   const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
@@ -699,8 +699,9 @@ var instr1_trial = {
     img.src = `img/assets/star${i}.png`;
     return img;
   });
-  var test_trials = {
 
+  var test_trials = {
+    
     timeline: [
       {
         type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
@@ -724,8 +725,6 @@ var instr1_trial = {
           const brainScale = isTablet ? 0.15 : smallScreen ? 0.15 : 0.2;
 
           function drawScene() {
-            ctx.fillStyle = "#fff9e0";
-            ctx.fillRect(0, 0, width, height);
 
             // === Progress info (stars/brain) ===
             const progress = num_correct;
@@ -748,7 +747,7 @@ var instr1_trial = {
               promptFontSize = 42;
             }
 
-            const textStartY = isMobile ? height * 0.2 : isTablet ? height * 0.08 : smallScreen ? height * 0.08 : height * 0.04;
+            const textStartY = isMobile ? height * 0.2 : isTablet ? height * 0.08 : smallScreen ? height * 0.08 : height * 0.08;
             textBounds = drawHTMLText(
               ctx, 
               prompts[resp_mode][choicekey]['trial_prompt'], 
@@ -835,7 +834,10 @@ var instr1_trial = {
 
             // Try fitting by height first
             scaledHeight = availableHeight - (2 * framePadding);
+
             scaledWidth = scaledHeight * imgAspectRatio;
+            console.log("scaled height", scaledHeight);
+            console.log("scaled width", scaledWidth);
 
             // If too wide, fit by width instead
             if (scaledWidth > availableWidth - (2 * framePadding)) {
@@ -894,22 +896,14 @@ var instr1_trial = {
         data: jsPsych.timelineVariable('data'),
 
         on_load: function() {
-          document.querySelectorAll('.image-btn-wrapper').forEach(wrapper => {
-            const btn = wrapper.querySelector('.image-btn');
-            const origSrc = btn.src;
-            const pressedSrc = origSrc.replace('.png','_pressed.png');
-
-            wrapper.addEventListener('mouseenter', () => { btn.src = pressedSrc; wrapper.classList.add('pressed'); });
-            wrapper.addEventListener('mouseup', () => { btn.src = origSrc; wrapper.classList.remove('pressed'); });
-            wrapper.addEventListener('mouseleave', () => { btn.src = origSrc; wrapper.classList.remove('pressed'); });
-
-            wrapper.addEventListener('touchstart', () => { btn.src = pressedSrc; wrapper.classList.add('pressed'); });
-            wrapper.addEventListener('touchend', () => { btn.src = origSrc; wrapper.classList.remove('pressed'); });
-            wrapper.addEventListener('touchcancel', () => { btn.src = origSrc; wrapper.classList.remove('pressed'); });
-          });
+          console.log('Trial starting, canvas exists?', document.querySelector('canvas'));
+          const displayElement = jsPsych.getDisplayElement();
+          displayElement.setAttribute('data-persist', 'true');
+          setupButtonListeners();
         },
 
         on_finish: function(data) {
+          console.log('Trial ending, canvas still exists?', document.querySelector('canvas'));
           let resp = null;
           if (resp_mode == 'button') {
             if (data.response == 0) { resp = 'o'; }
@@ -928,7 +922,12 @@ var instr1_trial = {
           }
           
           data.resp = resp;
-        }
+          cleanupButtonListeners();
+        },
+        on_trial_finish: function(){
+
+        },
+        post_trial_gap: 0,
       }
     ],
     timeline_variables: tlv
@@ -1038,7 +1037,7 @@ var instr1_trial = {
 var browserinfo = {
     type: jsPsychBrowserCheck
   };
-  
+
   var timeline = [browserinfo, preload, instr1_trial, test_trials, debrief_block];
   jsPsych.run(timeline);
   

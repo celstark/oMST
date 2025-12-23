@@ -1,47 +1,166 @@
 let activeBtn = null;
+let lastTouchTime = 0;
+const hasHover = window.matchMedia('(hover: hover)').matches;
+
+//console.log('🖱️ Device hover capability:', hasHover);
 
 function handlePress(e) {
     const wrapper = e.target.closest('.image-btn-wrapper');
     if (!wrapper) return;
 
     const btn = wrapper.querySelector('.image-btn');
+    const btnId = btn.id || btn.src.split('/').pop(); // For identification
+    
+    //console.log(`⬇️ PRESS EVENT: ${e.type} on button "${btnId}"`);
+    //console.log(`   - Time since last touch: ${Date.now() - lastTouchTime}ms`);
+    //console.log(`   - Has hover capability: ${hasHover}`);
+    //console.log(`   - Currently active button: ${activeBtn ? 'YES' : 'NO'}`);
+
+    // Track touch usage
+    if (e.type === 'touchstart') {
+        lastTouchTime = Date.now();
+        //console.log(`   ✋ TOUCH detected - updating lastTouchTime`);
+    }
+    
+    // Block ghost mouse events on touch devices
+    if (e.type === 'mouseover') {
+        const timeSinceTouch = Date.now() - lastTouchTime;
+        
+        if (timeSinceTouch < 500) {
+            //console.log(`   ⛔ BLOCKED mouseover (${timeSinceTouch}ms after touch - too soon!)`);
+            return;
+        }
+        
+        if (!hasHover) {
+            //console.log(`   ⛔ BLOCKED mouseover (device has no hover capability)`);
+            return;
+        }
+        
+        //console.log(`   ✅ ALLOWED mouseover (${timeSinceTouch}ms after touch, device has hover)`);
+    }
+
+    if (activeBtn === btn) {
+        //console.log(`   ⚠️ SKIPPED - button already active`);
+        return;
+    }
+    
     const origSrc = btn.dataset.orig || btn.src;
     const pressedSrc = btn.dataset.pressed || origSrc.replace('.png', '_pressed.png');
 
     btn.dataset.orig = origSrc;
     btn.dataset.pressed = pressedSrc;
 
+    //console.log(`   🔽 PRESSING button "${btnId}"`);
+    //console.log(`   - Original: ${origSrc.split('/').pop()}`);
+    //console.log(`   - Pressed: ${pressedSrc.split('/').pop()}`);
+
     btn.src = pressedSrc;
     wrapper.classList.add('pressed');
 
-    activeBtn = btn;  // remember which button is pressed
+    activeBtn = btn;
 }
 
-function handleRelease() {
+function handleRelease(e) {
     if (!activeBtn) {
-        return; // nothing to release
+        if (e) {
+            //console.log(`⬆️ RELEASE EVENT: ${e.type} (no active button, ignoring)`);
+        }
+        return;
     }
+    
+    const btnId = activeBtn.id || activeBtn.src.split('/').pop();
+    //console.log(`⬆️ RELEASE EVENT: ${e ? e.type : 'FORCED'} on button "${btnId}"`);
+    //console.log(`   - Time since last touch: ${Date.now() - lastTouchTime}ms`);
+    
+    if (e && e.type === 'touchend') {
+        lastTouchTime = Date.now();
+        //console.log(`   ✋ TOUCH END - updating lastTouchTime`);
+    }
+    
+    // Block ghost mouse events
+    if (e && e.type.startsWith('mouse')) {
+        const timeSinceTouch = Date.now() - lastTouchTime;
+        if (timeSinceTouch < 500) {
+            //console.log(`   ⛔ BLOCKED ${e.type} (${timeSinceTouch}ms after touch - too soon!)`);
+            return;
+        }
+        //console.log(`   ✅ ALLOWED ${e.type} (${timeSinceTouch}ms after touch)`);
+    }
+    
     const wrapper = activeBtn.closest('.image-btn-wrapper');
-    activeBtn.src = activeBtn.dataset.orig;
-    wrapper.classList.remove('pressed');
+    if (wrapper) {
+        //console.log(`   🔼 RELEASING button "${btnId}"`);
+        activeBtn.src = activeBtn.dataset.orig;
+        wrapper.classList.remove('pressed');
+    }
 
-    activeBtn = null; // reset
+    activeBtn = null;
+}
+
+function forceReleaseAll(e) {
+    const eventType = e ? e.type : 'UNKNOWN';
+    //console.log(`🚨 FORCE RELEASE ALL (${eventType})`);
+    
+    if (activeBtn) {
+        const btnId = activeBtn.id || activeBtn.src.split('/').pop();
+        const wrapper = activeBtn.closest('.image-btn-wrapper');
+        if (wrapper) {
+            //console.log(`   🔼 Force releasing button "${btnId}"`);
+            activeBtn.src = activeBtn.dataset.orig;
+            wrapper.classList.remove('pressed');
+        }
+        activeBtn = null;
+    } else {
+        //console.log(`   ℹ️ No active button to release`);
+    }
 }
 
 function setupButtonListeners() {
+    console.log('🎬 Setting up button listeners');
+    
+    // Touch events
+    document.addEventListener('touchstart', handlePress, { passive: true });
+    document.addEventListener('touchend', handleRelease, { passive: true });
+    document.addEventListener('touchcancel', forceReleaseAll, { passive: true });
+    
+    // Mouse hover
     document.addEventListener('mouseover', handlePress, true);
     document.addEventListener('mouseleave', handleRelease, true);
-    document.addEventListener('touchstart', handlePress, { passive: true });
-    document.addEventListener('touchend', handleRelease);
-    document.addEventListener('mouseup', handleRelease);
+    document.addEventListener('mouseout', handleRelease, true);
+    
+    // Navigation cleanup
+    window.addEventListener('pagehide', (e) => {
+        console.log('📄 PAGE HIDE event');
+        forceReleaseAll(e);
+    });
+    
+    window.addEventListener('beforeunload', (e) => {
+        console.log('🚪 BEFORE UNLOAD event');
+        forceReleaseAll(e);
+    });
+    
+    document.addEventListener('visibilitychange', () => {
+        console.log(`👁️ VISIBILITY CHANGE: ${document.hidden ? 'HIDDEN' : 'VISIBLE'}`);
+        if (document.hidden) forceReleaseAll();
+    });
+    
+    console.log('✅ Button listeners setup complete');
 }
 
-function cleanupButtonListeners () {
+function cleanupButtonListeners() {
+    console.log('🧹 Cleaning up button listeners');
+    
     document.removeEventListener('mouseover', handlePress, true);
     document.removeEventListener('mouseleave', handleRelease, true);
+    document.removeEventListener('mouseout', handleRelease, true);
     document.removeEventListener('touchstart', handlePress);
     document.removeEventListener('touchend', handleRelease);
-    document.removeEventListener('mouseup', handleRelease);
+    document.removeEventListener('touchcancel', forceReleaseAll);
+    window.removeEventListener('pagehide', forceReleaseAll);
+    window.removeEventListener('beforeunload', forceReleaseAll);
+    
+    forceReleaseAll();
+    console.log('✅ Cleanup complete');
 }
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -58,63 +177,84 @@ function roundRect(ctx, x, y, w, h, r) {
     ctx.closePath();
 }
 
-async function fitTextToContainer(element, maxHeight, minSize = 12, maxSize = 48) {
+function fitTextToContainer(element, maxHeight, minSize = 12, maxSize = 48) {
+    if (document.fonts) {
+        const computedFont = window.getComputedStyle(element).fontFamily;
+        const fontName = computedFont.split(',')[0].replace(/['"]/g, '').trim();
+        console.log(fontName);
+        if (!document.fonts.check(`12px "${fontName}"`)) {
+            console.log(`Waiting for font ${fontName} to load...`);
+            // Schedule retry after fonts load
+            if (!element.dataset.fontWaitScheduled) {
+                element.dataset.fontWaitScheduled = 'true';
+                document.fonts.ready.then(() => {
+                    delete element.dataset.fontWaitScheduled;
+                    fitTextToContainer(element, maxHeight, minSize, maxSize);
+                });
+            }
+            return minSize; // Return minimum safe size temporarily
+        }
+    } else {
+        console.log("no fonts", document.fonts);
+    }
+    
     console.log(`Fitting to ${maxHeight}px, range ${minSize}-${maxSize}`);
-
-    // Wait for fonts to load
-    await document.fonts.ready;
 
     // DISABLE iOS text size adjustment
     element.style.webkitTextSizeAdjust = 'none';
     element.style.textSizeAdjust = 'none';
 
-    // Save original styles
     const originalStyles = {
         height: element.style.height,
         overflow: element.style.overflow,
         lineHeight: element.style.lineHeight,
         transition: element.style.transition,
-        whiteSpace: element.style.whiteSpace,
         visibility: element.style.visibility
     };
 
-    // Ensure element is visible and layout-ready
     element.style.height = 'auto';
     element.style.overflow = 'visible';
     element.style.lineHeight = '1.2';
-    element.style.transition = 'none'; // Disable transitions during measurement
-    element.style.visibility = 'hidden'; // Hidden but still takes up space for measurement
+    element.style.transition = 'none';
     
-    // Force multiple reflows to ensure accurate measurement
-    const forceReflow = () => {
-        void element.offsetHeight;
+    // Better reflow forcing
+    const getMeasurement = () => {
+        // Force layout by reading multiple properties
+        void element.offsetTop;
+        void element.offsetLeft;
+        void element.offsetWidth;
+        const h1 = element.offsetHeight;
         void element.scrollHeight;
-        void element.clientHeight;
-        return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+        const h2 = element.offsetHeight;
+        const h3 = element.getBoundingClientRect().height;
+        
+        // Use the maximum of all measurements, rounded up
+        return Math.ceil(Math.max(h1, h2, h3));
     };
 
     let low = minSize;
     let high = maxSize;
     let bestFit = minSize;
+    let iterations = 0;
+    const maxIterations = 20; // Prevent infinite loops
 
-    while (low <= high) {
+    while (low <= high && iterations < maxIterations) {
+        iterations++;
         const fontSize = Math.floor((low + high) / 2);
         element.style.fontSize = fontSize + 'px';
         
-        // Wait for layout to stabilize
-        await forceReflow();
-        
-        // Take multiple measurements and use the maximum
-        const measurements = [];
-        for (let i = 0; i < 3; i++) {
-            void element.offsetWidth; // Force reflow
-            measurements.push(element.offsetHeight);
+        // Wait for next frame (forces browser to complete layout)
+        const startTime = performance.now();
+        while (performance.now() - startTime < 1) {
+            void element.offsetHeight;
         }
-        const naturalHeight = Math.max(...measurements);
+        
+        const naturalHeight = getMeasurement();
         
         console.log(`  Testing ${fontSize}px: natural height = ${naturalHeight}px (max: ${maxHeight}px)`);
         
-        if (naturalHeight <= maxHeight) {
+        // Add a small tolerance (1-2px) to account for subpixel rounding
+        if (naturalHeight <= maxHeight + 1) {
             bestFit = fontSize;
             low = fontSize + 1;
         } else {
@@ -122,15 +262,14 @@ async function fitTextToContainer(element, maxHeight, minSize = 12, maxSize = 48
         }
     }
 
-    element.style.fontSize = bestFit + 'px';
-    console.log(`  Final: ${bestFit}px`);
+    element.style.fontSize = (bestFit) + 'px';
+    console.log(`  Final: ${bestFit}px after ${iterations} iterations`);
 
-    // Restore original styles (except line-height)
     element.style.height = originalStyles.height;
     element.style.overflow = originalStyles.overflow;
     element.style.transition = originalStyles.transition;
     element.style.visibility = originalStyles.visibility;
-    
+    console.log(`Shrinked best fit to ${bestFit}`);
     return bestFit;
 }
 
@@ -364,8 +503,15 @@ function getDeviceType() {
   console.log("height: " + height);
   console.log("aspect ratio: " + aspectRatio.toFixed(2));
   
-  // Very large screens are desktops
+
   if (screenSize >= 1920) {
+    if (isPortrait && aspectRatio >= 1.3 && aspectRatio <= 1.675) {
+      console.log("tablet (large)");
+      return tablet;
+    } else if (isPortrait) {
+      console.log("phone (large)");
+      return mobile;
+    }
     console.log("desktop");
     return desktop;
   }
@@ -376,6 +522,9 @@ function getDeviceType() {
     if (isPortrait && aspectRatio >= 1.3 && aspectRatio <= 1.6) {
       console.log("tablet (large)");
       return tablet;
+    } else if (isPortrait) {
+      console.log("phone (large)");
+      return mobile;
     }
     console.log("laptop");
     return laptop;
@@ -383,9 +532,12 @@ function getDeviceType() {
   
   // Medium screens (tablets vs small laptops)
   if (screenSize >= 1024 && screenSize < 1366) {
-    if (isPortrait) {
+    if (isPortrait && aspectRatio >= 1.3 && aspectRatio <= 1.6) {
       console.log("tablet");
       return tablet;
+    } else if (isPortrait) {
+      console.log("phone (large)");
+      return mobile;
     } else {
       console.log("laptop");
       return laptop;
@@ -398,7 +550,7 @@ function getDeviceType() {
     // Phones have more elongated screens (taller/narrower)
     // aspectRatio >= 1.7 suggests a phone
     if (aspectRatio >= 1.7) {
-      console.log("mobile (large phone)");
+      console.log("mobile");
       return mobile;
     } else {
       console.log("tablet (small)");

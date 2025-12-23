@@ -62,6 +62,9 @@
   display: inline-block;
   position: relative;
   margin: 0.5em;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
 }
 
 .image-btn {
