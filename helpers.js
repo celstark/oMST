@@ -5,21 +5,25 @@ const hasHover = window.matchMedia('(hover: hover)').matches;
 //console.log('🖱️ Device hover capability:', hasHover);
 
 function handlePress(e) {
-    const wrapper = e.target.closest('.image-btn-wrapper');
+    // First try to find wrapper from the target
+    let wrapper = e.target.closest('.image-btn-wrapper');
+    
+    // If not found, check if we clicked the jsPsych button container
+    if (!wrapper) {
+        const jsPsychBtn = e.target.closest('.jspsych-canvas-button-response-button');
+        if (jsPsychBtn) {
+            wrapper = jsPsychBtn.querySelector('.image-btn-wrapper');
+        }
+    }
+    
     if (!wrapper) return;
 
     const btn = wrapper.querySelector('.image-btn');
-    const btnId = btn.id || btn.src.split('/').pop(); // For identification
-    
-    //console.log(`⬇️ PRESS EVENT: ${e.type} on button "${btnId}"`);
-    //console.log(`   - Time since last touch: ${Date.now() - lastTouchTime}ms`);
-    //console.log(`   - Has hover capability: ${hasHover}`);
-    //console.log(`   - Currently active button: ${activeBtn ? 'YES' : 'NO'}`);
+    const btnId = btn.id || btn.src.split('/').pop();
 
     // Track touch usage
     if (e.type === 'touchstart') {
         lastTouchTime = Date.now();
-        //console.log(`   ✋ TOUCH detected - updating lastTouchTime`);
     }
     
     // Block ghost mouse events on touch devices
@@ -27,20 +31,14 @@ function handlePress(e) {
         const timeSinceTouch = Date.now() - lastTouchTime;
         
         if (timeSinceTouch < 500) {
-            //console.log(`   ⛔ BLOCKED mouseover (${timeSinceTouch}ms after touch - too soon!)`);
             return;
         }
-        
         if (!hasHover) {
-            //console.log(`   ⛔ BLOCKED mouseover (device has no hover capability)`);
             return;
         }
-        
-        //console.log(`   ✅ ALLOWED mouseover (${timeSinceTouch}ms after touch, device has hover)`);
     }
 
     if (activeBtn === btn) {
-        //console.log(`   ⚠️ SKIPPED - button already active`);
         return;
     }
     
@@ -50,46 +48,31 @@ function handlePress(e) {
     btn.dataset.orig = origSrc;
     btn.dataset.pressed = pressedSrc;
 
-    //console.log(`   🔽 PRESSING button "${btnId}"`);
-    //console.log(`   - Original: ${origSrc.split('/').pop()}`);
-    //console.log(`   - Pressed: ${pressedSrc.split('/').pop()}`);
-
     btn.src = pressedSrc;
     wrapper.classList.add('pressed');
 
     activeBtn = btn;
 }
 
-function handleRelease(e) {
-    if (!activeBtn) {
-        if (e) {
-            //console.log(`⬆️ RELEASE EVENT: ${e.type} (no active button, ignoring)`);
-        }
-        return;
-    }
+function handleRelease(e) {  
+    if (!activeBtn) return;
     
     const btnId = activeBtn.id || activeBtn.src.split('/').pop();
-    //console.log(`⬆️ RELEASE EVENT: ${e ? e.type : 'FORCED'} on button "${btnId}"`);
-    //console.log(`   - Time since last touch: ${Date.now() - lastTouchTime}ms`);
     
     if (e && e.type === 'touchend') {
         lastTouchTime = Date.now();
-        //console.log(`   ✋ TOUCH END - updating lastTouchTime`);
     }
     
     // Block ghost mouse events
     if (e && e.type.startsWith('mouse')) {
         const timeSinceTouch = Date.now() - lastTouchTime;
         if (timeSinceTouch < 500) {
-            //console.log(`   ⛔ BLOCKED ${e.type} (${timeSinceTouch}ms after touch - too soon!)`);
             return;
         }
-        //console.log(`   ✅ ALLOWED ${e.type} (${timeSinceTouch}ms after touch)`);
     }
     
     const wrapper = activeBtn.closest('.image-btn-wrapper');
     if (wrapper) {
-        //console.log(`   🔼 RELEASING button "${btnId}"`);
         activeBtn.src = activeBtn.dataset.orig;
         wrapper.classList.remove('pressed');
     }
@@ -99,19 +82,15 @@ function handleRelease(e) {
 
 function forceReleaseAll(e) {
     const eventType = e ? e.type : 'UNKNOWN';
-    //console.log(`🚨 FORCE RELEASE ALL (${eventType})`);
     
     if (activeBtn) {
         const btnId = activeBtn.id || activeBtn.src.split('/').pop();
         const wrapper = activeBtn.closest('.image-btn-wrapper');
         if (wrapper) {
-            //console.log(`   🔼 Force releasing button "${btnId}"`);
             activeBtn.src = activeBtn.dataset.orig;
             wrapper.classList.remove('pressed');
         }
         activeBtn = null;
-    } else {
-        //console.log(`   ℹ️ No active button to release`);
     }
 }
 

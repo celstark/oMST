@@ -1,5 +1,5 @@
-Text + brain getting refreshed on low end devices in const_omst
-clipping after italicized character in cont_omst
+Text, brain, and stars getting refreshed in const_omst
+pcon static sometimes not appearing
 Dutch consent form not translated
 Continue and OK buttons not translated
 Short blank screen between tasks

@@ -53,9 +53,18 @@
 
 /* Form elements like input fields and buttons */
 
+.jspsych-canvas-button-response-button {
+  cursor: pointer;
+}
+
 .jspsych-display-element input[type="text"] {
   font-family: 'Open Sans', 'Arial', sans-serif;
   font-size: 14px;
+}
+
+.jspsych-btn {
+  width: 250px;
+  height: 150px;
 }
 
 .image-btn-wrapper {
@@ -157,6 +166,7 @@ body {
   align-items: center;
   justify-content: center;
 }
+
 
 /* jsPsych progress bar */
 

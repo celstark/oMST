@@ -627,7 +627,7 @@ jatos.onLoad(async function() {
         },
         choices: [ prompts[resp_mode]['trial_choices']['same'], prompts[resp_mode]['trial_choices']['dif'] ],
         //stimulus_duration: 2000,
-        canvas_size: [canvasHeight, canvasWidth],
+        canvas_size: [canvasHeight * .95, canvasWidth],
         trial_duration: null,
         response_ends_trial: true,
         margin_horizontal: '40px',
@@ -787,7 +787,7 @@ jatos.onLoad(async function() {
         },
         choices: [ prompts[resp_mode]['trial_choices']['same'], prompts[resp_mode]['trial_choices']['dif'] ],
         //stimulus_duration: 2000,
-        canvas_size: [canvasHeight, canvasWidth],
+        canvas_size: [canvasHeight * .95, canvasWidth],
         trial_duration: null,
         response_ends_trial: true,
         margin_horizontal: '40px',
@@ -951,10 +951,11 @@ jatos.onLoad(async function() {
         },
         choices: [ prompts[resp_mode]['trial_choices']['same'], prompts[resp_mode]['trial_choices']['dif'] ],
         //stimulus_duration: 2000,
-        canvas_size: [canvasHeight, canvasWidth],
+        canvas_size: [canvasHeight * .95, canvasWidth],
         trial_duration: null,
         response_ends_trial: true,
         margin_horizontal: '40px',
+        post_trial_gap: 500,
         button_html: [
           `<div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_green.png"
@@ -996,12 +997,13 @@ jatos.onLoad(async function() {
           console.log(data.resp,data.cresp,data.correct)
         }
       },
+
     ],
     timeline_variables: [
       { img1: 'img/pcon001a.jpg', img2: 'img/pcon001b.jpg', cresp: 'd'},
       { img1: 'img/pcon002a.jpg', img2: 'img/pcon002a.jpg', cresp: 's'},
       { img1: 'img/pcon003a.jpg', img2: 'img/pcon003a.jpg', cresp: 's'},
-      /*{ img1: 'img/pcon004a.jpg', img2: 'img/pcon004b.jpg', cresp: 'd'},
+      { img1: 'img/pcon004a.jpg', img2: 'img/pcon004b.jpg', cresp: 'd'},
       { img1: 'img/pcon005a.jpg', img2: 'img/pcon005a.jpg', cresp: 's'},
       { img1: 'img/pcon006a.jpg', img2: 'img/pcon006a.jpg', cresp: 's'},
       { img1: 'img/pcon007a.jpg', img2: 'img/pcon007a.jpg', cresp: 's'},
@@ -1025,7 +1027,7 @@ jatos.onLoad(async function() {
       { img1: 'img/pcon025a.jpg', img2: 'img/pcon025b.jpg', cresp: 'd'},
       //{ img1: 'img/pcon026a.jpg', img2: 'img/pcon026b.jpg', cresp: 'd'},
       { img1: 'img/pcon027a.jpg', img2: 'img/pcon027a.jpg', cresp: 's'},     
-      //{ img1: 'img/pcon028a.jpg', img2: 'img/pcon028a.jpg', cresp: 's'},*/
+      //{ img1: 'img/pcon028a.jpg', img2: 'img/pcon028a.jpg', cresp: 's'},
     ],
     randomize_order: randomize
   }

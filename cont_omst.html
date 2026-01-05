@@ -340,6 +340,10 @@ jatos.onLoad(async function() {
     ...Array.from({length: 11}, (_, i) => `img/assets/star${i}.png`)
   );
 
+  var classic_graphics = 0;
+  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
+    classic_graphics = jatos.studySessionData['classic_graphics'];
+  }
 
   
   var lang='en';
@@ -368,6 +372,7 @@ jatos.onLoad(async function() {
     const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
     let fontStyle = '';
     const letterSpacing = fontSize * 0.08 // change multiplier to change kerning
+    const italicCorrection = fontSize * 0.12; // Extra spacing after italic-to-roman transition
     const maxWidth = 1.5 * x;
     const fontFamily = `"Comic Relief", sans-serif`;
     ctx.textBaseline = 'middle';
@@ -399,7 +404,7 @@ jatos.onLoad(async function() {
       ctx.font = `${fontStyle}bold ${fontSize}px ${fontFamily}`;
       const wordWidth = ctx.measureText(word).width;
 
-      const wordObj = { text: word, font: ctx.font, width: wordWidth };
+      const wordObj = { text: word, font: ctx.font, width: wordWidth, isItalic: fontStyle.includes('italic') };
 
       if (currentLineWidth + wordWidth > maxWidth) {
         // Trim trailing space
@@ -414,10 +419,10 @@ jatos.onLoad(async function() {
 
         // Start new line
         const trimmedWord = word.trimStart();
-        currentLine = trimmedWord ? [{ text: trimmedWord, font: ctx.font, width: ctx.measureText(trimmedWord).width }] : [];
+        currentLine = trimmedWord ? [{ text: trimmedWord, font: ctx.font, width: ctx.measureText(trimmedWord).width, isItalic: fontStyle.includes('italic') }] : [];
         currentLineWidth = trimmedWord ? ctx.measureText(trimmedWord).width : 0;
       } else {
-        currentLine.push({ text: word, font: ctx.font, width: wordWidth });
+        currentLine.push(wordObj);
         currentLineWidth += wordWidth;
       }
     }
@@ -433,7 +438,8 @@ jatos.onLoad(async function() {
       const lineWidth = line.reduce((sum, w) => sum + w.width, 0) + letterSpacing * lineCharCount;
       let startX = x - lineWidth / 2;
 
-      for (let word of line) {
+      for (let wordIdx = 0; wordIdx < line.length; wordIdx++) {
+        let word = line[wordIdx];
         ctx.font = word.font;
 
         // Determine word color
@@ -448,13 +454,27 @@ jatos.onLoad(async function() {
 
         // Draw word character by character with spacing
         let charX = startX;
-        for (let char of word.text) {
+        for (let charIdx = 0; charIdx < word.text.length; charIdx++) {
+          let char = word.text[charIdx];
           ctx.strokeText(char, charX, startY + i * lineHeight);
           ctx.fillText(char, charX, startY + i * lineHeight);
           charX += ctx.measureText(char).width + letterSpacing;
+          
+          // Add italic correction if transitioning from italic to non-italic
+          const isLastCharInWord = charIdx === word.text.length - 1;
+          const nextWord = line[wordIdx + 1];
+          if (word.isItalic && isLastCharInWord && nextWord && !nextWord.isItalic) {
+            charX += italicCorrection;
+          }
         }
 
         startX += word.width + letterSpacing * word.text.length;
+        
+        // Add correction to startX as well for proper alignment
+        const nextWord = line[wordIdx + 1];
+        if (word.isItalic && nextWord && !nextWord.isItalic) {
+          startX += italicCorrection;
+        }
       }
     }
 
@@ -489,45 +509,49 @@ jatos.onLoad(async function() {
   console.log(canvasWidth);
   console.log(window.innerHeight);
   console.log(window.innerWidth);
-  var jsPsych = initJsPsych({on_finish: function() {
-    if (0) { jsPsych.data.displayData(); }
-      else {
-        var order=jatos.studySessionData["order"];
-        jatos.studySessionData["taskindex"] += 1;
-        var expdata = jsPsych.data.get().json();
-        if (typeof order === 'undefined') {
-          // We don't have an 'order' setup, so assume it's 1-N
-          console.log('faking an order')
-          order=Array(jatos.componentList.length).fill().map((e,i)=>i+1);
-          jatos.studySessionData["taskindex"]=jatos.componentPos;
-          //console.log(order);
-          //console.log(jatos.studySessionData["taskindex"]);
-        }
-        // Submit results to JATOS and queue the end or next task
-        if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) { 
-          // we're done
-          // Check if this came from SONA - should have URL.sid and .sona
-          if (typeof jatos.urlQueryParameters.sid === 'undefined' || typeof jatos.urlQueryParameters.sona === 'undefined' ||
-              typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {
-            jatos.submitResultData(expdata,jatos.endStudy);
-          }
+  var jsPsych = initJsPsych(
+    {
+      override_safe_mode: true,
+      on_finish: function() {
+        if (0) { jsPsych.data.displayData(); }
           else {
-            // This is here for SONA experiments.  You'll want to tweak it for your own online setup, but this gives you the return to them for credit
-            var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
-              '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
-            jatos.endStudyAndRedirect(redirect,expdata);
+            var order=jatos.studySessionData["order"];
+            jatos.studySessionData["taskindex"] += 1;
+            var expdata = jsPsych.data.get().json();
+            if (typeof order === 'undefined') {
+              // We don't have an 'order' setup, so assume it's 1-N
+              console.log('faking an order')
+              order=Array(jatos.componentList.length).fill().map((e,i)=>i+1);
+              jatos.studySessionData["taskindex"]=jatos.componentPos;
+              //console.log(order);
+              //console.log(jatos.studySessionData["taskindex"]);
+            }
+            // Submit results to JATOS and queue the end or next task
+            if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) { 
+              // we're done
+              // Check if this came from SONA - should have URL.sid and .sona
+              if (typeof jatos.urlQueryParameters.sid === 'undefined' || typeof jatos.urlQueryParameters.sona === 'undefined' ||
+                  typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {
+                jatos.submitResultData(expdata,jatos.endStudy);
+              }
+              else {
+                // This is here for SONA experiments.  You'll want to tweak it for your own online setup, but this gives you the return to them for credit
+                var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
+                  '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
+                jatos.endStudyAndRedirect(redirect,expdata);
+              }
+            }
+            else {
+              // submit and start the next
+              jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
+            }
           }
-        }
-        else {
-          // submit and start the next
-          jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
-        }
-      }
-    }, 
-    show_progress_bar: false,
-    auto_update_progress_bar: false,
-    message_progress_bar: ''
-  });
+        }, 
+        show_progress_bar: false,
+        auto_update_progress_bar: false,
+        message_progress_bar: ''
+  }
+);
 
   jsPsych.data.addProperties({
     task: phasename,
@@ -588,70 +612,7 @@ jatos.onLoad(async function() {
 
 
 
-var instr1_trial = {
-  type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
 
-  // Canvas drawing
-  stimulus: function(c) {
-    const ctx = c.getContext('2d');
-    const width = c.width;
-    const height = c.height;
-    const stimHTML = prompts[resp_mode][choicekey]['instr_stim'];
-
-    // Background
-    ctx.fillStyle = "#fff9e0";
-    ctx.fillRect(0, 0, width, height);
-
-    ctx.save();
-
-    if (isMobile) {
-      if (['kr', 'nl', 'ru'].includes(lang)) {
-        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
-      } else if (['cn', 'es'].includes(lang)) {
-        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 84);
-      } else {
-        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 96);
-      }
-    } else if (isTablet) {
-      if (['kr', 'nl', 'ru'].includes(lang)) {
-        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.1, isMobile, 64);
-      } else {
-        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.1, isMobile, 64);
-      }
-    } else {
-      if (['kr', 'nl', 'ru'].includes(lang)) {
-        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
-      } else {
-        drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
-      }
-    }
-
-    ctx.restore();
-  },
-
-  // Buttons
-  choices: [prompts[resp_mode]['instr_choice']],
-  button_html: `<div class="image-btn-wrapper">
-                  <input type="image" src="img/assets/blank_green.png"
-                         class="image-btn" style="mix-blend-mode: multiply;">
-                  <svg class="image-btn-text" viewBox="0 0 266 160">
-                    <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
-                  </svg>
-                </div>`,
-  margin_horizontal: isMobile ? '20px' : '40px',
-  margin_vertical: '20px',
-  prompt: '<p class="prompt_text">' + prompts[resp_mode]['instr_prompt'] + '</p>',
-  canvas_size: isMobile ? [canvasHeight * 0.8, canvasWidth] : isTablet ? [canvasHeight * 0.8, canvasWidth] : smallScreen ? [canvasHeight * 0.6, canvasWidth] : [canvasHeight * 0.65, canvasWidth],
-
-  // After button HTML is rendered, attach proper event listeners
-  on_load: function() {
-    setupButtonListeners();
-  },
-
-  on_finish: function() {
-    cleanupButtonListeners();
-  }
-};
   
   // Build up my actual trial timeline
   var tlv = [];
@@ -700,13 +661,95 @@ var instr1_trial = {
     return img;
   });
 
+
+  var instr1_trial = {
+    type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
+
+    // Canvas drawing
+    stimulus: function(c) {
+      const ctx = c.getContext('2d');
+      const width = c.width;
+      const height = c.height;
+      const stimHTML = prompts[resp_mode][choicekey]['instr_stim'];
+
+      // Background
+      ctx.fillStyle = "#fff9e0";
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.save();
+
+      if (isMobile) {
+        if (['kr', 'nl', 'ru'].includes(lang)) {
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+        } else if (['cn', 'es'].includes(lang)) {
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 84);
+        } else {
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 96);
+        }
+      } else if (isTablet) {
+        if (['kr', 'nl', 'ru'].includes(lang)) {
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.1, isMobile, 64);
+        } else {
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.1, isMobile, 64);
+        }
+      } else {
+        if (['kr', 'nl', 'ru'].includes(lang)) {
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+        } else {
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+        }
+      }
+
+      ctx.restore();
+    },
+
+    // Buttons
+    choices: [prompts[resp_mode]['instr_choice']],
+    button_html: `<div class="image-btn-wrapper">
+                    <input type="image" src="img/assets/blank_green.png"
+                          class="image-btn" style="mix-blend-mode: multiply;">
+                    <svg class="image-btn-text" viewBox="0 0 266 160">
+                      <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+                    </svg>
+                  </div>`,
+    margin_horizontal: isMobile ? '20px' : '40px',
+    margin_vertical: '20px',
+    prompt: '<p class="prompt_text">' + prompts[resp_mode]['instr_prompt'] + '</p>',
+    canvas_size: isMobile ? [canvasHeight * 0.8, canvasWidth] : isTablet ? [canvasHeight * 0.8, canvasWidth] : smallScreen ? [canvasHeight * 0.6, canvasWidth] : [canvasHeight * 0.65, canvasWidth],
+
+    // After button HTML is rendered, attach proper event listeners
+    on_load: function() {
+      setupButtonListeners();
+    },
+
+    on_finish: function() {
+      cleanupButtonListeners();
+    }
+  };
   var test_trials = {
     
     timeline: [
       {
         type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
-        render_on_canvas: false,
+        post_trial_gap: 500,
+        choices: trial_choices,
+        render_on_canvas: true,
+        clear_canvas: false,
+        button_html: trial_choices.map((txt, i) => `
+          <div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_${isMobile ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
+                  class="image-btn" style="${isMobile ? 'mix-blend-mode: multiply;' : ''}">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">${txt}</text>
+            </svg>
+          </div>
+        `),
+        canvas_size: [canvasHeight, canvasWidth],
+        trial_duration: (selfpaced == 1 ? null : 2500),
+        data: jsPsych.timelineVariable('data'),
+
         stimulus: function(c) {
+
           const ctx = c.getContext('2d');
           const width = c.width;
           const height = c.height;
@@ -864,46 +907,34 @@ var instr1_trial = {
           stimImg.src = stimPath;
 
           // After stimulus duration, remove only the image + its frame
-          setTimeout(() => {
-            if (stimImg._renderInfo) {
-              const { x, y, scaledWidth, scaledHeight } = stimImg._renderInfo;
-              const ctx2 = c.getContext('2d');
-              ctx2.clearRect(
-                x - framePadding - ctx2.lineWidth,
-                y - framePadding - ctx2.lineWidth,
-                scaledWidth + 2 * framePadding + ctx2.lineWidth * 2,
-                scaledHeight + 2 * framePadding + ctx2.lineWidth * 2
-              );
+          const startTime = performance.now();
+          function checkAndClear() {
+            if (performance.now() - startTime >= STIMULUS_DURATION) {
+              if (stimImg._renderInfo) {
+                const { x, y, scaledWidth, scaledHeight } = stimImg._renderInfo;
+                const ctx2 = c.getContext('2d');
+                ctx2.clearRect(
+                  x - framePadding - ctx2.lineWidth,
+                  y - framePadding - ctx2.lineWidth,
+                  scaledWidth + 2 * framePadding + ctx2.lineWidth * 2,
+                  scaledHeight + 2 * framePadding + ctx2.lineWidth * 2
+                );
+              }
+            } else {
+              requestAnimationFrame(checkAndClear);
             }
-          }, STIMULUS_DURATION);
+          }
+          requestAnimationFrame(checkAndClear);
         },
 
-        choices: trial_choices,
-        clear_canvas: false,
-        button_html: trial_choices.map((txt, i) => `
-          <div class="image-btn-wrapper">
-            <input type="image" src="img/assets/blank_${isMobile ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
-                  class="image-btn" style="${isMobile ? 'mix-blend-mode: multiply;' : ''}">
-            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">${txt}</text>
-            </svg>
-          </div>
-        `),
-
-        canvas_size: [canvasHeight, canvasWidth],
-        trial_duration: (selfpaced == 1 ? null : 2500),
-
-        data: jsPsych.timelineVariable('data'),
-
         on_load: function() {
-          console.log('Trial starting, canvas exists?', document.querySelector('canvas'));
-          const displayElement = jsPsych.getDisplayElement();
-          displayElement.setAttribute('data-persist', 'true');
+
           setupButtonListeners();
         },
 
         on_finish: function(data) {
           console.log('Trial ending, canvas still exists?', document.querySelector('canvas'));
+          
           let resp = null;
           if (resp_mode == 'button') {
             if (data.response == 0) { resp = 'o'; }
@@ -927,11 +958,13 @@ var instr1_trial = {
         on_trial_finish: function(){
 
         },
-        post_trial_gap: 0,
+        
       }
     ],
     timeline_variables: tlv
   };
+
+  
 
   var debrief_block = {
     type: jsPsychHtmlKeyboardResponse,
