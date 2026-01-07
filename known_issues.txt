@@ -1,6 +1,6 @@
-Text, brain, and stars getting refreshed in const_omst
-pcon static sometimes not appearing
-Dutch consent form not translated
-Continue and OK buttons not translated
-Short blank screen between tasks
-incorrect answers incrementing stars on cont_omst (intended for testing)
+Text, brain, and stars getting refreshed in const_omst - fixed
+pcon static sometimes not appearing - maybe still here
+Dutch consent form not translated - needed
+Continue and OK buttons not translated - maybe just fine
+Short blank screen between tasks - jus thow its gonna be
+incorrect answers incrementing stars on cont_omst (intended for testing) - intended

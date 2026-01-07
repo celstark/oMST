@@ -215,6 +215,17 @@ jatos.onLoad(async function() {
     lang=jatos.batchJsonInput['lang']
   }
 
+  var classicGraphics = 0;
+  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['classic_graphics'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  }
+
   // load honeycomb version of lang file
   console.log('loading json lang: ',lang)
   var langfile='lang/omst_'+lang+'.json';
@@ -297,6 +308,7 @@ jatos.onLoad(async function() {
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
   if (smallScreen) {document.body.classList.add('smallScreen');}
   if (isTablet) {document.body.classList.add('tablet');}
+  if (classicGraphics) {document.body.classList.add('classic');}
   jsPsych.data.addProperties({
     task: phasename,
     subject: sid,
@@ -490,7 +502,21 @@ jatos.onLoad(async function() {
       correct_text: '',
       
       force_correct_button_press: true,
-      button_html: trial_choices.map((txt, i) => `
+      button_html: classicGraphics ?
+      trial_choices.map((txt, i) => `
+        <div class="image-btn-wrapper">
+          <input type="image" 
+                src="img/assets/blank_button.png"
+                class="image-btn"
+                data-choice="${i}"
+                data-correct="${i === buttonAnswer}">
+          <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+            <text x="50%" y="50%">${txt}</text>
+          </svg>
+        </div>
+      `)
+      :
+      trial_choices.map((txt, i) => `
         <div class="image-btn-wrapper">
           <input type="image" 
                 src="img/assets/blank_${isMobile ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
@@ -640,7 +666,9 @@ jatos.onLoad(async function() {
           configurable: true
         });
 
-        setupButtonListeners();
+        if (!classicGraphics){
+          setupButtonListeners();
+        }
       },
 
       on_finish: function(data) {
@@ -650,7 +678,9 @@ jatos.onLoad(async function() {
           delete displayElement.innerHTML;
         }
 
-        cleanupButtonListeners();
+        if (!classicGraphics){
+          cleanupButtonListeners();
+        }
       },
     };
   }
@@ -693,8 +723,8 @@ jatos.onLoad(async function() {
             ctx.fillStyle = '#ffffff';
             ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            roundRect(ctx, xPos - framePadding, y - framePadding,
-                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            if (!classicGraphics) {roundRect(ctx, xPos - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);}
             ctx.fill();
             ctx.stroke();
             ctx.drawImage(img, xPos, y, imgWidth, imgHeight);
@@ -707,7 +737,15 @@ jatos.onLoad(async function() {
         imgR.src = imgRight;
       },
       prompt: `<p class="prompt_text" style="margin: 0;">${promptText}</p>`,
-      button_html:           
+      button_html: classicGraphics ?
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_button.png"
+                class="image-btn">
+          <svg class="image-btn-text" viewBox="0 0 266 160">
+            <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+          </svg>
+        </div>`
+        :
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_green.png"
                 class="image-btn">
@@ -720,11 +758,15 @@ jatos.onLoad(async function() {
           fitSideBySideToScreen(isMobile, isTablet, smallScreen);
         });
         
-        setupButtonListeners();
+        if (!classicGraphics){
+          setupButtonListeners();
+        }
       },
 
       on_finish: function() {
-        cleanupButtonListeners();
+        if (!classicGraphics){
+          cleanupButtonListeners();
+        }
       },
     };
   }
@@ -732,7 +774,15 @@ jatos.onLoad(async function() {
 var intro = {
   type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
   choices: [prompts[resp_mode]['instr_choice']],
-  button_html:           
+  button_html: classicGraphics ?
+    `<div class="image-btn-wrapper">
+      <input type="image" src="img/assets/blank_button.png"
+            class="image-btn">
+      <svg class="image-btn-text" viewBox="0 0 266 160">
+        <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+      </svg>
+    </div>`
+  :
     `<div class="image-btn-wrapper">
       <input type="image" src="img/assets/blank_green.png"
             class="image-btn">
@@ -744,11 +794,16 @@ var intro = {
     requestAnimationFrame(() => {
       fitIntroOutroToScreen(isMobile, isTablet, smallScreen);
     });
-    setupButtonListeners();
+
+    if (!classicGraphics){
+      setupButtonListeners();
+    }
   },
 
   on_finish: function() {
-    cleanupButtonListeners();
+    if (!classicGraphics){
+      cleanupButtonListeners();
+    }
   },
   prompt: `<p class="prompt_text">${prompts[resp_mode]['prompt0']}</p>`,
   stimulus: `<p class="prompt_text intro ${lang}">` + prompts['txt0'] + '</p>',
@@ -756,7 +811,7 @@ var intro = {
 
 var new1 = isMobile ?
   makeCategorizeTrial(
-    'img/assets/foil_1032_border.png',
+    `img/${classicGraphics ? "" : "assets/"}foil_1032${classicGraphics ? "" : "_border"}.png`,
     prompts['key']['trial_choices']['new'],
     1,
     prompts[resp_mode]['prompt_new'],
@@ -765,158 +820,158 @@ var new1 = isMobile ?
   ) 
   :
   makeCategorizeTrial(
-    'img/assets/foil_1032_border.png',
-    prompts['key']['trial_choices']['new'],
+    `img/${classicGraphics ? "" : "assets/"}foil_1032${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`new`],
     2,
-    prompts[resp_mode]['prompt_new'],
-    prompts[resp_mode]['inc_new'],
-    prompts['cor_new']
+    prompts[resp_mode][`prompt_new`],
+    prompts[resp_mode][`inc_new`],
+    prompts[`cor_new`]
   )
 
 var new2 = isMobile ?
   makeCategorizeTrial(
-    'img/assets/foil_1033_border.png',
-    prompts['key']['trial_choices']['new'],
+    `img/${classicGraphics ? "" : "assets/"}foil_1033${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`new`],
     1,
-    prompts[resp_mode]['prompt_new'],
-    prompts[resp_mode]['inc_new'],
-    prompts['cor_new']
+    prompts[resp_mode][`prompt_new`],
+    prompts[resp_mode][`inc_new`],
+    prompts[`cor_new`]
   )
   :
   makeCategorizeTrial(
-    'img/assets/foil_1033_border.png',
-    prompts['key']['trial_choices']['new'],
+    `img/${classicGraphics ? "" : "assets/"}foil_1033${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`new`],
     2,
-    prompts[resp_mode]['prompt_new'],
-    prompts[resp_mode]['inc_new'],
-    prompts['cor_new']
+    prompts[resp_mode][`prompt_new`],
+    prompts[resp_mode][`inc_new`],
+    prompts[`cor_new`]
   );
 
 var new3 = isMobile ?
   makeCategorizeTrial(
-    'img/assets/pcon026a_border.png',
-    prompts['key']['trial_choices']['new'],
+    `img/${classicGraphics ? "" : "assets/"}pcon026a${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`new`],
     1,
-    prompts[resp_mode]['prompt_new'],
-    prompts[resp_mode]['inc_new'],
-    prompts['cor_new']
+    prompts[resp_mode][`prompt_new`],
+    prompts[resp_mode][`inc_new`],
+    prompts[`cor_new`]
   )  
   :
   makeCategorizeTrial(
-    'img/assets/pcon026a_border.png',
-    prompts['key']['trial_choices']['new'],
+    `img/${classicGraphics ? "" : "assets/"}pcon026a${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`new`],
     2,
-    prompts[resp_mode]['prompt_new'],
-    prompts[resp_mode]['inc_new'],
-    prompts['cor_new']
+    prompts[resp_mode][`prompt_new`],
+    prompts[resp_mode][`inc_new`],
+    prompts[`cor_new`]
   );
 
 var repeat1 = makeCategorizeTrial(
-  'img/assets/foil_1033_border.png',
-  prompts['key']['trial_choices']['old'],
+  `img/${classicGraphics ? "" : "assets/"}foil_1033${classicGraphics ? "" : "_border"}.png`,
+  prompts[`key`][`trial_choices`][`old`],
   0,
-  prompts[resp_mode]['prompt_rep'],
-  prompts[resp_mode]['inc_rep'],
-  prompts['cor_rep']
+  prompts[resp_mode][`prompt_rep`],
+  prompts[resp_mode][`inc_rep`],
+  prompts[`cor_rep`]
 );
 
 var lure1 = isMobile ?
   makeCategorizeTrial(
-    'img/assets/pcon026b_border.png',
-    prompts['key']['trial_choices']['sim'],
+    `img/${classicGraphics ? "" : "assets/"}pcon026b${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`sim`],
     2,
-    prompts[resp_mode]['prompt_lure'],
-    prompts[resp_mode]['inc_lure'],
-    prompts['cor_lure']
+    prompts[resp_mode][`prompt_lure`],
+    prompts[resp_mode][`inc_lure`],
+    prompts[`cor_lure`]
   )
   :
   makeCategorizeTrial(
-    'img/assets/pcon026b_border.png',
-    prompts['key']['trial_choices']['sim'],
+    `img/${classicGraphics ? "" : "assets/"}pcon026b${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`sim`],
     1,
-    prompts[resp_mode]['prompt_lure'],
-    prompts[resp_mode]['inc_lure'],
-    prompts['cor_lure']
+    prompts[resp_mode][`prompt_lure`],
+    prompts[resp_mode][`inc_lure`],
+    prompts[`cor_lure`]
   );
 
 var side_by_side1 = makeSideBySideTrial(
-  'img/pcon026a.jpg',
-  'img/pcon026b.jpg',
-  prompts['side_by_side'],
-  prompts[resp_mode]['instr_choice']
+  `img/pcon026a.jpg`,
+  `img/pcon026b.jpg`,
+  prompts[`side_by_side`],
+  prompts[resp_mode][`instr_choice`]
 );
 
 var new4 = isMobile ?
   makeCategorizeTrial(
-    'img/assets/foil_1035_border.png',
-    prompts['key']['trial_choices']['new'],
+    `img/${classicGraphics ? "" : "assets/"}foil_1035${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`new`],
     1,
-    prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
-    prompts[resp_mode]['inc_new'],
-    prompts['cor_new']
+    prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
+    prompts[resp_mode][`inc_new`],
+    prompts[`cor_new`]
   )
   :
   makeCategorizeTrial(
-    'img/assets/foil_1035_border.png',
-    prompts['key']['trial_choices']['new'],
+    `img/${classicGraphics ? "" : "assets/"}foil_1035${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`new`],
     2,
-    prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
-    prompts[resp_mode]['inc_new'],
-    prompts['cor_new']
+    prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
+    prompts[resp_mode][`inc_new`],
+    prompts[`cor_new`]
   );
 
 var new5 = isMobile ?
   makeCategorizeTrial(
-    'img/assets/pcon028a_border.png',
-    prompts['key']['trial_choices']['new'],
+    `img/${classicGraphics ? "" : "assets/"}pcon028a${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`new`],
     1,
-    prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
-    prompts[resp_mode]['inc_new'],
-    prompts['cor_new']
+    prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
+    prompts[resp_mode][`inc_new`],
+    prompts[`cor_new`]
   )
   :
   makeCategorizeTrial(
-    'img/assets/pcon028a_border.png',
-    prompts['key']['trial_choices']['new'],
+    `img/${classicGraphics ? "" : "assets/"}pcon028a${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`new`],
     2,
-    prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
-    prompts[resp_mode]['inc_new'],
-    prompts['cor_new']
+    prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
+    prompts[resp_mode][`inc_new`],
+    prompts[`cor_new`]
   );
 
 var repeat2 = makeCategorizeTrial(
-  'img/assets/foil_1035_border.png',
-  prompts['key']['trial_choices']['old'],
+  `img/${classicGraphics ? "" : "assets/"}foil_1035${classicGraphics ? "" : "_border"}.png`,
+  prompts[`key`][`trial_choices`][`old`],
   0,
-  prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
-  prompts[resp_mode]['inc_rep'],
-  prompts['cor_rep']
+  prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
+  prompts[resp_mode][`inc_rep`],
+  prompts[`cor_rep`]
 );
 
 var lure2 = isMobile ?
   makeCategorizeTrial(
-    'img/assets/pcon028b_border.png',
-    prompts['key']['trial_choices']['sim'],
+    `img/${classicGraphics ? "" : "assets/"}pcon028b${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`sim`],
     2,
-    prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
-    prompts[resp_mode]['inc_lure'],
-    prompts['cor_lure']
+    prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
+    prompts[resp_mode][`inc_lure`],
+    prompts[`cor_lure`]
   )
   :
   makeCategorizeTrial(
-    'img/assets/pcon028b_border.png',
-    prompts['key']['trial_choices']['sim'],
+    `img/${classicGraphics ? "" : "assets/"}pcon028b${classicGraphics ? "" : "_border"}.png`,
+    prompts[`key`][`trial_choices`][`sim`],
     1,
-    prompts['prompt_test'] + ' ' + prompts[resp_mode]['trial_txt'],
-    prompts[resp_mode]['inc_lure'],
-    prompts['cor_lure']
+    prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
+    prompts[resp_mode][`inc_lure`],
+    prompts[`cor_lure`]
   );
 
 var side_by_side2 = makeSideBySideTrial(
-  'img/pcon028a.jpg',
-  'img/pcon028b.jpg',
-  prompts['side_by_side'],
-  prompts[resp_mode]['instr_choice']
+  `img/pcon028a.jpg`,
+  `img/pcon028b.jpg`,
+  prompts[`side_by_side`],
+  prompts[resp_mode][`instr_choice`]
 );
 var outtro = {
   type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),

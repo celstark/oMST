@@ -189,19 +189,7 @@ function waitFor(conditionFunction) {
   }
   return new Promise(poll)
 }
-const device = getDeviceType();
-console.log("have device " + device);
-const isMobile = device[0];
-const isTablet = device[1];
-const smallScreen = device[2];
-console.log("smallScreen " + smallScreen);
-const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
-const fontScale = isMobile ? 1.5 : 1.0;
-const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
-document.body.classList.add(isMobile ? 'mobile' : 'desktop');
-if (smallScreen) {document.body.classList.add('smallScreen');}
-if (isTablet) {document.body.classList.add('tablet');}
+
 
 jatos.onLoad(async function () {
   var sid = getID();
@@ -231,6 +219,35 @@ jatos.onLoad(async function () {
   await waitFor(_ => json_prompts !== null);
   let prompts=json_prompts['consent'];
 
+
+  var classicGraphics = 0;
+  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['classic_graphics'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  }
+
+  console.log("classic graphics: " + classicGraphics);
+
+  const device = getDeviceType();
+  console.log("have device " + device);
+  const isMobile = device[0];
+  const isTablet = device[1];
+  const smallScreen = device[2];
+  console.log("smallScreen " + smallScreen);
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
+  const fontScale = isMobile ? 1.5 : 1.0;
+  const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
+  document.body.classList.add(isMobile ? 'mobile' : 'desktop');
+  if (smallScreen) {document.body.classList.add('smallScreen');}
+  if (isTablet) {document.body.classList.add('tablet');}
+  if (classicGraphics) {document.body.classList.add('classic');}
+
   // Build consent text HTML (keep original formatting)
   let container = document.createElement("div");
   container.innerHTML = `
@@ -257,7 +274,26 @@ jatos.onLoad(async function () {
   buttonsDiv.style.justifyContent = 'center';
   buttonsDiv.style.gap = '40px';
   buttonsDiv.style.marginTop = '20px';
-  buttonsDiv.innerHTML = `
+  buttonsDiv.innerHTML = classicGraphics ?
+  `
+    <div class="image-btn-wrapper" id="agreeButtonWrapper">
+      <input type="image" src="img/assets/blank_button.png"
+            class="image-btn">
+      <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+        <text x="50%" y="50%">${prompts['buttons']['agree']}</text>
+      </svg>
+    </div>
+
+    <div class="image-btn-wrapper" id="cancelButtonWrapper">
+      <input type="image" src="img/assets/blank_button.png"
+            class="image-btn">
+      <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+        <text x="50%" y="50%">${prompts['buttons']['cancel']}</text>
+      </svg>
+    </div>
+  `
+  :
+  `
     <div class="image-btn-wrapper" id="agreeButtonWrapper">
       <input type="image" src="img/assets/blank_green.png"
             class="image-btn">
@@ -281,14 +317,16 @@ jatos.onLoad(async function () {
   // ---------------------------------------------------------------------
 
   // Attach listeners to BOTH wrappers
-  const wrappers = document.querySelectorAll('.image-btn-wrapper');
-  wrappers.forEach(wrapper => {
-    wrapper.addEventListener('mouseenter', handlePress, true);
-    wrapper.addEventListener('mouseleave', handleRelease, true);
-    wrapper.addEventListener('touchstart', handlePress, { passive: true });
-    wrapper.addEventListener('touchend', handleRelease);
-  });
-  document.addEventListener('mouseup', handleRelease);
+  if (!classicGraphics){
+    const wrappers = document.querySelectorAll('.image-btn-wrapper');
+    wrappers.forEach(wrapper => {
+      wrapper.addEventListener('mouseenter', handlePress, true);
+      wrapper.addEventListener('mouseleave', handleRelease, true);
+      wrapper.addEventListener('touchstart', handlePress, { passive: true });
+      wrapper.addEventListener('touchend', handleRelease);
+    });
+    document.addEventListener('mouseup', handleRelease);
+  }
 
   // ---------------------------------------------------------------------
   // Click actions

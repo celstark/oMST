@@ -186,6 +186,15 @@
       border-color:#5d2b12;
     }
 
+    .classic .idcode {
+      color: black;
+      border: 2px solid black !important;
+    }
+
+    .classic .idcode:focus {
+      border-color: black;
+    }
+
     .mobile .idcode_text {
       font-size: 1.5em !important;
     }
@@ -219,6 +228,16 @@
 <script>
 
 jatos.onLoad(function() {
+  var classicGraphics = 0;
+  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['classic_graphics'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  }
   var jsPsych = initJsPsych({
     on_finish: function() {
       var result = jsPsych.data.get().json();
@@ -263,6 +282,7 @@ jatos.onLoad(function() {
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
   if (smallScreen) {document.body.classList.add('smallScreen');}
   if (isTablet) {document.body.classList.add('tablet');}
+  if (classicGraphics) {document.body.classList.add('classic');}
   //var sid=getID()
   //console.log('In id, sid= ' + sid);
   let date = new Date(); 
@@ -289,15 +309,28 @@ jatos.onLoad(function() {
       document.querySelector('.jspsych-btn').style.display = 'none';
 
       // insert your custom button
-      document.querySelector('.jspsych-content').insertAdjacentHTML('beforeend', `
-        <div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_green.png"
-                class="image-btn" id="id_continue_btn">
-          <svg class="image-btn-text" viewBox="0 0 266 160">
-            <text x="50%" y="50%">Continue</text>
-          </svg>
-        </div>
-      `);
+      if (classicGraphics) {
+        document.querySelector('.jspsych-content').insertAdjacentHTML('beforeend', `
+          <div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_button.png"
+                  class="image-btn" id="id_continue_btn">
+            <svg class="image-btn-text" viewBox="0 0 266 160">
+              <text x="50%" y="50%">Continue</text>
+            </svg>
+          </div>
+        `);
+      } else {
+        document.querySelector('.jspsych-content').insertAdjacentHTML('beforeend', `
+          <div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_green.png"
+                  class="image-btn" id="id_continue_btn">
+            <svg class="image-btn-text" viewBox="0 0 266 160">
+              <text x="50%" y="50%">Continue</text>
+            </svg>
+          </div>
+        `);
+      }
+      
 
       const customBtn = document.getElementById('id_continue_btn');
       customBtn.addEventListener('click', (e) => {
@@ -306,13 +339,16 @@ jatos.onLoad(function() {
       });
 
       // press/release stuff
-      setupButtonListeners();
+      if (!classicGraphics){
+        setupButtonListeners();
+      }
     },
 
     on_finish: function(data) {
       // clean up listeners
-      cleanupButtonListeners();
-
+      if (!classicGraphics){  
+          cleanupButtonListeners(); 
+      }
       console.log(data.response);
       var sid = data.response['idcode'];
       console.log(sid);

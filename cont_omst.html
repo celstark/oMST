@@ -340,10 +340,7 @@ jatos.onLoad(async function() {
     ...Array.from({length: 11}, (_, i) => `img/assets/star${i}.png`)
   );
 
-  var classic_graphics = 0;
-  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
-    classic_graphics = jatos.studySessionData['classic_graphics'];
-  }
+
 
   
   var lang='en';
@@ -356,6 +353,18 @@ jatos.onLoad(async function() {
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
   }
+
+  var classicGraphics = 0;
+  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['classic_graphics'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  }
+
   // load honeycomb version of lang file
   console.log('loading json lang')
   var langfile='lang/omst_'+lang+'.json';
@@ -374,7 +383,11 @@ jatos.onLoad(async function() {
     const letterSpacing = fontSize * 0.08 // change multiplier to change kerning
     const italicCorrection = fontSize * 0.12; // Extra spacing after italic-to-roman transition
     const maxWidth = 1.5 * x;
-    const fontFamily = `"Comic Relief", sans-serif`;
+    
+    // Classic vs Modern styling
+    const fontFamily = classicGraphics ? `"Open Sans", "Arial", sans-serif` : `"Comic Relief", sans-serif`;
+    const useOutline = !classicGraphics;
+    
     ctx.textBaseline = 'middle';
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
@@ -443,20 +456,28 @@ jatos.onLoad(async function() {
         ctx.font = word.font;
 
         // Determine word color
-        let fillColor = '#fff8d6';
-        if (word.text.includes('Old') || word.text.includes('Viejo') || word.text.includes('旧') || word.text.includes('이전') || word.text.includes('Oud') || word.text.includes('Старое')) fillColor = '#f9b8d0';
-        else if (word.text.includes('Similar') || word.text.includes('相近') || word.text.includes('비슷한') || word.text.includes('Gelijkaardig') || word.text.includes('Похожее')) fillColor = '#d3f5a6';
-        else if (word.text.includes('New') || word.text.includes('Nuevo') || word.text.includes('新') || word.text.includes('새로운') || word.text.includes('Nieuw') || word.text.includes('Новое')) fillColor = '#b4d8ff';
+        let fillColor = classicGraphics ? 'black' : '#fff8d6';
+        
+        if (!classicGraphics) {
+          if (word.text.includes('Old') || word.text.includes('Viejo') || word.text.includes('旧') || word.text.includes('이전') || word.text.includes('Oud') || word.text.includes('Старое')) fillColor = '#f9b8d0';
+          else if (word.text.includes('Similar') || word.text.includes('相近') || word.text.includes('비슷한') || word.text.includes('Gelijkaardig') || word.text.includes('Похожее')) fillColor = '#d3f5a6';
+          else if (word.text.includes('New') || word.text.includes('Nuevo') || word.text.includes('新') || word.text.includes('새로운') || word.text.includes('Nieuw') || word.text.includes('Новое')) fillColor = '#b4d8ff';
+        }
 
-        ctx.lineWidth = isMobile ? 15 : smallScreen ? 8 : 12;
-        ctx.strokeStyle = '#5d2b12';
         ctx.fillStyle = fillColor;
+        
+        if (useOutline) {
+          ctx.lineWidth = isMobile ? 15 : smallScreen ? 8 : 12;
+          ctx.strokeStyle = '#5d2b12';
+        }
 
         // Draw word character by character with spacing
         let charX = startX;
         for (let charIdx = 0; charIdx < word.text.length; charIdx++) {
           let char = word.text[charIdx];
-          ctx.strokeText(char, charX, startY + i * lineHeight);
+          if (useOutline) {
+            ctx.strokeText(char, charX, startY + i * lineHeight);
+          }
           ctx.fillText(char, charX, startY + i * lineHeight);
           charX += ctx.measureText(char).width + letterSpacing;
           
@@ -502,6 +523,7 @@ jatos.onLoad(async function() {
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
   if (smallScreen) {document.body.classList.add('smallScreen');}
   if (isTablet) {document.body.classList.add('tablet');}
+  if (classicGraphics) {document.body.classList.add('classic');}
   console.log(isMobile);
   console.log(isTablet);
   console.log(smallScreen);
@@ -673,7 +695,7 @@ jatos.onLoad(async function() {
       const stimHTML = prompts[resp_mode][choicekey]['instr_stim'];
 
       // Background
-      ctx.fillStyle = "#fff9e0";
+      ctx.fillStyle = classicGraphics ? "white" : "#fff9e0";
       ctx.fillRect(0, 0, width, height);
 
       ctx.save();
@@ -705,7 +727,16 @@ jatos.onLoad(async function() {
 
     // Buttons
     choices: [prompts[resp_mode]['instr_choice']],
-    button_html: `<div class="image-btn-wrapper">
+    button_html: classicGraphics ? 
+                `<div class="image-btn-wrapper">
+                    <input type="image" src="img/assets/blank_button.png"
+                          class="image-btn" style="mix-blend-mode: multiply;">
+                    <svg class="image-btn-text" viewBox="0 0 266 160">
+                      <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+                    </svg>
+                  </div>`
+                : 
+                `<div class="image-btn-wrapper">
                     <input type="image" src="img/assets/blank_green.png"
                           class="image-btn" style="mix-blend-mode: multiply;">
                     <svg class="image-btn-text" viewBox="0 0 266 160">
@@ -719,15 +750,21 @@ jatos.onLoad(async function() {
 
     // After button HTML is rendered, attach proper event listeners
     on_load: function() {
-      setupButtonListeners();
+      if (!classicGraphics) {
+        setupButtonListeners();
+      }
+      
     },
 
     on_finish: function() {
-      cleanupButtonListeners();
+      if (!classicGraphics) {
+        cleanupButtonListeners();
+      }
     }
   };
+  
+
   var test_trials = {
-    
     timeline: [
       {
         type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
@@ -735,7 +772,18 @@ jatos.onLoad(async function() {
         choices: trial_choices,
         render_on_canvas: true,
         clear_canvas: false,
-        button_html: trial_choices.map((txt, i) => `
+        button_html: classicGraphics ? 
+        trial_choices.map((txt, i) => `
+          <div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_button.png"
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">${txt}</text>
+            </svg>
+          </div>
+        `)
+        :
+        trial_choices.map((txt, i) => `
           <div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_${isMobile ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
                   class="image-btn" style="${isMobile ? 'mix-blend-mode: multiply;' : ''}">
@@ -806,7 +854,7 @@ jatos.onLoad(async function() {
             const fillLevel = step;
             const currentLevel = Math.min(fillLevel, 10);
 
-            if (!isMobile){
+            if (!isMobile && !classicGraphics){
               const leftX = isTablet ? 20 : smallScreen ? 10 : 40;
               const leftStartY = isTablet ? textBounds.endY + 60 : height * 0.25;
 
@@ -838,7 +886,7 @@ jatos.onLoad(async function() {
               currentStar.onload = function() { ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize); };
               if (currentStar.complete) ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize);
             
-            } else {
+            } else if (isMobile && !classicGraphics){
               const leftX = 0;
               const leftStartY = 20;
               const currentStar = starImgs[currentLevel];
@@ -853,7 +901,7 @@ jatos.onLoad(async function() {
                   if (currentStar.complete) ctx.drawImage(currentStar, posX, leftStartY, starSize, starSize);
                 }
               }
-            }
+            } 
             return textBounds;
           }
 
@@ -896,7 +944,7 @@ jatos.onLoad(async function() {
             ctx.fillStyle = "#ffffff";
             ctx.strokeStyle = "#5d2514";
             ctx.lineWidth = 15;
-            roundRect(ctx, x - framePadding, y - framePadding, scaledWidth + 2*framePadding, scaledHeight + 2*framePadding, radius);
+            if (!classicGraphics) {roundRect(ctx, x - framePadding, y - framePadding, scaledWidth + 2*framePadding, scaledHeight + 2*framePadding, radius);}
             ctx.fill();
             ctx.stroke();
             ctx.drawImage(stimImg, x, y, scaledWidth, scaledHeight);
@@ -928,8 +976,10 @@ jatos.onLoad(async function() {
         },
 
         on_load: function() {
-
-          setupButtonListeners();
+          if (!classicGraphics) {
+            setupButtonListeners();
+          }
+          
         },
 
         on_finish: function(data) {
@@ -953,16 +1003,16 @@ jatos.onLoad(async function() {
           }
           
           data.resp = resp;
-          cleanupButtonListeners();
+          if (!classicGraphics){
+            cleanupButtonListeners();
+          }
+          
         },
-        on_trial_finish: function(){
-
-        },
-        
       }
     ],
     timeline_variables: tlv
   };
+
 
   
 

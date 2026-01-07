@@ -57,14 +57,13 @@
   cursor: pointer;
 }
 
+.classic .jspsych-canvas-button-response-button:hover {
+  filter: brightness(85%);
+}
+
 .jspsych-display-element input[type="text"] {
   font-family: 'Open Sans', 'Arial', sans-serif;
   font-size: 14px;
-}
-
-.jspsych-btn {
-  width: 250px;
-  height: 150px;
 }
 
 .image-btn-wrapper {
@@ -74,6 +73,10 @@
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
+}
+
+.classic .image-btn-wrapper:hover {
+  filter: brightness(85%);
 }
 
 .image-btn {
@@ -125,6 +128,10 @@
   height: auto;
 }
 
+.classic .image-btn-text {
+  top: 50%;
+}
+
 .image-btn-text text {
   font-family: 'Comic Relief', sans-serif;
   font-size: 2.6em;
@@ -138,6 +145,16 @@
   paint-order: stroke fill;
   stroke-linejoin: round;
   stroke-linecap: round;
+}
+
+.classic .image-btn-text text {
+  font-family: 'Open Sans', 'Arial', sans-serif;
+  color: black;
+  fill: unset;
+  stroke: unset;
+  stroke-width: unset;
+  paint-order: unset;
+  font-weight: normal;
 }
 
 .mobile .image-btn-text text{
@@ -156,8 +173,17 @@
   text-size-adjust: none; 
 }
 
+.classic .prompt_text {
+  font-family: 'Open Sans', 'Arial', sans-serif;
+  color: black;
+}
+
 body {
   background-color: #fff9e0;
+}
+
+body.classic {
+  background-color: white;
 }
 
 .jspsych-content {

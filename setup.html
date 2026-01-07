@@ -159,20 +159,6 @@
 
 <script type="text/javascript">
 
-const device = getDeviceType();
-console.log("have device " + device);
-const isMobile = device[0];
-const isTablet = device[1];
-const smallScreen = device[2];
-console.log("smallScreen " + smallScreen);
-const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
-const fontScale = isMobile ? 1.5 : 1.0;
-const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
-document.body.classList.add(isMobile ? 'mobile' : 'desktop');
-if (smallScreen) {document.body.classList.add('smallScreen');}
-if (isTablet) {document.body.classList.add('tablet');}
-
 function getID() {
   // Try to get a reasonable ID code for this person.  You can use the URL with a "sid" parameter or
   // specify one in the jatos studySessionData. If not, it'll use the JATOS workerId.
@@ -356,10 +342,44 @@ jatos.onLoad(async function () {
     date: d.toString()
   });
 
+  var classicGraphics = 0;
+  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['classic_graphics'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  }
+
+  const device = getDeviceType();
+  console.log("have device " + device);
+  const isMobile = device[0];
+  const isTablet = device[1];
+  const smallScreen = device[2];
+  console.log("smallScreen " + smallScreen);
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
+  const fontScale = isMobile ? 1.5 : 1.0;
+  const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
+  document.body.classList.add(isMobile ? 'mobile' : 'desktop');
+  if (smallScreen) {document.body.classList.add('smallScreen');}
+  if (isTablet) {document.body.classList.add('tablet');}
+  if (classicGraphics) {document.body.classList.add('classic');}
+
   var setup = {
     type: jsPsychHtmlButtonResponse,
     choices: ["Continue"],
-    button_html:
+    button_html: classicGraphics ? 
+      `<div class="image-btn-wrapper">
+        <input type="image" src="img/assets/blank_button.png"
+              class="image-btn" id="continueButton">
+        <svg class="image-btn-text" viewBox="0 0 266 160">
+          <text x="50%" y="50%">Continue</text>
+        </svg>
+      </div>`
+    :
       `<div class="image-btn-wrapper">
         <input type="image" src="img/assets/blank_green.png"
               class="image-btn" id="continueButton">
@@ -373,12 +393,15 @@ jatos.onLoad(async function () {
       <br><br><strong>Do not hit your browser's back button or the experiment will terminate</strong>
     </p>`,
     on_load: function() {
-      setupButtonListeners();
+      if (!classicGraphics) {
+        setupButtonListeners();
+      }
     },
 
     on_finish: function() {
-      cleanupButtonListeners();
-
+      if (!classicGraphics) {   
+        cleanupButtonListeners();
+      } 
       var nruns = jatos.batchSession.get("nruns");
       jatos.batchSession.set("nruns", nruns+1);
       var order = jatos.studySessionData["order"];

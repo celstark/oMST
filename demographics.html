@@ -93,6 +93,11 @@
     position: relative;
   }
 
+  .classic input[type="radio"] {
+    background-color: white;
+    border-color: black;
+  }
+
   input[type="radio"]:checked::after {
     content: "";
     position: absolute;
@@ -105,10 +110,18 @@
     border-radius: 50%;
   }
 
+  .classic input[type="radio"]:checked::after {
+    background: black;
+  }
+
   .mobile input[type="radio"] {
     width: 30px;
     height: 30px;
     border: 4px solid #5d2b12;
+  }
+
+  .classic.mobile input[type="radio"] {
+    border-color: black;
   }
 
   .mobile input[type="radio"]:checked::after {
@@ -127,17 +140,31 @@
     vertical-align: middle;
     line-height: 1.2;
   }
+  
+  .classic.jspsych-display-element input[type="text"] {
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    color: black;
+    border: 2px solid black;
+  }
 
   .jspsych-display-element input[type="text"]:focus {
-    border: 2px solid #5d2b12 !important;
-    border-color: #5d2b12 !important;
+    border: 2px solid #5d2b12;
+    border-color: #5d2b12;
     -webkit-box-shadow: none;
     box-shadow: none;
   }
 
+  .classic.jspsych-display-element input[type="text"]:focus {
+    border-color: black;
+  }
+
   .jspsych-display-element input[type="text"]:focus-visible {
-    border: 2px solid #5d2b12 !important;
-    border-color: #5d2b12 !important;
+    border: 2px solid #5d2b12;
+    border-color: #5d2b12;
+  }
+
+  .classic.jspsych-display-element input[type="text"]:focus-visible {
+    border-color: black;
   }
 
   .mobile.jspsych-display-element input[type="text"] {
@@ -155,6 +182,18 @@
 
 </body>
 <script>
+
+var classicGraphics = 0;
+if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
+  classicGraphics = jatos.studySessionData['classic_graphics'];
+}
+if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
+  classicGraphics=jatos.studyJsonInput['classic_graphics']
+}
+if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
+  classicGraphics=jatos.batchJsonInput['classic_graphics']
+}
+
 const device = getDeviceType();
 console.log("have device " + device);
 const isMobile = device[0];
@@ -168,6 +207,7 @@ const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
 document.body.classList.add(isMobile ? 'mobile' : 'desktop');
 if (smallScreen) {document.body.classList.add('smallScreen');}
 if (isTablet) {document.body.classList.add('tablet');}
+if (classicGraphics) {document.body.classList.add('classic');}
 function getID() {
   // Try to get a reasonable ID code for this person
   // URL > studySession > workerID
@@ -205,6 +245,8 @@ jatos.onLoad(async function() {
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
   }
+
+
   // load honeycomb version of lang file
   console.log('loading json lang')
   var langfile='lang/omst_'+lang+'.json';
@@ -314,7 +356,7 @@ jatos.onLoad(async function() {
         </div>
 
         <div class="image-btn-wrapper">
-          <input type="image" src="img/assets/blank_green.png"
+          <input type="image" src="img/assets/blank_${classicGraphics ? "button" : "green"}.png"
                 class="image-btn" id="id_continue_btn">
           <svg class="image-btn-text" viewBox="0 0 266 160">
             <text x="50%" y="50%">Continue</text>
@@ -332,12 +374,15 @@ jatos.onLoad(async function() {
         e.preventDefault();  // prevent weird image input default
         form.requestSubmit(); // properly submit the form
       });
-
-      setupButtonListeners();
+      if (!classicGraphics){
+        setupButtonListeners();
+      }
     },
 
     on_finish: function(data) {
-      cleanupButtonListeners();
+      if (!classicGraphics){
+        cleanupButtonListeners();
+      }
       console.log(data.response);
     }
   }
