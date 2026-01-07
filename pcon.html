@@ -42,6 +42,7 @@
   <script src="js/jspsych_731/dist/plugin-canvas-keyboard-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-canvas-button-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-animation.js"></script>
+  <script src="js/jspsych_731/dist/plugin-video-keyboard-response.js"></script>
   <script src="js/jspsych_731/dist/plugin-preload.js"></script>
   <script src="helpers.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
@@ -346,7 +347,7 @@ jatos.onLoad(async function() {
       canvas_size: calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen), // Calculate based on horizontal allocation
       stimulus: function(c) {
         const ctx = c.getContext('2d');
-        ctx.fillStyle = '#fff9e0';
+        ctx.fillStyle = classicGraphics ? "white" : '#fff9e0';
         const gap = 60; // spacing between the two images
         const framePadding = 20;
         const radius = 25;
@@ -377,8 +378,8 @@ jatos.onLoad(async function() {
             ctx.fillStyle = '#ffffff';
             ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            roundRect(ctx, xPos - framePadding, y - framePadding,
-                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            if (!classicGraphics) {roundRect(ctx, xPos - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);}
             ctx.fill();
             ctx.stroke();
             ctx.drawImage(img, xPos, y, imgWidth, imgHeight);
@@ -391,7 +392,15 @@ jatos.onLoad(async function() {
         imgR.src = imgRight;
       },
       prompt: `<p class="prompt_text" style="margin: 0;">${promptText}</p>`,
-      button_html:           
+      button_html: classicGraphics ?
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_button.png"
+                class="image-btn">
+          <svg class="image-btn-text" viewBox="0 0 266 160">
+            <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+          </svg>
+        </div>`
+      :
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_green.png"
                 class="image-btn">
@@ -404,12 +413,15 @@ jatos.onLoad(async function() {
         requestAnimationFrame(() => {
           fitSideBySideToScreen(isMobile, isTablet, smallScreen);
         });
-        
-        setupButtonListeners();
+        if (!classicGraphics){
+          setupButtonListeners();
+        }
       },
 
       on_finish: function() {
-        cleanupButtonListeners();
+        if (!classicGraphics){
+          cleanupButtonListeners();
+        }
       },
     };
   }
@@ -458,7 +470,8 @@ jatos.onLoad(async function() {
     "img/assets/blank_blue.png",
     "img/assets/blank_blue_pressed.png",
     "img/assets/blank_green.png",
-    "img/assets/blank_green_pressed.png" ], 
+    "img/assets/blank_green_pressed.png",
+    "img/noise_animation.mp4" ], 
     show_progress_bar: true,
     show_detailed_erros: true,
     continue_after_error: true,
@@ -475,7 +488,15 @@ jatos.onLoad(async function() {
   var instr1_trial = {
     type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
     choices: [prompts[resp_mode]['instr_choice']],
-    button_html: 
+    button_html: classicGraphics ?
+        `<div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_button.png"
+                class="image-btn">
+          <svg class="image-btn-text" viewBox="0 0 266 160">
+            <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+          </svg>
+        </div>`
+    :
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_green.png"
                 class="image-btn">
@@ -487,10 +508,14 @@ jatos.onLoad(async function() {
       requestAnimationFrame(() => {
         fitIntroOutroToScreen(isMobile, isTablet, smallScreen);
       });
-      setupButtonListeners();
+      if (!classicGraphics) {
+        setupButtonListeners();
+      }
     },
     on_finish: function() {
-      cleanupButtonListeners();
+      if (!classicGraphics){
+        cleanupButtonListeners();
+      }
     },
 
     prompt: `<p class="prompt_text">${prompts[resp_mode]['instr1_prompt']}</p>`,
@@ -543,8 +568,8 @@ jatos.onLoad(async function() {
             ctx.fillStyle = "#ffffff";
             ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            roundRect(ctx, x - framePadding, y - framePadding,
-                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            if (!classicGraphics) {roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);}
             ctx.fill();
             ctx.stroke();
 
@@ -563,26 +588,44 @@ jatos.onLoad(async function() {
         sequence_reps: 2,
         frame_time: 200,
         render_on_canvas: true,
-        prompt: `<p class="prompt_text">${prompts['wait']}</p>`,
+        prompt: `<p class="prompt_text" style="visibility: hidden;" id="animation-prompt">${prompts['wait']}</p>`,
         on_start: function(trial) {
-          // Preload all animation frames before starting
+          // The trial won't render until this Promise resolves
+          console.log('Preloading animation images before showing anything...');
+          
           return new Promise((resolve) => {
             let loadedCount = 0;
             const totalImages = trial.stimuli.length;
+            const images = [];
             
-            trial.stimuli.forEach(src => {
+            trial.stimuli.forEach((src, index) => {
               const img = new Image();
+              
               img.onload = () => {
+                loadedCount++;
+                console.log(`Loaded ${loadedCount}/${totalImages}`);
+                
+                if (loadedCount === totalImages) {
+                  console.log('ALL IMAGES LOADED. Now showing animation trial.');
+                  resolve(); // This allows the trial to render
+                }
+              };
+              
+              img.onerror = () => {
+                console.error(`Failed to load image ${index}: ${src}`);
                 loadedCount++;
                 if (loadedCount === totalImages) {
                   resolve();
                 }
               };
+              
               img.src = src;
+              images.push(img);
             });
           });
         },
         on_load: function() {
+          // This runs AFTER on_start resolves and trial is displayed
           const canvas = document.querySelector('canvas');
 
           if (canvas) {
@@ -597,6 +640,13 @@ jatos.onLoad(async function() {
           if (content) {
             content.style.textAlign = 'center';
           }
+          
+          const promptText = document.getElementById('animation-prompt');
+          if (promptText) {
+            promptText.style.visibility = 'visible';
+          }
+
+          console.log('Animation trial is now visible and running');
         }
       },
       {
@@ -626,8 +676,8 @@ jatos.onLoad(async function() {
             ctx.fillStyle = "#ffffff";
             ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            roundRect(ctx, x - framePadding, y - framePadding,
-                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            if(!classicGraphics) {roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);}
             ctx.fill();
             ctx.stroke();
 
@@ -643,7 +693,26 @@ jatos.onLoad(async function() {
         trial_duration: null,
         response_ends_trial: true,
         margin_horizontal: '40px',
-        button_html: [
+        button_html: classicGraphics ?
+        [
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_button.png"
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">%choice%</text>
+            </svg>
+          </div>`,
+
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_button.png"
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">%choice%</text>
+            </svg>
+          </div>`,
+        ]
+        :
+        [
           `<div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_green.png"
                   class="image-btn">
@@ -661,11 +730,15 @@ jatos.onLoad(async function() {
           </div>`,
         ],
         on_load: function() {
-          setupButtonListeners();
+          if (!classicGraphics){
+            setupButtonListeners();
+          }
         },
 
         on_finish: function() {
-          cleanupButtonListeners();
+          if (!classicGraphics){
+            cleanupButtonListeners();
+          }
         },
       },
     ],
@@ -719,14 +792,12 @@ jatos.onLoad(async function() {
             ctx.fillStyle = "#ffffff";
             ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            roundRect(ctx, x - framePadding, y - framePadding,
-                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            if(!classicGraphics) {roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);}
             ctx.fill();
             ctx.stroke();
 
             ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
-
-
           };
           stimImg.src = stimPath;
         },
@@ -741,8 +812,44 @@ jatos.onLoad(async function() {
         sequence_reps: 2,
         frame_time: 200,
         render_on_canvas: true,
-        prompt: `<p class="prompt_text">${prompts['wait']}</p>`,
+        prompt: `<p class="prompt_text" style="visibility: hidden;" id="animation-prompt">${prompts['wait']}</p>`,
+        on_start: function(trial) {
+          // The trial won't render until this Promise resolves
+          console.log('Preloading animation images before showing anything...');
+          
+          return new Promise((resolve) => {
+            let loadedCount = 0;
+            const totalImages = trial.stimuli.length;
+            const images = [];
+            
+            trial.stimuli.forEach((src, index) => {
+              const img = new Image();
+              
+              img.onload = () => {
+                loadedCount++;
+                console.log(`Loaded ${loadedCount}/${totalImages}`);
+                
+                if (loadedCount === totalImages) {
+                  console.log('ALL IMAGES LOADED. Now showing animation trial.');
+                  resolve(); // This allows the trial to render
+                }
+              };
+              
+              img.onerror = () => {
+                console.error(`Failed to load image ${index}: ${src}`);
+                loadedCount++;
+                if (loadedCount === totalImages) {
+                  resolve();
+                }
+              };
+              
+              img.src = src;
+              images.push(img);
+            });
+          });
+        },
         on_load: function() {
+          // This runs AFTER on_start resolves and trial is displayed
           const canvas = document.querySelector('canvas');
 
           if (canvas) {
@@ -757,6 +864,14 @@ jatos.onLoad(async function() {
           if (content) {
             content.style.textAlign = 'center';
           }
+          
+          // NOW reveal the prompt text
+          const promptText = document.getElementById('animation-prompt');
+          if (promptText) {
+            promptText.style.visibility = 'visible';
+          }
+
+          console.log('Animation trial is now visible and running');
         }
       },
       {
@@ -786,8 +901,8 @@ jatos.onLoad(async function() {
             ctx.fillStyle = "#ffffff";
             ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            roundRect(ctx, x - framePadding, y - framePadding,
-                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            if(!classicGraphics) {roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);}
             ctx.fill();
             ctx.stroke();
             
@@ -803,7 +918,26 @@ jatos.onLoad(async function() {
         trial_duration: null,
         response_ends_trial: true,
         margin_horizontal: '40px',
-        button_html: [
+        button_html: classicGraphics ?
+        [
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_button.png"
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">%choice%</text>
+            </svg>
+          </div>`,
+
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_button.png"
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">%choice%</text>
+            </svg>
+          </div>`,
+        ]
+        :
+        [
           `<div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_green.png"
                   class="image-btn">
@@ -821,11 +955,15 @@ jatos.onLoad(async function() {
           </div>`,
         ],
         on_load: function() {
-          setupButtonListeners();
+          if (!classicGraphics){
+            setupButtonListeners();
+          }
         },
 
         on_finish: function() {
-          cleanupButtonListeners();
+          if (!classicGraphics){
+            cleanupButtonListeners();
+          }
         },
       },
     ],
@@ -881,14 +1019,12 @@ jatos.onLoad(async function() {
             ctx.fillStyle = "#ffffff";
             ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            roundRect(ctx, x - framePadding, y - framePadding,
-                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            if (!classicGraphics) {roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);}
             ctx.fill();
             ctx.stroke();
 
             ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
-
-
           };
           stimImg.src = stimPath;
         },
@@ -896,7 +1032,7 @@ jatos.onLoad(async function() {
         canvas_size: [canvasHeight, canvasWidth],
         trial_duration: 2000,
         response_ends_trial: false,
-
+        
       },
       {
         type: jsPsychAnimation,
@@ -904,8 +1040,45 @@ jatos.onLoad(async function() {
         sequence_reps: 2,
         frame_time: 200,
         render_on_canvas: true,
-        prompt: `<p class="prompt_text">${prompts['wait']}</p>`,
+        prompt: `<p class="prompt_text" style="visibility: hidden;" id="animation-prompt">${prompts['wait']}</p>`,
+        on_start: function(trial) {
+          // The trial won't render until this Promise resolves
+          console.log('Preloading animation images before showing anything...');
+          
+          return new Promise((resolve) => {
+            let loadedCount = 0;
+            const totalImages = trial.stimuli.length;
+            const images = [];
+            
+            trial.stimuli.forEach((src, index) => {
+              const img = new Image();
+              
+              img.onload = () => {
+                loadedCount++;
+                console.log(`Loaded ${loadedCount}/${totalImages}`);
+                
+                if (loadedCount === totalImages) {
+                  console.log('ALL IMAGES LOADED. Now showing animation trial.');
+                  resolve(); // This allows the trial to render
+                }
+              };
+              
+              img.onerror = () => {
+                console.error(`Failed to load image ${index}: ${src}`);
+                loadedCount++;
+                if (loadedCount === totalImages) {
+                  resolve();
+                }
+              };
+              
+              img.src = src;
+              images.push(img);
+            });
+
+          });
+        },
         on_load: function() {
+          // This runs AFTER on_start resolves and trial is displayed
           const canvas = document.querySelector('canvas');
 
           if (canvas) {
@@ -920,6 +1093,14 @@ jatos.onLoad(async function() {
           if (content) {
             content.style.textAlign = 'center';
           }
+            
+          // NOW reveal the prompt text
+          const promptText = document.getElementById('animation-prompt');
+          if (promptText) {
+            promptText.style.visibility = 'visible';
+          }
+
+          console.log('Animation trial is now visible and running');
         }
       },
       {
@@ -950,8 +1131,8 @@ jatos.onLoad(async function() {
             ctx.fillStyle = "#ffffff";
             ctx.strokeStyle = '#5d2514';
             ctx.lineWidth = 15;
-            roundRect(ctx, x - framePadding, y - framePadding,
-                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+            if(!classicGraphics) {roundRect(ctx, x - framePadding, y - framePadding,
+                    imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);}
             ctx.fill();
             ctx.stroke();
 
@@ -968,7 +1149,26 @@ jatos.onLoad(async function() {
         response_ends_trial: true,
         margin_horizontal: '40px',
         post_trial_gap: 500,
-        button_html: [
+        button_html: classicGraphics ?
+        [
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_button.png"
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">%choice%</text>
+            </svg>
+          </div>`,
+
+          `<div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_button.png"
+                  class="image-btn">
+            <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+              <text x="50%" y="50%">%choice%</text>
+            </svg>
+          </div>`,
+        ]
+        :
+        [
           `<div class="image-btn-wrapper">
             <input type="image" src="img/assets/blank_green.png"
                   class="image-btn">
@@ -986,11 +1186,15 @@ jatos.onLoad(async function() {
           </div>`,
         ],
         on_load: function() {
-          setupButtonListeners();
+          if (!classicGraphics) {
+            setupButtonListeners();
+          }
         },
 
         on_finish: function(data) {
-          cleanupButtonListeners();
+          if (!classicGraphics){
+            cleanupButtonListeners();
+          }
           // same = button 0 = 's'
           // different = button 1 = 'd'
           let resp = null;

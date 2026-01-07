@@ -381,7 +381,7 @@ jatos.onLoad(async function() {
     const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
     let fontStyle = '';
     const letterSpacing = fontSize * 0.08 // change multiplier to change kerning
-    const italicCorrection = fontSize * 0.12; // Extra spacing after italic-to-roman transition
+    const italicCorrection = classicGraphics ? fontSize * 0.08 : fontSize * 0.12; // Extra spacing after italic-to-roman transition
     const maxWidth = 1.5 * x;
     
     // Classic vs Modern styling
@@ -407,7 +407,7 @@ jatos.onLoad(async function() {
     let lines = [];
     let currentLine = [];
     let currentLineWidth = 0;
-
+    console.log("\n");
     for (let word of words) {
       if (word === '<i>') { fontStyle = 'italic '; continue; }
       if (word === '</i>') { fontStyle = ''; continue; }
@@ -420,6 +420,9 @@ jatos.onLoad(async function() {
       const wordObj = { text: word, font: ctx.font, width: wordWidth, isItalic: fontStyle.includes('italic') };
 
       if (currentLineWidth + wordWidth > maxWidth) {
+        if (currentLine[currentLine.length-1].text == '') {
+          currentLine.pop();
+        }
         // Trim trailing space
         if (currentLine.length && currentLine[currentLine.length - 1].text.endsWith(' ')) {
           currentLine[currentLine.length - 1].text =
@@ -429,15 +432,18 @@ jatos.onLoad(async function() {
         }
 
         lines.push(currentLine);
-
+       
         // Start new line
         const trimmedWord = word.trimStart();
         currentLine = trimmedWord ? [{ text: trimmedWord, font: ctx.font, width: ctx.measureText(trimmedWord).width, isItalic: fontStyle.includes('italic') }] : [];
         currentLineWidth = trimmedWord ? ctx.measureText(trimmedWord).width : 0;
+        
       } else {
         currentLine.push(wordObj);
+        
         currentLineWidth += wordWidth;
       }
+      
     }
     if (currentLine.length) lines.push(currentLine);
 

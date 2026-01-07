@@ -692,7 +692,7 @@ jatos.onLoad(async function() {
       canvas_size: calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen), // Calculate based on horizontal allocation
       stimulus: function(c) {
         const ctx = c.getContext('2d');
-        ctx.fillStyle = '#fff9e0';
+        ctx.fillStyle = classicGraphics ? 'white' : '#fff9e0';
         const gap = 60; // spacing between the two images
         const framePadding = 20;
         const radius = 25;
@@ -811,7 +811,7 @@ var intro = {
 
 var new1 = isMobile ?
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}foil_1032${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}foil_1032${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts['key']['trial_choices']['new'],
     1,
     prompts[resp_mode]['prompt_new'],
@@ -820,7 +820,7 @@ var new1 = isMobile ?
   ) 
   :
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}foil_1032${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}foil_1032${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`new`],
     2,
     prompts[resp_mode][`prompt_new`],
@@ -830,7 +830,7 @@ var new1 = isMobile ?
 
 var new2 = isMobile ?
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}foil_1033${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}foil_1033${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`new`],
     1,
     prompts[resp_mode][`prompt_new`],
@@ -839,7 +839,7 @@ var new2 = isMobile ?
   )
   :
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}foil_1033${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}foil_1033${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`new`],
     2,
     prompts[resp_mode][`prompt_new`],
@@ -849,7 +849,7 @@ var new2 = isMobile ?
 
 var new3 = isMobile ?
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}pcon026a${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}pcon026a${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`new`],
     1,
     prompts[resp_mode][`prompt_new`],
@@ -858,7 +858,7 @@ var new3 = isMobile ?
   )  
   :
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}pcon026a${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}pcon026a${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`new`],
     2,
     prompts[resp_mode][`prompt_new`],
@@ -867,7 +867,7 @@ var new3 = isMobile ?
   );
 
 var repeat1 = makeCategorizeTrial(
-  `img/${classicGraphics ? "" : "assets/"}foil_1033${classicGraphics ? "" : "_border"}.png`,
+  `img/${classicGraphics ? "" : "assets/"}foil_1033${classicGraphics ? ".jpg" : "_border.png"}`,
   prompts[`key`][`trial_choices`][`old`],
   0,
   prompts[resp_mode][`prompt_rep`],
@@ -877,7 +877,7 @@ var repeat1 = makeCategorizeTrial(
 
 var lure1 = isMobile ?
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}pcon026b${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}pcon026b${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`sim`],
     2,
     prompts[resp_mode][`prompt_lure`],
@@ -886,7 +886,7 @@ var lure1 = isMobile ?
   )
   :
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}pcon026b${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}pcon026b${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`sim`],
     1,
     prompts[resp_mode][`prompt_lure`],
@@ -903,7 +903,7 @@ var side_by_side1 = makeSideBySideTrial(
 
 var new4 = isMobile ?
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}foil_1035${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}foil_1035${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`new`],
     1,
     prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
@@ -912,7 +912,7 @@ var new4 = isMobile ?
   )
   :
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}foil_1035${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}foil_1035${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`new`],
     2,
     prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
@@ -922,7 +922,7 @@ var new4 = isMobile ?
 
 var new5 = isMobile ?
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}pcon028a${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}pcon028a${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`new`],
     1,
     prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
@@ -931,7 +931,7 @@ var new5 = isMobile ?
   )
   :
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}pcon028a${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}pcon028a${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`new`],
     2,
     prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
@@ -940,7 +940,7 @@ var new5 = isMobile ?
   );
 
 var repeat2 = makeCategorizeTrial(
-  `img/${classicGraphics ? "" : "assets/"}foil_1035${classicGraphics ? "" : "_border"}.png`,
+  `img/${classicGraphics ? "" : "assets/"}foil_1035${classicGraphics ? ".jpg" : "_border.png"}`,
   prompts[`key`][`trial_choices`][`old`],
   0,
   prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
@@ -950,7 +950,7 @@ var repeat2 = makeCategorizeTrial(
 
 var lure2 = isMobile ?
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}pcon028b${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}pcon028b${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`sim`],
     2,
     prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
@@ -959,7 +959,7 @@ var lure2 = isMobile ?
   )
   :
   makeCategorizeTrial(
-    `img/${classicGraphics ? "" : "assets/"}pcon028b${classicGraphics ? "" : "_border"}.png`,
+    `img/${classicGraphics ? "" : "assets/"}pcon028b${classicGraphics ? ".jpg" : "_border.png"}`,
     prompts[`key`][`trial_choices`][`sim`],
     1,
     prompts[`prompt_test`] + ` ` + prompts[resp_mode][`trial_txt`],
@@ -978,7 +978,15 @@ var outtro = {
   choices: [prompts[resp_mode]['instr_choice']],
   prompt: '<p class="prompt_text">' + prompts[resp_mode]['prompt0'] + '</p>',
   stimulus: `<p class="prompt_text intro">` + prompts['end'] + '</p>', 
-  button_html:           
+  button_html: classicGraphics ?
+    `<div class="image-btn-wrapper">
+      <input type="image" src="img/assets/blank_button.png"
+            class="image-btn">
+      <svg class="image-btn-text" viewBox="0 0 266 160">
+        <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+      </svg>
+    </div>`
+  :
     `<div class="image-btn-wrapper">
       <input type="image" src="img/assets/blank_green.png"
             class="image-btn">
