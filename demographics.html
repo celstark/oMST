@@ -183,31 +183,6 @@
 </body>
 <script>
 
-var classicGraphics = 0;
-if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
-  classicGraphics = jatos.studySessionData['classic_graphics'];
-}
-if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
-  classicGraphics=jatos.studyJsonInput['classic_graphics']
-}
-if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
-  classicGraphics=jatos.batchJsonInput['classic_graphics']
-}
-
-const device = getDeviceType();
-console.log("have device " + device);
-const isMobile = device[0];
-const isTablet = device[1];
-const smallScreen = device[2];
-console.log("smallScreen " + smallScreen);
-const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
-const fontScale = isMobile ? 1.5 : 1.0;
-const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
-document.body.classList.add(isMobile ? 'mobile' : 'desktop');
-if (smallScreen) {document.body.classList.add('smallScreen');}
-if (isTablet) {document.body.classList.add('tablet');}
-if (classicGraphics) {document.body.classList.add('classic');}
 function getID() {
   // Try to get a reasonable ID code for this person
   // URL > studySession > workerID
@@ -235,6 +210,22 @@ function waitFor(conditionFunction) {
 jatos.onLoad(async function() {
   var sid=getID();
   //console.log('In demog, sid= ' + sid);
+  var classicGraphics = 0;
+  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['classic_graphics'];
+    console.log("classic graphics 1*: " + classicGraphics)
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['classic_graphics']
+    console.log("classic graphics 2*: " + classicGraphics)
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['classic_graphics']
+    console.log("classic graphics 3*: " + classicGraphics)
+  }
+
+  console.log("classic graphics*: " + classicGraphics)
+
   var lang='en';
   if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
@@ -246,6 +237,21 @@ jatos.onLoad(async function() {
     lang=jatos.batchJsonInput['lang']
   }
 
+  // get device information
+  const device = getDeviceType();
+  console.log("have device " + device);
+  const isMobile = device[0];
+  const isTablet = device[1];
+  const smallScreen = device[2];
+  console.log("smallScreen " + smallScreen);
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
+  const fontScale = isMobile ? 1.5 : 1.0;
+  const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
+  document.body.classList.add(isMobile ? 'mobile' : 'desktop');
+  if (smallScreen) {document.body.classList.add('smallScreen');}
+  if (isTablet) {document.body.classList.add('tablet');}
+  if (classicGraphics) {document.body.classList.add('classic');}
 
   // load honeycomb version of lang file
   console.log('loading json lang')

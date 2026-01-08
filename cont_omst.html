@@ -921,9 +921,9 @@ jatos.onLoad(async function() {
             const availableHeight = height - imageTopY - bottomMargin;
             
             // For tablet: leave space for stars on left and brain on right
-            const leftReserved = isTablet ? starSize + 60 : 0;
-            const rightReserved = isTablet ? (brain.width * brainScale) + 60 : 0;
-            const availableWidth = isTablet ? width - leftReserved - rightReserved : width * 0.8; // Increased from 0.8 to 0.85
+            const leftReserved = isTablet && !classicGraphics ? starSize + 60 : 0;
+            const rightReserved = isTablet && !classicGraphics ? (brain.width * brainScale) + 60 : 0;
+            const availableWidth = isTablet && !classicGraphics ? width - leftReserved - rightReserved : width * 0.8; // Increased from 0.8 to 0.85
 
             // *** SCALE IMAGE TO FIT AVAILABLE SPACE ***
             const imgAspectRatio = stimImg.width / stimImg.height;
@@ -943,7 +943,7 @@ jatos.onLoad(async function() {
             }
 
             // *** POSITION IMAGE CENTERED IN AVAILABLE SPACE ***
-            const x = isTablet ? leftReserved + (availableWidth - scaledWidth) / 2 : (width - scaledWidth) / 2;
+            const x = isTablet && !classicGraphics ? leftReserved + (availableWidth - scaledWidth) / 2 : (width - scaledWidth) / 2;
             const y = imageTopY + (availableHeight - scaledHeight - 2 * framePadding) / 2;
 
             // Draw frame and image

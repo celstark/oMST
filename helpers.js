@@ -161,6 +161,7 @@ function fitTextToContainer(element, maxHeight, minSize = 12, maxSize = 48) {
         const computedFont = window.getComputedStyle(element).fontFamily;
         const fontName = computedFont.split(',')[0].replace(/['"]/g, '').trim();
         console.log(fontName);
+        // make sure font is loaded
         if (!document.fonts.check(`12px "${fontName}"`)) {
             console.log(`Waiting for font ${fontName} to load...`);
             // Schedule retry after fonts load
@@ -259,6 +260,7 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
     const totalHeight = window.visualViewport ? 
         window.visualViewport.height : window.innerHeight;
 
+    // grab 3 sections
     const stimulusContainer = document.querySelector('.intro') || document.querySelector('#jspsych-html-button-response-stimulus .prompt_text');
     const buttonContainer = document.querySelector('#jspsych-html-button-response-btngroup') || document.querySelector('.jspsych-btn');
     const promptContainer = document.querySelector('.jspsych-content > p.prompt_text:not(.intro)');
@@ -293,35 +295,35 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
         stimulusContainer.style.maxWidth = isMobile ? '90%' : isTablet ? '90%' : '70%';
         
         requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            let minFontSize, maxFontSize;
-            if (isMobile) {
-                minFontSize = 32;
-                maxFontSize = 96;
-            } else if (isTablet) {
-                minFontSize = 36;
-                maxFontSize = 96;
-            } else if (smallScreen) {
-                minFontSize = 24;
-                maxFontSize = 56;
-            } else {
-                minFontSize = 32;
-                maxFontSize = 88;
-            }
-            
-            const finalSize = fitTextToContainer(
-                stimulusContainer, 
-                stimulusAllocation - 40, 
-                minFontSize, 
-                maxFontSize
-            );
-            
-            console.log('Stimulus fitted to:', finalSize);
-            
-            // Now apply final styling
-            stimulusContainer.style.height = stimulusAllocation + 'px';
-            stimulusContainer.style.overflow = 'hidden';
-        });
+            requestAnimationFrame(() => {
+                let minFontSize, maxFontSize;
+                if (isMobile) {
+                    minFontSize = 32;
+                    maxFontSize = 96;
+                } else if (isTablet) {
+                    minFontSize = 36;
+                    maxFontSize = 96;
+                } else if (smallScreen) {
+                    minFontSize = 24;
+                    maxFontSize = 56;
+                } else {
+                    minFontSize = 32;
+                    maxFontSize = 88;
+                }
+                
+                const finalSize = fitTextToContainer(
+                    stimulusContainer, 
+                    stimulusAllocation - 40, 
+                    minFontSize, 
+                    maxFontSize
+                );
+                
+                console.log('Stimulus fitted to:', finalSize);
+                
+                // Now apply final styling
+                stimulusContainer.style.height = stimulusAllocation + 'px';
+                stimulusContainer.style.overflow = 'hidden';
+            });
         });
     }
 
@@ -335,27 +337,27 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
         promptContainer.style.padding = '10px 20px';
         
         requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            let minFontSize, maxFontSize;
-            if (isMobile) {
-                minFontSize = 24;
-                maxFontSize = 48;
-            } else if (isTablet) {
-                minFontSize = 28;
-                maxFontSize = 56;
-            } else if (smallScreen) {
-                minFontSize = 28;
-                maxFontSize = 56;
-            } else {
-                minFontSize = 32;
-                maxFontSize = 64;
-            }
-            
-            fitTextToContainer(promptContainer, promptAllocation, minFontSize, maxFontSize);
-            container.classList.add('ready');
-            promptContainer.style.height = promptAllocation + 'px';
-            promptContainer.style.overflow = 'hidden';
-        });
+            requestAnimationFrame(() => {
+                let minFontSize, maxFontSize;
+                if (isMobile) {
+                    minFontSize = 24;
+                    maxFontSize = 48;
+                } else if (isTablet) {
+                    minFontSize = 28;
+                    maxFontSize = 56;
+                } else if (smallScreen) {
+                    minFontSize = 28;
+                    maxFontSize = 56;
+                } else {
+                    minFontSize = 32;
+                    maxFontSize = 64;
+                }
+                
+                fitTextToContainer(promptContainer, promptAllocation, minFontSize, maxFontSize);
+                container.classList.add('ready');
+                promptContainer.style.height = promptAllocation + 'px';
+                promptContainer.style.overflow = 'hidden';
+            });
         });
     }
 }
@@ -402,7 +404,7 @@ function fitSideBySideToScreen(isMobile, isTablet, smallScreen) {
     const totalHeight = window.offsetHeight ? 
         window.offsetHeight : window.innerHeight;
 
-    // Find the actual elements (using ID selectors, not class!)
+    // grab 3 sections
     const canvasStimulusContainer = document.querySelector('#jspsych-canvas-button-response-stimulus');
     const buttonContainer = document.querySelector('#jspsych-canvas-button-response-btngroup');
     const promptContainer = document.querySelector('.prompt_text');

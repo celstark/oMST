@@ -295,6 +295,8 @@ jatos.onLoad(async function() {
       }
     }
   });
+
+
   const device = getDeviceType();
   console.log("have device " + device);
   const isMobile = device[0];
@@ -1000,11 +1002,15 @@ var outtro = {
     requestAnimationFrame(() => {
       fitIntroOutroToScreen(isMobile, isTablet, smallScreen);
     });
-    setupButtonListeners();
+    if (!classicGraphics){
+      setupButtonListeners();
+    }
   },
 
   on_finish: function() {
-    cleanupButtonListeners();
+    if (!classicGraphics){
+      cleanupButtonListeners();
+    }
   },
 }
 
