@@ -353,6 +353,16 @@ jatos.onLoad(async function () {
     classicGraphics=jatos.batchJsonInput['classic_graphics']
   }
 
+    // Save for next page load
+  localStorage.setItem('classicGraphics', classicGraphics);
+  
+  // Apply it now
+  if (classicGraphics === 1) {
+    document.body.style.backgroundColor = '#ffffff';
+  } else {
+    document.body.style.backgroundColor = '#fff9e0';
+  }
+
   const device = getDeviceType();
   console.log("have device " + device);
   const isMobile = device[0];
@@ -393,15 +403,12 @@ jatos.onLoad(async function () {
       <br><br><strong>Do not hit your browser's back button or the experiment will terminate</strong>
     </p>`,
     on_load: function() {
-      if (!classicGraphics) {
-        setupButtonListeners();
-      }
+      setupButtonListeners();
     },
 
-    on_finish: function() {
-      if (!classicGraphics) {   
-        cleanupButtonListeners();
-      } 
+    on_finish: function() { 
+      cleanupButtonListeners();
+      
       var nruns = jatos.batchSession.get("nruns");
       jatos.batchSession.set("nruns", nruns+1);
       var order = jatos.studySessionData["order"];

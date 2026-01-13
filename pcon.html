@@ -26,6 +26,21 @@
 -->
 
 <head>
+  <script>
+  console.log('Script running');
+  const value = localStorage.getItem('classicGraphics');
+  console.log('classicGraphics value:', value);
+  console.log('Type:', typeof value);
+  // This runs IMMEDIATELY when parsed, before body exists
+  const classicGraphics = localStorage.getItem('classicGraphics') === '1';
+  
+  // Set background on HTML element (which already exists)
+  if (classicGraphics) {
+    document.documentElement.style.backgroundColor = '#ffffff'; // white
+  } else {
+    document.documentElement.style.backgroundColor = '#f5f5dc'; // cream
+  }
+</script>
  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
         https://fonts.gstatic.com ; 
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; media-src *; 
@@ -413,15 +428,12 @@ jatos.onLoad(async function() {
         requestAnimationFrame(() => {
           fitSideBySideToScreen(isMobile, isTablet, smallScreen);
         });
-        if (!classicGraphics){
-          setupButtonListeners();
-        }
+
+        setupButtonListeners();
       },
 
       on_finish: function() {
-        if (!classicGraphics){
-          cleanupButtonListeners();
-        }
+        cleanupButtonListeners();
       },
     };
   }
@@ -508,14 +520,11 @@ jatos.onLoad(async function() {
       requestAnimationFrame(() => {
         fitIntroOutroToScreen(isMobile, isTablet, smallScreen);
       });
-      if (!classicGraphics) {
-        setupButtonListeners();
-      }
+
+      setupButtonListeners();
     },
     on_finish: function() {
-      if (!classicGraphics){
-        cleanupButtonListeners();
-      }
+      cleanupButtonListeners();
     },
 
     prompt: `<p class="prompt_text">${prompts[resp_mode]['instr1_prompt']}</p>`,
@@ -730,15 +739,11 @@ jatos.onLoad(async function() {
           </div>`,
         ],
         on_load: function() {
-          if (!classicGraphics){
-            setupButtonListeners();
-          }
+          setupButtonListeners();
         },
 
         on_finish: function() {
-          if (!classicGraphics){
-            cleanupButtonListeners();
-          }
+          cleanupButtonListeners();
         },
       },
     ],
@@ -955,15 +960,11 @@ jatos.onLoad(async function() {
           </div>`,
         ],
         on_load: function() {
-          if (!classicGraphics){
-            setupButtonListeners();
-          }
+          setupButtonListeners();
         },
 
         on_finish: function() {
-          if (!classicGraphics){
-            cleanupButtonListeners();
-          }
+          cleanupButtonListeners();
         },
       },
     ],
@@ -1027,6 +1028,42 @@ jatos.onLoad(async function() {
             ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
           };
           stimImg.src = stimPath;
+        },
+        on_start: function(trial) {
+          // The trial won't render until this Promise resolves
+          console.log('Preloading animation images before showing anything...');
+          
+          return new Promise((resolve) => {
+            let loadedCount = 0;
+            const totalImages = noise_sequence.length;
+            const images = [];
+            
+            noise_sequence.forEach((src, index) => {
+              const img = new Image();
+              
+              img.onload = () => {
+                loadedCount++;
+                console.log(`Loaded ${loadedCount}/${totalImages}`);
+                
+                if (loadedCount === totalImages) {
+                  console.log('ALL IMAGES LOADED. Now showing animation trial.');
+                  resolve(); // This allows the trial to render
+                }
+              };
+              
+              img.onerror = () => {
+                console.error(`Failed to load image ${index}: ${src}`);
+                loadedCount++;
+                if (loadedCount === totalImages) {
+                  resolve();
+                }
+              };
+              
+              img.src = src;
+              images.push(img);
+            });
+
+          });
         },
         choices: "NO_KEYS",
         canvas_size: [canvasHeight, canvasWidth],
@@ -1186,15 +1223,11 @@ jatos.onLoad(async function() {
           </div>`,
         ],
         on_load: function() {
-          if (!classicGraphics) {
-            setupButtonListeners();
-          }
+          setupButtonListeners();
         },
 
         on_finish: function(data) {
-          if (!classicGraphics){
-            cleanupButtonListeners();
-          }
+          cleanupButtonListeners();
           // same = button 0 = 's'
           // different = button 1 = 'd'
           let resp = null;

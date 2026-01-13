@@ -32,6 +32,21 @@ Revised: November 20, 2019 (CELS) for Cordova
  -->
 
 <head>
+  <script>
+    console.log('Script running');
+    const value = localStorage.getItem('classicGraphics');
+    console.log('classicGraphics value:', value);
+    console.log('Type:', typeof value);
+    // This runs IMMEDIATELY when parsed, before body exists
+    const classicGraphics = localStorage.getItem('classicGraphics') === '1';
+    
+    // Set background on HTML element (which already exists)
+    if (classicGraphics) {
+      document.documentElement.style.backgroundColor = '#ffffff'; // white
+    } else {
+      document.documentElement.style.backgroundColor = '#f5f5dc'; // cream
+    }
+  </script>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' 'unsafe-eval' 
     https://fonts.gstatic.com http://www.stark-labs.com/exp/jsPsych/mobile_cMST/append_log.php http://www.stark-labs.com/exp/jsPsych/mobile_cMST/write_data_file.php; 
     script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net;
@@ -668,9 +683,7 @@ jatos.onLoad(async function() {
           configurable: true
         });
 
-        if (!classicGraphics){
-          setupButtonListeners();
-        }
+        setupButtonListeners();
       },
 
       on_finish: function(data) {
@@ -680,9 +693,7 @@ jatos.onLoad(async function() {
           delete displayElement.innerHTML;
         }
 
-        if (!classicGraphics){
           cleanupButtonListeners();
-        }
       },
     };
   }
@@ -759,16 +770,12 @@ jatos.onLoad(async function() {
         requestAnimationFrame(() => {
           fitSideBySideToScreen(isMobile, isTablet, smallScreen);
         });
-        
-        if (!classicGraphics){
-          setupButtonListeners();
-        }
+
+        setupButtonListeners();
       },
 
       on_finish: function() {
-        if (!classicGraphics){
-          cleanupButtonListeners();
-        }
+        cleanupButtonListeners();
       },
     };
   }
@@ -797,15 +804,11 @@ var intro = {
       fitIntroOutroToScreen(isMobile, isTablet, smallScreen);
     });
 
-    if (!classicGraphics){
-      setupButtonListeners();
-    }
+    setupButtonListeners();
   },
 
   on_finish: function() {
-    if (!classicGraphics){
-      cleanupButtonListeners();
-    }
+    cleanupButtonListeners();
   },
   prompt: `<p class="prompt_text">${prompts[resp_mode]['prompt0']}</p>`,
   stimulus: `<p class="prompt_text intro ${lang}">` + prompts['txt0'] + '</p>',
@@ -1002,15 +1005,12 @@ var outtro = {
     requestAnimationFrame(() => {
       fitIntroOutroToScreen(isMobile, isTablet, smallScreen);
     });
-    if (!classicGraphics){
-      setupButtonListeners();
-    }
+
+    setupButtonListeners();
   },
 
   on_finish: function() {
-    if (!classicGraphics){
-      cleanupButtonListeners();
-    }
+    cleanupButtonListeners();
   },
 }
 

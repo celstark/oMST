@@ -9,6 +9,21 @@
 
 -->
 <head>
+  <script>
+  console.log('Script running');
+  const value = localStorage.getItem('classicGraphics');
+  console.log('classicGraphics value:', value);
+  console.log('Type:', typeof value);
+  // This runs IMMEDIATELY when parsed, before body exists
+  const classicGraphics = localStorage.getItem('classicGraphics') === '1';
+  
+  // Set background on HTML element (which already exists)
+  if (classicGraphics) {
+    document.documentElement.style.backgroundColor = '#ffffff'; // white
+  } else {
+    document.documentElement.style.backgroundColor = '#f5f5dc'; // cream
+  }
+</script>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
     https://fonts.gstatic.com http://www.stark-labs.com/exp/jsPsych/mobile_cMST/append_log.php http://www.stark-labs.com/exp/jsPsych/mobile_cMST/write_data_file.php; 
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; media-src *; 
@@ -339,16 +354,12 @@ jatos.onLoad(function() {
       });
 
       // press/release stuff
-      if (!classicGraphics){
-        setupButtonListeners();
-      }
+      setupButtonListeners();
     },
 
     on_finish: function(data) {
       // clean up listeners
-      if (!classicGraphics){  
-          cleanupButtonListeners(); 
-      }
+      cleanupButtonListeners(); 
       console.log(data.response);
       var sid = data.response['idcode'];
       console.log(sid);

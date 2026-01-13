@@ -87,6 +87,21 @@
 -->
 
 <head>
+<script>
+  console.log('Script running');
+  const value = localStorage.getItem('classicGraphics');
+  console.log('classicGraphics value:', value);
+  console.log('Type:', typeof value);
+  // This runs IMMEDIATELY when parsed, before body exists
+  const classicGraphics = localStorage.getItem('classicGraphics') === '1';
+  
+  // Set background on HTML element (which already exists)
+  if (classicGraphics) {
+    document.documentElement.style.backgroundColor = '#ffffff'; // white
+  } else {
+    document.documentElement.style.backgroundColor = '#f5f5dc'; // cream
+  }
+</script>
 <meta http-equiv="Content-Security-Policy"
       content="
         default-src 'self' data: gap: 'unsafe-inline' 'unsafe-eval';
@@ -378,6 +393,7 @@ jatos.onLoad(async function() {
   let prompts=json_prompts['cont'] // Load in this phase's section
 
   function drawHTMLText(ctx, html, x, y, isMobile, fontSize) {
+    console.log(html);
     const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
     let fontStyle = '';
     const letterSpacing = fontSize * 0.08 // change multiplier to change kerning
@@ -418,10 +434,15 @@ jatos.onLoad(async function() {
       const wordWidth = ctx.measureText(word).width;
 
       const wordObj = { text: word, font: ctx.font, width: wordWidth, isItalic: fontStyle.includes('italic') };
-
+      console.log("wordObj: " + wordObj.text);
       if (currentLineWidth + wordWidth > maxWidth) {
-        if (currentLine[currentLine.length-1].text == '') {
-          currentLine.pop();
+        console.log("wordObj if: " + wordObj.text);
+        console.log(currentLine[0]);
+        console.log(currentLine.length);
+        if (currentLine[0]){
+          if (currentLine[currentLine.length-1].text == '') {
+            currentLine.pop();
+          }
         }
         // Trim trailing space
         if (currentLine.length && currentLine[currentLine.length - 1].text.endsWith(' ')) {
@@ -439,6 +460,7 @@ jatos.onLoad(async function() {
         currentLineWidth = trimmedWord ? ctx.measureText(trimmedWord).width : 0;
         
       } else {
+        console.log("pushed wordObj: " + wordObj.text);
         currentLine.push(wordObj);
         
         currentLineWidth += wordWidth;
@@ -523,7 +545,7 @@ jatos.onLoad(async function() {
   const smallScreen = device[2];
   console.log("smallScreen " + smallScreen);
   const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .70;
+  const canvasHeight = isMobile ? window.innerHeight * 0.65 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .70;
   const fontScale = isMobile ? 1.5 : 1.0;
   const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
@@ -756,16 +778,11 @@ jatos.onLoad(async function() {
 
     // After button HTML is rendered, attach proper event listeners
     on_load: function() {
-      if (!classicGraphics) {
-        setupButtonListeners();
-      }
-      
+      setupButtonListeners();
     },
 
     on_finish: function() {
-      if (!classicGraphics) {
-        cleanupButtonListeners();
-      }
+      cleanupButtonListeners();
     }
   };
   
@@ -844,7 +861,7 @@ jatos.onLoad(async function() {
               promptFontSize = 42;
             }
 
-            const textStartY = isMobile ? height * 0.2 : isTablet ? height * 0.08 : smallScreen ? height * 0.08 : height * 0.08;
+            const textStartY = isMobile ? (classicGraphics ? height * 0.1 : height * 0.2) : isTablet ? height * 0.08 : smallScreen ? height * 0.08 : height * 0.08;
             textBounds = drawHTMLText(
               ctx, 
               prompts[resp_mode][choicekey]['trial_prompt'], 
@@ -982,10 +999,7 @@ jatos.onLoad(async function() {
         },
 
         on_load: function() {
-          if (!classicGraphics) {
-            setupButtonListeners();
-          }
-          
+          setupButtonListeners();
         },
 
         on_finish: function(data) {
@@ -1009,10 +1023,8 @@ jatos.onLoad(async function() {
           }
           
           data.resp = resp;
-          if (!classicGraphics){
-            cleanupButtonListeners();
-          }
-          
+
+          cleanupButtonListeners();
         },
       }
     ],

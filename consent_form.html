@@ -6,6 +6,21 @@
 
 -->
 <head>
+  <script>
+  console.log('Script running');
+  const value = localStorage.getItem('classicGraphics');
+  console.log('classicGraphics value:', value);
+  console.log('Type:', typeof value);
+  // This runs IMMEDIATELY when parsed, before body exists
+  const classicGraphics = localStorage.getItem('classicGraphics') === '1';
+  
+  // Set background on HTML element (which already exists)
+  if (classicGraphics) {
+    document.documentElement.style.backgroundColor = '#ffffff'; // white
+  } else {
+    document.documentElement.style.backgroundColor = '#f5f5dc'; // cream
+  }
+</script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <script type="text/javascript" src="jatos.js"></script>
   <script src="js/jquery-3.1.1.min.js"></script>
@@ -317,16 +332,14 @@ jatos.onLoad(async function () {
   // ---------------------------------------------------------------------
 
   // Attach listeners to BOTH wrappers
-  if (!classicGraphics){
-    const wrappers = document.querySelectorAll('.image-btn-wrapper');
-    wrappers.forEach(wrapper => {
-      wrapper.addEventListener('mouseenter', handlePress, true);
-      wrapper.addEventListener('mouseleave', handleRelease, true);
-      wrapper.addEventListener('touchstart', handlePress, { passive: true });
-      wrapper.addEventListener('touchend', handleRelease);
-    });
-    document.addEventListener('mouseup', handleRelease);
-  }
+  const wrappers = document.querySelectorAll('.image-btn-wrapper');
+  wrappers.forEach(wrapper => {
+    wrapper.addEventListener('mouseenter', handlePress, true);
+    wrapper.addEventListener('mouseleave', handleRelease, true);
+    wrapper.addEventListener('touchstart', handlePress, { passive: true });
+    wrapper.addEventListener('touchend', handleRelease);
+  });
+  document.addEventListener('mouseup', handleRelease);
 
   // ---------------------------------------------------------------------
   // Click actions
