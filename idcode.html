@@ -244,14 +244,14 @@
 
 jatos.onLoad(function() {
   var classicGraphics = 0;
-  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
-    classicGraphics = jatos.studySessionData['classic_graphics'];
+  if (typeof jatos.studySessionData['plain_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['plain_graphics'];
   }
-  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['plain_graphics']
   }
-  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['plain_graphics']
   }
   var jsPsych = initJsPsych({
     on_finish: function() {

@@ -178,13 +178,13 @@
   color: black;
 }
 
-/*body {
+body {
   background-color: #fff9e0;
 }
 
 body.classic {
   background-color: white;
-}*/
+}
 
 .jspsych-content {
   display: flex;

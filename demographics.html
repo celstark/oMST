@@ -226,16 +226,16 @@ jatos.onLoad(async function() {
   var sid=getID();
   //console.log('In demog, sid= ' + sid);
   var classicGraphics = 0;
-  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
-    classicGraphics = jatos.studySessionData['classic_graphics'];
+  if (typeof jatos.studySessionData['plain_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['plain_graphics'];
     console.log("classic graphics 1*: " + classicGraphics)
   }
-  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['plain_graphics']
     console.log("classic graphics 2*: " + classicGraphics)
   }
-  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['plain_graphics']
     console.log("classic graphics 3*: " + classicGraphics)
   }
 

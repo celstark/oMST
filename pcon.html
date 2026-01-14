@@ -273,14 +273,14 @@ jatos.onLoad(async function() {
   }
 
   var classicGraphics = 0;
-  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
-    classicGraphics = jatos.studySessionData['classic_graphics'];
+  if (typeof jatos.studySessionData['plain_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['plain_graphics'];
   }
-  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['plain_graphics']
   }
-  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['plain_graphics']
   }
 
   // load honeycomb version of lang file
@@ -1252,7 +1252,7 @@ jatos.onLoad(async function() {
       { img1: 'img/pcon001a.jpg', img2: 'img/pcon001b.jpg', cresp: 'd'},
       { img1: 'img/pcon002a.jpg', img2: 'img/pcon002a.jpg', cresp: 's'},
       { img1: 'img/pcon003a.jpg', img2: 'img/pcon003a.jpg', cresp: 's'},
-      /*{ img1: 'img/pcon004a.jpg', img2: 'img/pcon004b.jpg', cresp: 'd'},
+      { img1: 'img/pcon004a.jpg', img2: 'img/pcon004b.jpg', cresp: 'd'},
       { img1: 'img/pcon005a.jpg', img2: 'img/pcon005a.jpg', cresp: 's'},
       { img1: 'img/pcon006a.jpg', img2: 'img/pcon006a.jpg', cresp: 's'},
       { img1: 'img/pcon007a.jpg', img2: 'img/pcon007a.jpg', cresp: 's'},
@@ -1276,7 +1276,7 @@ jatos.onLoad(async function() {
       { img1: 'img/pcon025a.jpg', img2: 'img/pcon025b.jpg', cresp: 'd'},
       //{ img1: 'img/pcon026a.jpg', img2: 'img/pcon026b.jpg', cresp: 'd'},
       { img1: 'img/pcon027a.jpg', img2: 'img/pcon027a.jpg', cresp: 's'},     
-      //{ img1: 'img/pcon028a.jpg', img2: 'img/pcon028a.jpg', cresp: 's'},*/
+      //{ img1: 'img/pcon028a.jpg', img2: 'img/pcon028a.jpg', cresp: 's'},
     ],
     randomize_order: randomize
   }

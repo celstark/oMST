@@ -95,7 +95,6 @@ function forceReleaseAll(e) {
 }
 
 function setupButtonListeners() {
-    console.log('🎬 Setting up button listeners');
     
     // Touch events
     document.addEventListener('touchstart', handlePress, { passive: true });
@@ -109,25 +108,20 @@ function setupButtonListeners() {
     
     // Navigation cleanup
     window.addEventListener('pagehide', (e) => {
-        console.log('📄 PAGE HIDE event');
         forceReleaseAll(e);
     });
     
     window.addEventListener('beforeunload', (e) => {
-        console.log('🚪 BEFORE UNLOAD event');
         forceReleaseAll(e);
     });
     
     document.addEventListener('visibilitychange', () => {
-        console.log(`👁️ VISIBILITY CHANGE: ${document.hidden ? 'HIDDEN' : 'VISIBLE'}`);
         if (document.hidden) forceReleaseAll();
     });
     
-    console.log('✅ Button listeners setup complete');
 }
 
 function cleanupButtonListeners() {
-    console.log('🧹 Cleaning up button listeners');
     
     document.removeEventListener('mouseover', handlePress, true);
     document.removeEventListener('mouseleave', handleRelease, true);
@@ -139,7 +133,6 @@ function cleanupButtonListeners() {
     window.removeEventListener('beforeunload', forceReleaseAll);
     
     forceReleaseAll();
-    console.log('✅ Cleanup complete');
 }
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -362,7 +355,7 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
     }
 }
 
-function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen) {
+function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen, stimText=false) {
     const totalWidth = window.visualViewport ? 
         window.visualViewport.width : window.innerWidth;
 
@@ -384,7 +377,7 @@ function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen) {
     // Calculate canvas height (2:1 ratio - width:height)
     // Since we have 2 square images side by side, the canvas is 2x wider than tall
     // So height = width / 2
-    const canvasHeight = canvasWidth / 1.8;
+    const canvasHeight = stimText ? canvasWidth / 1.8 : canvasWidth / 1.8;
 
     console.log('Canvas size calculated:', {
         device: isMobile ? 'mobile' : isTablet ? 'tablet' : smallScreen ? 'laptop' : 'desktop',
@@ -554,3 +547,143 @@ function getDeviceType() {
   console.log("desktop");
   return desktop;
 }
+
+function drawHTMLText(ctx, html, x, y, fontSize, device) {    
+    const isMobile = device[0];
+    const isTablet = device[1];
+    const smallScreen = device[2];
+    const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
+    let fontStyle = '';
+    const letterSpacing = fontSize * 0.08 // change multiplier to change kerning
+    const italicCorrection = classicGraphics ? fontSize * 0.08 : fontSize * 0.12; // Extra spacing after italic-to-roman transition
+    const maxWidth = 1.5 * x;
+    
+    // Classic vs Modern styling
+    const fontFamily = classicGraphics ? `"Open Sans", "Arial", sans-serif` : `"Comic Relief", sans-serif`;
+    const useOutline = !classicGraphics;
+    
+    ctx.textBaseline = 'middle';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    // Split into words, keeping HTML tags
+    let words = [];
+    for (let part of parts) {
+      if (part.startsWith('<')) {
+        words.push(part);
+      } else {
+        part.split(' ').forEach((word, i, arr) => {
+          words.push(word + (i < arr.length - 1 ? ' ' : ''));
+        });
+      }
+    }
+
+    let lines = [];
+    let currentLine = [];
+    let currentLineWidth = 0;
+    for (let word of words) {
+      if (word === '<i>') { fontStyle = 'italic '; continue; }
+      if (word === '</i>') { fontStyle = ''; continue; }
+      if (word === '<b>') { fontStyle = 'bold '; continue; }
+      if (word === '</b>') { fontStyle = ''; continue; }
+
+      ctx.font = `${fontStyle}bold ${fontSize}px ${fontFamily}`;
+      const wordWidth = ctx.measureText(word).width;
+
+      const wordObj = { text: word, font: ctx.font, width: wordWidth, isItalic: fontStyle.includes('italic') };
+      if (currentLineWidth + wordWidth > maxWidth) {
+        if (currentLine[0]){
+          if (currentLine[currentLine.length-1].text == '') {
+            currentLine.pop();
+          }
+        }
+        // Trim trailing space
+        if (currentLine.length && currentLine[currentLine.length - 1].text.endsWith(' ')) {
+          currentLine[currentLine.length - 1].text =
+            currentLine[currentLine.length - 1].text.trimEnd();
+          currentLine[currentLine.length - 1].width =
+            ctx.measureText(currentLine[currentLine.length - 1].text).width;
+        }
+
+        lines.push(currentLine);
+       
+        // Start new line
+        const trimmedWord = word.trimStart();
+        currentLine = trimmedWord ? [{ text: trimmedWord, font: ctx.font, width: ctx.measureText(trimmedWord).width, isItalic: fontStyle.includes('italic') }] : [];
+        currentLineWidth = trimmedWord ? ctx.measureText(trimmedWord).width : 0;
+        
+      } else {
+        currentLine.push(wordObj);
+        
+        currentLineWidth += wordWidth;
+      }
+      
+    }
+    if (currentLine.length) lines.push(currentLine);
+
+    // Draw each line with kerning
+    const lineHeight = fontSize * 1.2;
+    const startY = y;
+
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
+      const lineCharCount = line.reduce((sum, w) => sum + w.text.length, 0);
+      const lineWidth = line.reduce((sum, w) => sum + w.width, 0) + letterSpacing * lineCharCount;
+      let startX = x - lineWidth / 2;
+
+      for (let wordIdx = 0; wordIdx < line.length; wordIdx++) {
+        let word = line[wordIdx];
+        ctx.font = word.font;
+
+        // Determine word color
+        let fillColor = classicGraphics ? 'black' : '#fff8d6';
+        
+        if (!classicGraphics) {
+          if (word.text.includes('Old') || word.text.includes('Viejo') || word.text.includes('旧') || word.text.includes('이전') || word.text.includes('Oud') || word.text.includes('Старое')) fillColor = '#f9b8d0';
+          else if (word.text.includes('Similar') || word.text.includes('相近') || word.text.includes('비슷한') || word.text.includes('Gelijkaardig') || word.text.includes('Похожее')) fillColor = '#d3f5a6';
+          else if (word.text.includes('New') || word.text.includes('Nuevo') || word.text.includes('新') || word.text.includes('새로운') || word.text.includes('Nieuw') || word.text.includes('Новое')) fillColor = '#b4d8ff';
+        }
+
+        ctx.fillStyle = fillColor;
+        
+        if (useOutline) {
+          ctx.lineWidth = isMobile ? 15 : smallScreen ? 8 : 12;
+          ctx.strokeStyle = '#5d2b12';
+        }
+
+        // Draw word character by character with spacing
+        let charX = startX;
+        for (let charIdx = 0; charIdx < word.text.length; charIdx++) {
+          let char = word.text[charIdx];
+          if (useOutline) {
+            ctx.strokeText(char, charX, startY + i * lineHeight);
+          }
+          ctx.fillText(char, charX, startY + i * lineHeight);
+          charX += ctx.measureText(char).width + letterSpacing;
+          
+          // Add italic correction if transitioning from italic to non-italic
+          const isLastCharInWord = charIdx === word.text.length - 1;
+          const nextWord = line[wordIdx + 1];
+          if (word.isItalic && isLastCharInWord && nextWord && !nextWord.isItalic) {
+            charX += italicCorrection;
+          }
+        }
+
+        startX += word.width + letterSpacing * word.text.length;
+        
+        // Add correction to startX as well for proper alignment
+        const nextWord = line[wordIdx + 1];
+        if (word.isItalic && nextWord && !nextWord.isItalic) {
+          startX += italicCorrection;
+        }
+      }
+    }
+
+    const textEndY = startY + (lines.length * lineHeight);
+    return {
+      startY: startY - lineHeight / 2,  // Account for middle baseline
+      endY: textEndY + lineHeight / 2,
+      lineHeight: lineHeight,
+      numLines: lines.length
+    };
+  }
