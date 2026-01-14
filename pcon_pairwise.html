@@ -369,6 +369,8 @@ jatos.onLoad(async function() {
   }
 
   function makeSideBySideTrial(imgLeft, imgRight, stimulusText, promptText, buttonLabel) {
+    
+    
     return {
       type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
       choices: [buttonLabel],
@@ -421,7 +423,7 @@ jatos.onLoad(async function() {
         imgL.src = imgLeft;
         imgR.src = imgRight;
       },
-      prompt: `<p class="prompt_text" style="margin: 0;">${promptText}</p>`,
+      prompt: promptText,
       button_html: classicGraphics ?
         `<div class="image-btn-wrapper" style="margin-top: 40px;">
           <input type="image" src="img/assets/blank_button.png"
@@ -445,7 +447,6 @@ jatos.onLoad(async function() {
           const stimulusDiv = document.createElement('div');
           stimulusDiv.className = 'prompt_text';
           stimulusDiv.style.textAlign = 'center';
-          stimulusDiv.style.marginBottom = '20px';
           stimulusDiv.innerHTML = `<p>${stimulusText}</p>`;
           canvasElement.parentNode.insertBefore(stimulusDiv, canvasElement);
         }
@@ -463,7 +464,7 @@ jatos.onLoad(async function() {
     };
   }
 
-  function makeSideBySideChoice(imgLeft, imgRight, buttonLabels) {
+  function makeSideBySideChoice(buttonLabels, score=false) {
     return {
       type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
       post_trial_gap: 500,
@@ -493,6 +494,8 @@ jatos.onLoad(async function() {
       canvas_size: [canvasHeight * 0.8, canvasWidth],
       
       stimulus: function(c) {
+        const img1 = jsPsych.timelineVariable('img1');
+        const img2 = jsPsych.timelineVariable('img2');
         const ctx = c.getContext('2d');
         const width = c.width;
         const height = c.height;
@@ -506,7 +509,7 @@ jatos.onLoad(async function() {
         const imgR = new Image();
 
         // Star and brain setup
-        const totalStars = 6;
+        const totalStars = 5;
         const maxFill = 10; // star1–star10
         const starSize = isMobile ? Math.min(width, height) * 0.15 :
                         isTablet ? Math.min(width, height) * 0.12 :
@@ -518,70 +521,71 @@ jatos.onLoad(async function() {
 
         function drawScene() {
           // === Progress info (stars/brain) ===
-          const progress = num_correct;
+          const progress = num_correct*4; // w/ 26 trials we want each correct answer to fill 1/5 of a star
           // Draw stars and brain
           const step = Math.floor((progress % (maxFill*2) + 1) / 2) || 0;
           const fullStars = Math.floor((progress/2) / maxFill);
           const fillLevel = step;
           const currentLevel = Math.min(fillLevel, 10);
+          if (score && !classicGraphics) {
+            if (!isMobile) {
+              const leftX = isTablet ? 20 : smallScreen ? 10 : 40;
+              const leftStartY = isTablet ? textBounds.endY + 25 : height * 0.25;
 
-          if (!isMobile && !classicGraphics) {
-            const leftX = isTablet ? 20 : smallScreen ? 10 : 40;
-            const leftStartY = isTablet ? textBounds.endY + 25 : height * 0.25;
-
-            for (let i = 0; i < fullStars; i++) {
-              const star = starImgs[10];
-              const posY = isTablet ? leftStartY + i * (starSize + spacing) : 
-                          leftStartY + (i%2) * (starSize + spacing);
-              star.onload = function() {
-                if (isTablet) ctx.drawImage(star, leftX, posY, starSize, starSize);
-                else ctx.drawImage(star, leftX + (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
-              };
-              if (star.complete) {
-                if (isTablet) ctx.drawImage(star, leftX, posY, starSize, starSize);
-                else ctx.drawImage(star, leftX + (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
-              }
-            }
-
-            const currentStar = starImgs[currentLevel];
-            const activeStarScale = 1.75;
-            const activeStarSize = starSize * activeStarScale;
-            const brainW = brain.width * brainScale;
-            const brainH = brain.height * brainScale;
-            const brainX = width - brainW - (isTablet ? 20 : 60);
-            const brainY = isTablet ? textBounds.endY + 2*activeStarSize : height * 0.55;
-            
-            const starX = brainX + brainW / 2 - activeStarSize / 2;
-            const starY = brainY - activeStarSize * 1.2;
-
-            ctx.drawImage(brain, brainX, brainY, brainW, brainH);
-            currentStar.onload = function() { 
-              ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize); 
-            };
-            if (currentStar.complete) {
-              ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize);
-            }
-          
-          } else if (isMobile && !classicGraphics) {
-            const leftX = 0;
-            const leftStartY = 20;
-            const currentStar = starImgs[currentLevel];
-            for (let i = 0; i < fullStars + 1 && i < totalStars; i++) {
-              const star = starImgs[10];
-              const posX = leftX + i * (starSize + spacing);
-              if (i < fullStars) {
-                star.onload = function() { ctx.drawImage(star, posX, leftStartY, starSize, starSize); };
-                if (star.complete) ctx.drawImage(star, posX, leftStartY, starSize, starSize);
-              } else {
-                currentStar.onload = function() { 
-                  ctx.drawImage(currentStar, posX, leftStartY, starSize, starSize); 
+              for (let i = 0; i < fullStars; i++) {
+                const star = starImgs[10];
+                const posY = isTablet ? leftStartY + i * (starSize + spacing) : 
+                            leftStartY + (i%2) * (starSize + spacing);
+                star.onload = function() {
+                  if (isTablet) ctx.drawImage(star, leftX, posY, starSize, starSize);
+                  else ctx.drawImage(star, leftX + (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
                 };
-                if (currentStar.complete) {
-                  ctx.drawImage(currentStar, posX, leftStartY, starSize, starSize);
+                if (star.complete) {
+                  if (isTablet) ctx.drawImage(star, leftX, posY, starSize, starSize);
+                  else ctx.drawImage(star, leftX + (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
                 }
               }
-            }
-          } 
+
+              const currentStar = starImgs[currentLevel];
+              const activeStarScale = 1.75;
+              const activeStarSize = starSize * activeStarScale;
+              const brainW = brain.width * brainScale;
+              const brainH = brain.height * brainScale;
+              const brainX = width - brainW - (isTablet ? 20 : 60);
+              const brainY = isTablet ? textBounds.endY + 2*activeStarSize : height * 0.55;
+              
+              const starX = brainX + brainW / 2 - activeStarSize / 2;
+              const starY = brainY - activeStarSize * 1.2;
+
+              ctx.drawImage(brain, brainX, brainY, brainW, brainH);
+              currentStar.onload = function() { 
+                ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize); 
+              };
+              if (currentStar.complete) {
+                ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize);
+              }
+            
+            } else if (isMobile) {
+              const leftX = 0;
+              const leftStartY = 20;
+              const currentStar = starImgs[currentLevel];
+              for (let i = 0; i < fullStars + 1 && i < totalStars; i++) {
+                const star = starImgs[10];
+                const posX = leftX + i * (starSize + spacing);
+                if (i < fullStars) {
+                  star.onload = function() { ctx.drawImage(star, posX, leftStartY, starSize, starSize); };
+                  if (star.complete) ctx.drawImage(star, posX, leftStartY, starSize, starSize);
+                } else {
+                  currentStar.onload = function() { 
+                    ctx.drawImage(currentStar, posX, leftStartY, starSize, starSize); 
+                  };
+                  if (currentStar.complete) {
+                    ctx.drawImage(currentStar, posX, leftStartY, starSize, starSize);
+                  }
+                }
+              }
+            } 
+          }
           return;
         }
 
@@ -599,6 +603,8 @@ jatos.onLoad(async function() {
           const rightReserved = isTablet && !classicGraphics ? (brain.width * brainScale) + 60 : 0;
           const horizontalSpace = isTablet && !classicGraphics ? 
                                   width - leftReserved - rightReserved : 
+                                  isMobile ? 
+                                  width * 0.9 :
                                   width * 0.6;
 
           // Two square images side by side with gap
@@ -638,9 +644,8 @@ jatos.onLoad(async function() {
           imgR._renderInfo = { x: x + imgWidth + gap, y, imgWidth, imgHeight };
         };
 
-        imgL.src = imgLeft;
-        imgR.src = imgRight;
-
+        imgL.src = img1;
+        imgR.src = img2;
         // After stimulus duration, remove both images + frames
         const startTime = performance.now();
         function checkAndClear() {
@@ -675,23 +680,30 @@ jatos.onLoad(async function() {
       },
 
       on_finish: function(data) {
-        let resp = null;
-        if (resp_mode == 'button') {
-          // For 2 buttons: 0 = same, 1 = similar
-          if (data.response == 0) { resp = 'same'; }
-          else if (data.response == 1) { resp = 'similar'; }
-        } else {
-          // Add keyboard mappings if needed
-          if (data.response == 's') { resp = 'same'; }
-          else if (data.response == 'd') { resp = 'similar'; }
+        if (score){
+          let resp = null;
+          if (resp_mode == 'button') {
+            // For 2 buttons: 0 = same, 1 = similar
+            if (data.response == 0) { resp = 's'; }
+            else if (data.response == 1) { resp = 'd'; }
+          } else {
+            // Add keyboard mappings if needed
+            if (data.response == 's') { resp = 's'; }
+            else if (data.response == 'd') { resp = 'd'; }
+          }
+          data.cresp = jsPsych.timelineVariable('cresp');
+          data.correct = resp == data.cresp;
+          data.resp = resp;
+          console.log(data.resp, data.cresp, data.correct);
+          data.correct = resp == data.correct_response;
+          
+          if (data.correct) {
+            num_correct += 1;
+          } else {
+            num_correct += 1;
+          }
+          data.resp = resp;
         }
-        
-        data.correct = resp == data.correct_response;
-        if (data.correct) {
-          num_correct += 1;
-        }
-        
-        data.resp = resp;
         cleanupButtonListeners();
       },
     };
@@ -757,8 +769,6 @@ jatos.onLoad(async function() {
         },
         
         makeSideBySideChoice(
-          'img/pprac1a.jpg',
-          'img/pprac1a.jpg',
           ['Same',  'Similar'],
         ),
     ],
@@ -796,8 +806,6 @@ jatos.onLoad(async function() {
             stimulus: '<p class="prompt_text">Get ready...</p>',
         },
         makeSideBySideChoice(
-          'img/pprac2a.jpg',
-          'img/pprac2b.jpg',
           ['Same',  'Similar'],
         ),
     ],
@@ -808,8 +816,8 @@ jatos.onLoad(async function() {
   
 
   var instr3_trial = makeSideBySideTrial(
-    'img/pprac1a.jpg',
-    'img/pprac1a.jpg',
+    'img/pprac2a.jpg',
+    'img/pprac2b.jpg',
     '<p>Here are those images again. You should have said <b>Similar</b> for that one as they were not exactly the same but are similar.</p>',
     '<p class="redtext">Ready to begin the test?</p><p class="prompt_text"><b>Press '+ instr_txt + ' to start</p>',
     instr_choice
@@ -824,11 +832,13 @@ jatos.onLoad(async function() {
             trial_duration: 500,
             response_ends_trial: false,
             stimulus: '<p class="prompt_text">Get ready...</p>',
+            on_load: function() {
+              console.log(jsPsych.timelineVariable('img1'));
+            }
         },
         makeSideBySideChoice(
-          jsPsych.timelineVariable('img1'),
-          jsPsych.timelineVariable('img2'),
           ['Same',  'Similar'],
+          score=true
         ),
     ],
     
