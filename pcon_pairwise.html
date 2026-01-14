@@ -129,7 +129,7 @@
     }
 
     .mobile .prompt_text {
-      font-size: 2em;
+      font-size: 1.2em;
     }
 
     .smallScreen .jspsych-categorize-image-buttons-stimulus{
@@ -165,6 +165,14 @@
     }
     .redtext {
       color: red;
+    }
+
+    .jspsych-content {
+      visibility: hidden !important;
+    }
+
+    .jspsych-content.ready {
+      visibility: visible !important;
     }
   </style>
 </head>
@@ -279,11 +287,50 @@ jatos.onLoad(async function() {
   }
 
 
-//   const preload_fnames = new Array(trial_stim.length)
-//   for (var i=0; i<trial_stim.length; i++) {  // Make our Set X_rs be SetX_rs
-//     trial_stim[i].image=baseurl+trial_stim[i].image.replace("Set ","Set");
-//     preload_fnames[i]=trial_stim[i].image;
-//   }
+  const preload_fnames = [];
+  preload_fnames.push(
+    "img/pcon001a.jpg",
+    "img/pcon001b.jpg",
+    "img/pcon002a.jpg",
+    "img/pcon003a.jpg",
+    "img/pcon004a.jpg",
+    "img/pcon004b.jpg",
+    "img/pcon005a.jpg",
+    "img/pcon006a.jpg",
+    "img/pcon007a.jpg",
+    "img/pcon008a.jpg",
+    "img/pcon008b.jpg",
+    "img/pcon009a.jpg",
+    "img/pcon009b.jpg",
+    "img/pcon010a.jpg",
+    "img/pcon010b.jpg",
+    "img/pcon011a.jpg",
+    "img/pcon012a.jpg",
+    "img/pcon012b.jpg",
+    "img/pcon013a.jpg",
+    "img/pcon014a.jpg",
+    "img/pcon014b.jpg",
+    "img/pcon015a.jpg",
+    "img/pcon016a.jpg",
+    "img/pcon016b.jpg",
+    "img/pcon017a.jpg",
+    "img/pcon018a.jpg",
+    "img/pcon019a.jpg",
+    "img/pcon020a.jpg",
+    "img/pcon020b.jpg",
+    "img/pcon021a.jpg",
+    "img/pcon021b.jpg",
+    "img/pcon022a.jpg",
+    "img/pcon023a.jpg",
+    "img/pcon023b.jpg",
+    "img/pcon024a.jpg",
+    "img/pcon024b.jpg",
+    "img/pcon025a.jpg",
+    "img/pcon025b.jpg",
+    "img/pcon027a.jpg",
+    "img/assets/brain.png",
+    ...Array.from({length: 11}, (_, i) => `img/assets/star${i}.png`)
+  );
   
   
   // START OF CODE THAT SHOULD BE CONSTANT REGARDLESS OF JATOS / CORDOVA
@@ -491,7 +538,7 @@ jatos.onLoad(async function() {
             </svg>
           </div>
         `),
-      canvas_size: [canvasHeight * 0.8, canvasWidth],
+      canvas_size: isMobile ? [canvasHeight * 0.9, canvasWidth] : [canvasHeight * 0.8, canvasWidth],
       
       stimulus: function(c) {
         const img1 = jsPsych.timelineVariable('img1');
@@ -502,7 +549,7 @@ jatos.onLoad(async function() {
         ctx.fillStyle = classicGraphics ? "white" : '#fff9e0';
         ctx.fillRect(0, 0, width, height);
         
-        const gap = 60; // spacing between the two images
+        const gap = 60; // spacing between images
         const framePadding = 20;
         const radius = 25;
         const imgL = new Image();
@@ -527,10 +574,11 @@ jatos.onLoad(async function() {
           const fullStars = Math.floor((progress/2) / maxFill);
           const fillLevel = step;
           const currentLevel = Math.min(fillLevel, 10);
+          
           if (score && !classicGraphics) {
             if (!isMobile) {
               const leftX = isTablet ? 20 : smallScreen ? 10 : 40;
-              const leftStartY = isTablet ? textBounds.endY + 25 : height * 0.25;
+              const leftStartY = isTablet ? 25 : height * 0.25;
 
               for (let i = 0; i < fullStars; i++) {
                 const star = starImgs[10];
@@ -552,7 +600,7 @@ jatos.onLoad(async function() {
               const brainW = brain.width * brainScale;
               const brainH = brain.height * brainScale;
               const brainX = width - brainW - (isTablet ? 20 : 60);
-              const brainY = isTablet ? textBounds.endY + 2*activeStarSize : height * 0.55;
+              const brainY = isTablet ? 2*activeStarSize : height * 0.55;
               
               const starX = brainX + brainW / 2 - activeStarSize / 2;
               const starY = brainY - activeStarSize * 1.2;
@@ -566,22 +614,26 @@ jatos.onLoad(async function() {
               }
             
             } else if (isMobile) {
-              const leftX = 0;
+              // Mobile: Stack stars vertically on the left
+              const leftX = 10;
               const leftStartY = 20;
               const currentStar = starImgs[currentLevel];
-              for (let i = 0; i < fullStars + 1 && i < totalStars; i++) {
+              
+              for (let i = 0; i < fullStars; i++) {
                 const star = starImgs[10];
-                const posX = leftX + i * (starSize + spacing);
-                if (i < fullStars) {
-                  star.onload = function() { ctx.drawImage(star, posX, leftStartY, starSize, starSize); };
-                  if (star.complete) ctx.drawImage(star, posX, leftStartY, starSize, starSize);
-                } else {
-                  currentStar.onload = function() { 
-                    ctx.drawImage(currentStar, posX, leftStartY, starSize, starSize); 
-                  };
-                  if (currentStar.complete) {
-                    ctx.drawImage(currentStar, posX, leftStartY, starSize, starSize);
-                  }
+                const posY = leftStartY + i * (starSize + spacing);
+                star.onload = function() { ctx.drawImage(star, leftX, posY, starSize, starSize); };
+                if (star.complete) ctx.drawImage(star, leftX, posY, starSize, starSize);
+              }
+              
+              // Draw current star
+              if (fullStars < totalStars && fillLevel > 0) {
+                const posY = leftStartY + fullStars * (starSize + spacing);
+                currentStar.onload = function() { 
+                  ctx.drawImage(currentStar, leftX, posY, starSize, starSize); 
+                };
+                if (currentStar.complete) {
+                  ctx.drawImage(currentStar, leftX, posY, starSize, starSize);
                 }
               }
             } 
@@ -592,56 +644,107 @@ jatos.onLoad(async function() {
         imgL.onload = imgR.onload = function() {
           drawScene();
           
-          // *** CALCULATE AVAILABLE SPACE FOR TWO IMAGES ***
-          const topMargin = isTablet ? 30 : 15;
+          // *** CALCULATE AVAILABLE SPACE FOR IMAGES ***
+          const topMargin = isMobile ? 25 : isTablet ? 30 : 15;
           const bottomMargin = 30;
           const imageTopY = topMargin;
           const availableHeight = height - imageTopY - bottomMargin;
           
-          // For tablet: leave space for stars on left and brain on right
-          const leftReserved = isTablet && !classicGraphics ? starSize + 60 : 0;
-          const rightReserved = isTablet && !classicGraphics ? (brain.width * brainScale) + 60 : 0;
-          const horizontalSpace = isTablet && !classicGraphics ? 
-                                  width - leftReserved - rightReserved : 
-                                  isMobile ? 
-                                  width * 0.9 :
-                                  width * 0.6;
-
-          // Two square images side by side with gap
-          const availableWidthPerImage = (horizontalSpace - gap - framePadding * 4) / 2;
-          const availableHeightForImages = availableHeight - framePadding * 2;
-          
-          // Use square images - take the smaller dimension
-          const imgSize = Math.min(availableWidthPerImage, availableHeightForImages);
-          
-          const imgWidth = imgSize;
-          const imgHeight = imgSize;
-          const totalWidth = imgWidth * 2 + gap;
-          const x = isTablet && !classicGraphics ? 
-                    leftReserved + (horizontalSpace - totalWidth) / 2 : 
-                    (width - totalWidth) / 2;
-          const y = imageTopY + (availableHeight - imgHeight - 2 * framePadding) / 2;
-
-          // Draw function for each image
-          function drawFramedImage(img, xPos) {
-            ctx.fillStyle = '#ffffff';
-            ctx.strokeStyle = '#5d2514';
-            ctx.lineWidth = 15;
-            if (!classicGraphics) {
-              roundRect(ctx, xPos - framePadding, y - framePadding,
-                      imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+          // MOBILE VERTICAL STACKING
+          if (isMobile || isTablet) {
+            // Calculate space for stars on the left when scoring
+            const leftReserved = (score && !classicGraphics && isMobile) ? starSize + 30 : 0;
+            const availableWidth = width - leftReserved - 20; // 20px right margin
+            
+            // For vertical stack, we need space for 2 images + gap + frames
+            const verticalGap = 30;
+            const availableHeightPerImage = (availableHeight - verticalGap - framePadding * 4) / 2;
+            
+            // Images are square - use the smaller dimension
+            const imgSize = Math.min(availableWidth - 2 * framePadding, availableHeightPerImage);
+            const imgWidth = imgSize;
+            const imgHeight = imgSize;
+            
+            // Center horizontally in available space, offset right if scoring
+            const xStart = leftReserved + (availableWidth - imgWidth) / 2;
+            const totalHeight = imgHeight * 2 + verticalGap + framePadding * 4;
+            const yStart = imageTopY + (availableHeight - totalHeight) / 2;
+            
+            // Position for top image
+            const img1X = xStart;
+            const img1Y = yStart;
+            
+            // Position for bottom image
+            const img2X = xStart;
+            const img2Y = yStart + imgHeight + 2 * framePadding + verticalGap;
+            
+            // Draw function for each image
+            function drawFramedImage(img, xPos, yPos) {
+              ctx.fillStyle = '#ffffff';
+              ctx.strokeStyle = '#5d2514';
+              ctx.lineWidth = 15;
+              if (!classicGraphics) {
+                roundRect(ctx, xPos - framePadding, yPos - framePadding,
+                        imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+              }
+              ctx.fill();
+              ctx.stroke();
+              ctx.drawImage(img, xPos, yPos, imgWidth, imgHeight);
             }
-            ctx.fill();
-            ctx.stroke();
-            ctx.drawImage(img, xPos, y, imgWidth, imgHeight);
-          }
-          
-          drawFramedImage(imgL, x);
-          drawFramedImage(imgR, x + imgWidth + gap);
+            
+            drawFramedImage(imgL, img1X, img1Y);
+            drawFramedImage(imgR, img2X, img2Y);
 
-          // Store for setTimeout clear
-          imgL._renderInfo = { x: x, y, imgWidth, imgHeight };
-          imgR._renderInfo = { x: x + imgWidth + gap, y, imgWidth, imgHeight };
+            // Store for setTimeout clear
+            imgL._renderInfo = { x: img1X, y: img1Y, imgWidth, imgHeight };
+            imgR._renderInfo = { x: img2X, y: img2Y, imgWidth, imgHeight };
+            
+          } else {
+            // TABLET/DESKTOP SIDE-BY-SIDE (original logic)
+            // For tablet: leave space for stars on left and brain on right
+            const leftReserved = isTablet && !classicGraphics && score ? starSize + 60 : 0;
+            const rightReserved = isTablet && !classicGraphics && score ? (brain.width * brainScale) + 60 : 0;
+            const horizontalSpace = isTablet && !classicGraphics && score? 
+                                    width - leftReserved - rightReserved : 
+                                    isTablet ? width * 0.8 :
+                                    width * 0.6;
+
+            // Two square images side by side with gap
+            const availableWidthPerImage = (horizontalSpace - gap - framePadding * 4) / 2;
+            const availableHeightForImages = availableHeight - framePadding * 2;
+            
+            // Use square images - take the smaller dimension
+            const imgSize = Math.min(availableWidthPerImage, availableHeightForImages);
+            
+            const imgWidth = imgSize;
+            const imgHeight = imgSize;
+            const totalWidth = imgWidth * 2 + gap;
+            const x = isTablet && !classicGraphics && score ? 
+                      leftReserved + (horizontalSpace - totalWidth) / 2 : 
+                      (width - totalWidth) / 2;
+            const y = imageTopY + (availableHeight - imgHeight - 2 * framePadding) / 2;
+
+            // Draw function for each image
+            function drawFramedImage(img, xPos) {
+              ctx.fillStyle = '#ffffff';
+              ctx.strokeStyle = '#5d2514';
+              ctx.lineWidth = 15;
+              if (!classicGraphics) {
+                roundRect(ctx, xPos - framePadding, y - framePadding,
+                        imgWidth + 2 * framePadding, imgHeight + 2 * framePadding, radius);
+              }
+              ctx.fill();
+              ctx.stroke();
+              ctx.drawImage(img, xPos, y, imgWidth, imgHeight);
+            }
+            
+            drawFramedImage(imgL, x);
+            drawFramedImage(imgR, x + imgWidth + gap);
+
+            // Store for setTimeout clear
+            imgL._renderInfo = { x: x, y, imgWidth, imgHeight };
+            imgR._renderInfo = { x: x + imgWidth + gap, y, imgWidth, imgHeight };
+          }
         };
 
         imgL.src = img1;
@@ -653,14 +756,14 @@ jatos.onLoad(async function() {
             if (imgL._renderInfo && imgR._renderInfo) {
               const ctx2 = c.getContext('2d');
               const lineWidth = 15;
-              // Clear left image
+              // Clear left/top image
               ctx2.clearRect(
                 imgL._renderInfo.x - framePadding - lineWidth,
                 imgL._renderInfo.y - framePadding - lineWidth,
                 imgL._renderInfo.imgWidth + 2 * framePadding + lineWidth * 2,
                 imgL._renderInfo.imgHeight + 2 * framePadding + lineWidth * 2
               );
-              // Clear right image
+              // Clear right/bottom image
               ctx2.clearRect(
                 imgR._renderInfo.x - framePadding - lineWidth,
                 imgR._renderInfo.y - framePadding - lineWidth,
@@ -714,8 +817,20 @@ jatos.onLoad(async function() {
 
   var preload = {
     type: jsPsychPreload,
-    auto_preload: true 
+    images: preload_fnames, // since we use a timeline variable, we can't use the simple "trials"
+    show_progress_bar: true,
+    show_detailed_erros: true,
+    continue_after_error: true,
+    on_error: function(fname) {
+      console.log('FAILED  '+fname)
+    },
+    on_finish: function(data) {
+      
+      console.log('Preload success? ' + data.success)
+      console.log('Failed on ' + data.failed_images.length)
+    }
   }
+  
   
 
   
@@ -819,7 +934,7 @@ jatos.onLoad(async function() {
     'img/pprac2a.jpg',
     'img/pprac2b.jpg',
     '<p>Here are those images again. You should have said <b>Similar</b> for that one as they were not exactly the same but are similar.</p>',
-    '<p class="redtext">Ready to begin the test?</p><p class="prompt_text"><b>Press '+ instr_txt + ' to start</p>',
+    '<p class="prompt_text"><span class="redtext">Ready to begin the test?</span><br><b>Press '+ instr_txt + ' to start</b></p>',
     instr_choice
   );
   
@@ -879,7 +994,7 @@ jatos.onLoad(async function() {
   var summary_block = {
     type: jsPsychHtmlKeyboardResponse,
     trial_duration: 500,
-    stimulus: 'Thank you',
+    stimulus: `<p class="prompt_text">Thank you</p>`,
     response_ends_trial: false,
     on_finish: function (data) {
       let validtrials=jsPsych.data.get().filterCustom(function(trial) {
