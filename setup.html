@@ -209,6 +209,7 @@ jatos.onLoad(async function () {
   var include_demographics=0;
   var include_idcode=0;
   var include_pcon=0;
+  var include_pairwise=0;
 
   // Useful little tags for the experiment and condition that will go into your log files
   var exptag='oMST'
@@ -271,8 +272,11 @@ jatos.onLoad(async function () {
   if (typeof jatos.studyJsonInput['include_icon'] !== 'undefined') {
     include_pcon=jatos.studyJsonInput['include_icon'];
   }
+  if (typeof jatos.studyJsonInput['include_pairwise'] !== 'undefined') {
+    include_pairwise=jatos.studyJsonInput['include_pairwise'];
+  }
   if (jatos.studyJsonInput) { console.log('jatos.studyJsonInput: ', jatos.studyJsonInput)}
-  console.log(include_consent,include_demographics,include_idcode,include_pcon,order)
+  console.log(include_consent,include_demographics,include_idcode,include_pcon,include_pairwise,order);
   console.log(jatos.studyJsonInput);
   //console.log(jatos.batchProperties.title);
   // Now, let any batch-level bits override those
@@ -302,13 +306,17 @@ jatos.onLoad(async function () {
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_icon'] !== 'undefined' ) { 
     include_pcon=jatos.batchJsonInput['include_icon'];
   }
-  console.log(include_consent,include_demographics,include_pcon,order)
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_pairwise'] !== 'undefined' ) { 
+    include_pairwise=jatos.batchJsonInput['include_pairwise'];
+  }
+  console.log(include_consent,include_demographics,include_idcode,include_pcon,include_pairwise,order)
   
   if (typeof jatos.urlQueryParameters.set_mst !== 'undefined') {
     jatos.studySessionData['set_omst'] = jatos.urlQueryParameters.set_omst;
   }
 
   if (include_pcon) { order.unshift(8); }
+  if (include_pairwise) { order.unshift(9); }
   if (include_demographics) { order.unshift(4); }
   if (include_consent) {order.unshift(3); }
   if (include_idcode) {order.unshift(2); }
