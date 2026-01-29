@@ -26,6 +26,21 @@
 -->
 
 <head>
+  <script>
+  console.log('Script running');
+  const value = localStorage.getItem('classicGraphics');
+  console.log('classicGraphics value:', value);
+  console.log('Type:', typeof value);
+  // This runs IMMEDIATELY when parsed, before body exists
+  const classicGraphics = localStorage.getItem('classicGraphics') === '1';
+  
+  // Set background on HTML element (which already exists)
+  if (classicGraphics) {
+    document.documentElement.style.backgroundColor = '#ffffff'; // white
+  } else {
+    document.documentElement.style.backgroundColor = '#f5f5dc'; // cream
+  }
+</script>
  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
         https://fonts.gstatic.com ; 
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; media-src *; 
@@ -71,21 +86,27 @@
   }
 
   .mobile .image-btn-text text{
-    stroke-width: 12;
     font-size: 1.5em;
+  }
+  .mobile .image-btn-text .text-stroke {
+    stroke-width: 12;
   }
 
   .image-btn-text.kr text {
     font-size: 1.2em;
-    stroke-width: 10;
   }
+
   .image-btn-text.ru text{
     font-size: 0.9em;
+  }
+  .mobile .image-btn-text.ru .text-stroke {
     stroke-width: 8;
   }
 
   .image-btn-text.nl  text{
     font-size: 0.8em;
+  }
+  .mobile .image-btn-text.nl .text-stroke {
     stroke-width: 8;
   }
 
@@ -95,26 +116,30 @@
   
   .mobile .image-btn-text.kr text {
     font-size: 1.2em;
-    stroke-width: 12;
   }
 
   .mobile .image-btn-text.nl text {
     font-size: 0.8em;
+  }
+  .mobile .image-btn-text.nl .text-stroke {
     stroke-width: 8;
   }
 
   .mobile .image-btn-text.ru text {
     font-size: .8em;
+  }
+  .mobile .image-btn-text.ru .text-stroke {
     stroke-width: 8;
   }
   
   .tablet .image-btn-text.kr text {
     font-size: 1.2em;
-    stroke-width: 10;
   }
 
   .tablet .image-btn-text.ru text {
     font-size: 0.8em;
+  }
+  .tablet .image-btn-text.ru .text-stroke {
     stroke-width: 8;
   }
 
@@ -258,14 +283,14 @@ jatos.onLoad(async function() {
   }
 
   var classicGraphics = 0;
-  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
-    classicGraphics = jatos.studySessionData['classic_graphics'];
+  if (typeof jatos.studySessionData['plain_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['plain_graphics'];
   }
-  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['plain_graphics']
   }
-  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['plain_graphics']
   }
 
   // load honeycomb version of lang file
@@ -320,6 +345,9 @@ jatos.onLoad(async function() {
       }
     }
   });
+
+  // ------------- Definitions -------------
+
   const device = getDeviceType();
   console.log("have device " + device);
   const isMobile = device[0];
@@ -339,6 +367,8 @@ jatos.onLoad(async function() {
     subject: sid,
     randomize: randomize
 });
+
+  // ------------- Helpers -------------
 
   function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
     return {
@@ -391,7 +421,7 @@ jatos.onLoad(async function() {
         imgL.src = imgLeft;
         imgR.src = imgRight;
       },
-      prompt: `<p class="prompt_text" style="margin: 0;">${promptText}</p>`,
+      prompt: `<p class="prompt_text" style="margin-bottom: 20;">${promptText}</p>`,
       button_html: classicGraphics ?
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_button.png"
@@ -405,7 +435,8 @@ jatos.onLoad(async function() {
           <input type="image" src="img/assets/blank_green.png"
                 class="image-btn">
           <svg class="image-btn-text" viewBox="0 0 266 160">
-            <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+            <text class="text-stroke" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+            <text class="text-fill" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
           </svg>
         </div>`,
       on_load: function() {
@@ -413,15 +444,12 @@ jatos.onLoad(async function() {
         requestAnimationFrame(() => {
           fitSideBySideToScreen(isMobile, isTablet, smallScreen);
         });
-        if (!classicGraphics){
-          setupButtonListeners();
-        }
+
+        setupButtonListeners();
       },
 
       on_finish: function() {
-        if (!classicGraphics){
-          cleanupButtonListeners();
-        }
+        cleanupButtonListeners();
       },
     };
   }
@@ -483,6 +511,8 @@ jatos.onLoad(async function() {
       console.log('Failed on ' + data.failed_images.length)
     }
   }
+
+  // ------------- Trials -------------
   
   // Instruction phase
   var instr1_trial = {
@@ -501,21 +531,19 @@ jatos.onLoad(async function() {
           <input type="image" src="img/assets/blank_green.png"
                 class="image-btn">
           <svg class="image-btn-text" viewBox="0 0 266 160">
-            <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+            <text class="text-stroke" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+            <text class="text-fill" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
           </svg>
         </div>`,
     on_load: function() {
       requestAnimationFrame(() => {
         fitIntroOutroToScreen(isMobile, isTablet, smallScreen);
       });
-      if (!classicGraphics) {
-        setupButtonListeners();
-      }
+
+      setupButtonListeners();
     },
     on_finish: function() {
-      if (!classicGraphics){
-        cleanupButtonListeners();
-      }
+      cleanupButtonListeners();
     },
 
     prompt: `<p class="prompt_text">${prompts[resp_mode]['instr1_prompt']}</p>`,
@@ -560,8 +588,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
-            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -668,8 +696,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
-            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -717,7 +745,8 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_green.png"
                   class="image-btn">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">%choice%</text>
+              <text class="text-stroke" x="50%" y="50%">%choice%</text>
+              <text class="text-fill" x="50%" y="50%">%choice%</text>
             </svg>
           </div>`,
 
@@ -725,20 +754,17 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_blue.png"
                   class="image-btn">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">%choice%</text>
+              <text class="text-stroke" x="50%" y="50%">%choice%</text>
+              <text class="text-fill" x="50%" y="50%">%choice%</text>
             </svg>
           </div>`,
         ],
         on_load: function() {
-          if (!classicGraphics){
-            setupButtonListeners();
-          }
+          setupButtonListeners();
         },
 
         on_finish: function() {
-          if (!classicGraphics){
-            cleanupButtonListeners();
-          }
+          cleanupButtonListeners();
         },
       },
     ],
@@ -784,8 +810,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
-            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -893,8 +919,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
-            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -942,7 +968,8 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_green.png"
                   class="image-btn">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">%choice%</text>
+              <text class="text-stroke" x="50%" y="50%">%choice%</text>
+              <text class="text-fill" x="50%" y="50%">%choice%</text>
             </svg>
           </div>`,
 
@@ -950,20 +977,17 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_blue.png"
                   class="image-btn">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">%choice%</text>
+              <text class="text-stroke" x="50%" y="50%">%choice%</text>
+              <text class="text-fill" x="50%" y="50%">%choice%</text>
             </svg>
           </div>`,
         ],
         on_load: function() {
-          if (!classicGraphics){
-            setupButtonListeners();
-          }
+          setupButtonListeners();
         },
 
         on_finish: function() {
-          if (!classicGraphics){
-            cleanupButtonListeners();
-          }
+          cleanupButtonListeners();
         },
       },
     ],
@@ -1011,8 +1035,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
-            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -1027,6 +1051,42 @@ jatos.onLoad(async function() {
             ctx.drawImage(stimImg, x, y, imgWidth, imgHeight);
           };
           stimImg.src = stimPath;
+        },
+        on_start: function(trial) {
+          // The trial won't render until this Promise resolves
+          console.log('Preloading animation images before showing anything...');
+          
+          return new Promise((resolve) => {
+            let loadedCount = 0;
+            const totalImages = noise_sequence.length;
+            const images = [];
+            
+            noise_sequence.forEach((src, index) => {
+              const img = new Image();
+              
+              img.onload = () => {
+                loadedCount++;
+                console.log(`Loaded ${loadedCount}/${totalImages}`);
+                
+                if (loadedCount === totalImages) {
+                  console.log('ALL IMAGES LOADED. Now showing animation trial.');
+                  resolve(); // This allows the trial to render
+                }
+              };
+              
+              img.onerror = () => {
+                console.error(`Failed to load image ${index}: ${src}`);
+                loadedCount++;
+                if (loadedCount === totalImages) {
+                  resolve();
+                }
+              };
+              
+              img.src = src;
+              images.push(img);
+            });
+
+          });
         },
         choices: "NO_KEYS",
         canvas_size: [canvasHeight, canvasWidth],
@@ -1123,8 +1183,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
-            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -1173,7 +1233,8 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_green.png"
                   class="image-btn">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">%choice%</text>
+              <text class="text-stroke" x="50%" y="50%">%choice%</text>
+              <text class="text-fill" x="50%" y="50%">%choice%</text>
             </svg>
           </div>`,
 
@@ -1181,20 +1242,17 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_blue.png"
                   class="image-btn">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">%choice%</text>
+              <text class="text-stroke" x="50%" y="50%">%choice%</text>
+              <text class="text-fill" x="50%" y="50%">%choice%</text>
             </svg>
           </div>`,
         ],
         on_load: function() {
-          if (!classicGraphics) {
-            setupButtonListeners();
-          }
+          setupButtonListeners();
         },
 
         on_finish: function(data) {
-          if (!classicGraphics){
-            cleanupButtonListeners();
-          }
+          cleanupButtonListeners();
           // same = button 0 = 's'
           // different = button 1 = 'd'
           let resp = null;

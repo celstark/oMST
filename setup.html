@@ -20,6 +20,7 @@
     <script src="js/jspsych_731/dist/plugin-preload.js"></script>
     <script src="js/jspsych_731/dist/plugin-html-button-response.js"></script>
     <script src="js/jspsych_731/dist/plugin-html-keyboard-response.js"></script>
+    <script src="js/jspsych_731/dist/plugin-fullscreen.js"></script>
     <script src="jatos.js"></script>
     <script src="helpers.js"></script>
   <link rel="stylesheet" href="css/pure-release-0.6.0/pure-min.css">
@@ -61,11 +62,9 @@
     
     .image-btn-text text {
       font-size: 1.2em;
-      stroke-width: 10;
     }
 
     .mobile .image-btn-text text{
-      stroke-width: 10;
       font-size: 1.2em;
       letter-spacing: 0.12em;
     }
@@ -73,27 +72,35 @@
     .image-btn-text.kr text,
     .image-btn-text.ru text{
       font-size: 0.9em;
+    }
+    .image-btn-text.kr .text-stroke,
+    .image-btn-text.ru .text-stroke {
       stroke-width: 8;
     }
 
     .image-btn-text.nl  text{
       font-size: 0.8em;
+    }
+    .image-btn-text.nl .text-stroke {
       stroke-width: 8;
     }
     
     .mobile .image-btn-text.kr text {
       font-size: 0.9em;
+    }
+    .mobile .image-btn-text.kr .text-stroke {
       stroke-width: 9;
     }
 
     .mobile .image-btn-text.nl text {
       font-size: 0.8em;
+    }
+    .mobile .image-btn-text.nl .text-stroke {
       stroke-width: 8;
     }
 
     .mobile .image-btn-text.ru text {
       font-size: 1.0em;
-      stroke-width: 10;
     }
     
     .tablet .image-btn-text text {
@@ -102,12 +109,13 @@
 
     .tablet .image-btn-text.kr text {
       font-size: 1em;
+    }
+    .tablet .image-btn-text.kr .text-stroke {
       stroke-width: 8;
     }
 
     .tablet .image-btn-text.ru text {
       font-size: 1.0em;
-      stroke-width: 10;
     }
 
     .prompt_text {
@@ -204,11 +212,13 @@ jatos.onLoad(async function () {
     console.log('condition forced via JSON component to ' + cond);
   }
 
-  var order=[5,6]; // Default order skips consent and demographics and does study/test -- will add "end" later
+  var order=[]; // Default order skips consent and demographics and does study/test -- will add "end" later
   var include_consent=0;
   var include_demographics=0;
   var include_idcode=0;
   var include_pcon=0;
+  var include_pairwise=0;
+  var include_omst=1;
 
   // Useful little tags for the experiment and condition that will go into your log files
   var exptag='oMST'
@@ -271,8 +281,14 @@ jatos.onLoad(async function () {
   if (typeof jatos.studyJsonInput['include_icon'] !== 'undefined') {
     include_pcon=jatos.studyJsonInput['include_icon'];
   }
+  if (typeof jatos.studyJsonInput['include_pairwise'] !== 'undefined') {
+    include_pairwise=jatos.studyJsonInput['include_pairwise'];
+  }
+  if (typeof jatos.studyJsonInput['include_omst'] !== 'undefined') {
+    include_omst=jatos.studyJsonInput['include_omst'];
+  }
   if (jatos.studyJsonInput) { console.log('jatos.studyJsonInput: ', jatos.studyJsonInput)}
-  console.log(include_consent,include_demographics,include_idcode,include_pcon,order)
+  console.log(include_consent,include_demographics,include_idcode,include_pcon,include_pairwise,order);
   console.log(jatos.studyJsonInput);
   //console.log(jatos.batchProperties.title);
   // Now, let any batch-level bits override those
@@ -302,19 +318,30 @@ jatos.onLoad(async function () {
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_icon'] !== 'undefined' ) { 
     include_pcon=jatos.batchJsonInput['include_icon'];
   }
-  console.log(include_consent,include_demographics,include_pcon,order)
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_pairwise'] !== 'undefined' ) { 
+    include_pairwise=jatos.batchJsonInput['include_pairwise'];
+  }
+    if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_omst'] !== 'undefined' ) { 
+    include_omst=jatos.batchJsonInput['include_omst'];
+  }
+  console.log(include_consent,include_demographics,include_idcode,include_pcon,include_pairwise,order)
   
   if (typeof jatos.urlQueryParameters.set_mst !== 'undefined') {
     jatos.studySessionData['set_omst'] = jatos.urlQueryParameters.set_omst;
   }
-
+  if (include_omst) { 
+    order.unshift(6); 
+    order.unshift(5); 
+  }
   if (include_pcon) { order.unshift(8); }
+  if (include_pairwise) { order.unshift(9); }
   if (include_demographics) { order.unshift(4); }
   if (include_consent) {order.unshift(3); }
   if (include_idcode) {order.unshift(2); }
 
   //if (include_pcon) {order.push(6); }
   order.push(7); // Add the "end", which is #7 currently
+  console.log('Final order: ' + order);
 
   if (jatos.studySessionData['set_omst'] == -1) { // randomize the set and subset
     jatos.studySessionData['set_omst'] = Math.floor(Math.random() * 6) + 1;
@@ -343,14 +370,24 @@ jatos.onLoad(async function () {
   });
 
   var classicGraphics = 0;
-  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
-    classicGraphics = jatos.studySessionData['classic_graphics'];
+  if (typeof jatos.studySessionData['plain_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['plain_graphics'];
   }
-  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['plain_graphics']
   }
-  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['plain_graphics']
+  }
+
+    // Save for next page load
+  localStorage.setItem('classicGraphics', classicGraphics);
+  
+  // Apply it now
+  if (classicGraphics === 1) {
+    document.body.style.backgroundColor = '#ffffff';
+  } else {
+    document.body.style.backgroundColor = '#fff9e0';
   }
 
   const device = getDeviceType();
@@ -384,7 +421,8 @@ jatos.onLoad(async function () {
         <input type="image" src="img/assets/blank_green.png"
               class="image-btn" id="continueButton">
         <svg class="image-btn-text" viewBox="0 0 266 160">
-          <text x="50%" y="50%">Continue</text>
+          <text class="text-stroke" x="50%" y="50%">Continue</text>
+          <text class="text-fill" x="50%" y="50%">Continue</text>
         </svg>
       </div>`,
     stimulus: 
@@ -393,21 +431,19 @@ jatos.onLoad(async function () {
       <br><br><strong>Do not hit your browser's back button or the experiment will terminate</strong>
     </p>`,
     on_load: function() {
-      if (!classicGraphics) {
-        setupButtonListeners();
-      }
+      setupButtonListeners();
     },
 
-    on_finish: function() {
-      if (!classicGraphics) {   
-        cleanupButtonListeners();
-      } 
+    on_finish: function() { 
+      cleanupButtonListeners();
+      
       var nruns = jatos.batchSession.get("nruns");
       jatos.batchSession.set("nruns", nruns+1);
       var order = jatos.studySessionData["order"];
       var d = new Date();
       jatos.studySessionData['datecode'] = d.toLocaleDateString();
-      jatos.studySessionData["taskindex"] += 1;
+      
+      console.log('Starting component at position ' + order[jatos.studySessionData["taskindex"]]);
       jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]);
 
       console.log('=== VERIFYING CACHE BEFORE NAVIGATION ===');
@@ -431,7 +467,6 @@ jatos.onLoad(async function () {
         var order = jatos.studySessionData["order"];
         var d = new Date();
         jatos.studySessionData['datecode'] = d.toLocaleDateString();
-        jatos.studySessionData["taskindex"] += 1;
         jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]);
       }, 100); // Small delay to ensure cache commits
     },

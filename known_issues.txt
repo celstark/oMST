@@ -1,6 +1,49 @@
-Text, brain, and stars getting refreshed in const_omst - fixed
 pcon static sometimes not appearing - maybe fixed
 Dutch consent form not translated - needed
 Continue and OK buttons not translated - maybe just fine
-Short blank screen between tasks - jus thow its gonna be
 incorrect answers incrementing stars on cont_omst (intended for testing) - intended
+
+pairwise PCon:
+no known issues
+test on larger variety of devices
+test on real devices
+test on throttled devices
+
+questions to ask:
+devices?
+yes
+
+how many trials total?
+always 26
+
+other languages?
+just english for now
+
+current star system shows every right/wrong answer.
+wanted
+
+other potential gameification elements?
+no
+
+aesthetic quality?
+yes
+
+where do we want this code?
+have it all in the same spot
+
+add in the instructions something about the stars
+
+update on every correct answer
+
+3 stars?
+no - 12
+
+stack smaller stars on mobile, 12 smaller 
+
+try omst stars along the sides vertically
+
+add lilian to final
+
+udpate casey task
+randomly select A or B for each user
+take another look at the codebase, don't need to make pretty

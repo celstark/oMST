@@ -87,6 +87,21 @@
 -->
 
 <head>
+<script>
+  console.log('Script running');
+  const value = localStorage.getItem('classicGraphics');
+  console.log('classicGraphics value:', value);
+  console.log('Type:', typeof value);
+  // This runs IMMEDIATELY when parsed, before body exists
+  const classicGraphics = localStorage.getItem('classicGraphics') === '1';
+  
+  // Set background on HTML element (which already exists)
+  if (classicGraphics) {
+    document.documentElement.style.backgroundColor = '#ffffff'; // white
+  } else {
+    document.documentElement.style.backgroundColor = '#f5f5dc'; // cream
+  }
+</script>
 <meta http-equiv="Content-Security-Policy"
       content="
         default-src 'self' data: gap: 'unsafe-inline' 'unsafe-eval';
@@ -133,40 +148,47 @@
   }
 
   .mobile .image-btn-text text{
-    stroke-width: 12;
     font-size: 1.5em;
+  }
+  .mobile .image-btn-text .text-stroke {
+    stroke-width: 12;
   }
 
   .image-btn-text.kr text,
   .image-btn-text.ru text{
     font-size: 0.9em;
+  }
+  .image-btn-text.kr .text-stroke,
+  .image-btn-text.ru .text-stroke {
     stroke-width: 8;
   }
 
-  .image-btn-text.nl  text{
+  .image-btn-text.nl text{
     font-size: 0.9em;
-    stroke-width: 10;
   }
   
   .mobile .image-btn-text.kr text,
   .mobile .image-btn-text.nl text{
     font-size: 0.8em;
+  }
+  .mobile .image-btn-text.kr .text-stroke,
+  .mobile .image-btn-text.nl .text-stroke {
     stroke-width: 8;
   }
 
   .mobile .image-btn-text.ru text{
     font-size: 1.2em;
-    stroke-width: 10;
   }
   
   .tablet .image-btn-text.kr text {
     font-size: .8em;
+  }
+  .tablet .image-btn-text.kr .text-stroke {
     stroke-width: 8;
   }
 
   .tablet .image-btn-text.ru text{
     font-size: 1.2em;
-    stroke-width: 10;
   }
 
   .prompt_text {
@@ -355,15 +377,27 @@ jatos.onLoad(async function() {
   }
 
   var classicGraphics = 0;
-  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
-    classicGraphics = jatos.studySessionData['classic_graphics'];
+  if (typeof jatos.studySessionData['plain_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['plain_graphics'];
   }
-  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['plain_graphics']
   }
-  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['plain_graphics']
   }
+
+  var stars_12 = 0;
+  if (typeof jatos.studySessionData['stars_12'] !== 'undefined') {
+    stars_12 = jatos.studySessionData['stars_12'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['stars_12'] !== 'undefined' ) { 
+    stars_12=jatos.studyJsonInput['stars_12']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['stars_12'] !== 'undefined' ) { 
+    stars_12=jatos.batchJsonInput['stars_12']
+  }
+
 
   // load honeycomb version of lang file
   console.log('loading json lang')
@@ -377,142 +411,7 @@ jatos.onLoad(async function() {
   console.log(json_prompts['task']['name'])
   let prompts=json_prompts['cont'] // Load in this phase's section
 
-  function drawHTMLText(ctx, html, x, y, isMobile, fontSize) {
-    const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
-    let fontStyle = '';
-    const letterSpacing = fontSize * 0.08 // change multiplier to change kerning
-    const italicCorrection = classicGraphics ? fontSize * 0.08 : fontSize * 0.12; // Extra spacing after italic-to-roman transition
-    const maxWidth = 1.5 * x;
-    
-    // Classic vs Modern styling
-    const fontFamily = classicGraphics ? `"Open Sans", "Arial", sans-serif` : `"Comic Relief", sans-serif`;
-    const useOutline = !classicGraphics;
-    
-    ctx.textBaseline = 'middle';
-    ctx.lineJoin = 'round';
-    ctx.lineCap = 'round';
-
-    // Split into words, keeping HTML tags
-    let words = [];
-    for (let part of parts) {
-      if (part.startsWith('<')) {
-        words.push(part);
-      } else {
-        part.split(' ').forEach((word, i, arr) => {
-          words.push(word + (i < arr.length - 1 ? ' ' : ''));
-        });
-      }
-    }
-
-    let lines = [];
-    let currentLine = [];
-    let currentLineWidth = 0;
-    console.log("\n");
-    for (let word of words) {
-      if (word === '<i>') { fontStyle = 'italic '; continue; }
-      if (word === '</i>') { fontStyle = ''; continue; }
-      if (word === '<b>') { fontStyle = 'bold '; continue; }
-      if (word === '</b>') { fontStyle = ''; continue; }
-
-      ctx.font = `${fontStyle}bold ${fontSize}px ${fontFamily}`;
-      const wordWidth = ctx.measureText(word).width;
-
-      const wordObj = { text: word, font: ctx.font, width: wordWidth, isItalic: fontStyle.includes('italic') };
-
-      if (currentLineWidth + wordWidth > maxWidth) {
-        if (currentLine[currentLine.length-1].text == '') {
-          currentLine.pop();
-        }
-        // Trim trailing space
-        if (currentLine.length && currentLine[currentLine.length - 1].text.endsWith(' ')) {
-          currentLine[currentLine.length - 1].text =
-            currentLine[currentLine.length - 1].text.trimEnd();
-          currentLine[currentLine.length - 1].width =
-            ctx.measureText(currentLine[currentLine.length - 1].text).width;
-        }
-
-        lines.push(currentLine);
-       
-        // Start new line
-        const trimmedWord = word.trimStart();
-        currentLine = trimmedWord ? [{ text: trimmedWord, font: ctx.font, width: ctx.measureText(trimmedWord).width, isItalic: fontStyle.includes('italic') }] : [];
-        currentLineWidth = trimmedWord ? ctx.measureText(trimmedWord).width : 0;
-        
-      } else {
-        currentLine.push(wordObj);
-        
-        currentLineWidth += wordWidth;
-      }
-      
-    }
-    if (currentLine.length) lines.push(currentLine);
-
-    // Draw each line with kerning
-    const lineHeight = fontSize * 1.2;
-    const startY = y;
-
-    for (let i = 0; i < lines.length; i++) {
-      let line = lines[i];
-      const lineCharCount = line.reduce((sum, w) => sum + w.text.length, 0);
-      const lineWidth = line.reduce((sum, w) => sum + w.width, 0) + letterSpacing * lineCharCount;
-      let startX = x - lineWidth / 2;
-
-      for (let wordIdx = 0; wordIdx < line.length; wordIdx++) {
-        let word = line[wordIdx];
-        ctx.font = word.font;
-
-        // Determine word color
-        let fillColor = classicGraphics ? 'black' : '#fff8d6';
-        
-        if (!classicGraphics) {
-          if (word.text.includes('Old') || word.text.includes('Viejo') || word.text.includes('旧') || word.text.includes('이전') || word.text.includes('Oud') || word.text.includes('Старое')) fillColor = '#f9b8d0';
-          else if (word.text.includes('Similar') || word.text.includes('相近') || word.text.includes('비슷한') || word.text.includes('Gelijkaardig') || word.text.includes('Похожее')) fillColor = '#d3f5a6';
-          else if (word.text.includes('New') || word.text.includes('Nuevo') || word.text.includes('新') || word.text.includes('새로운') || word.text.includes('Nieuw') || word.text.includes('Новое')) fillColor = '#b4d8ff';
-        }
-
-        ctx.fillStyle = fillColor;
-        
-        if (useOutline) {
-          ctx.lineWidth = isMobile ? 15 : smallScreen ? 8 : 12;
-          ctx.strokeStyle = '#5d2b12';
-        }
-
-        // Draw word character by character with spacing
-        let charX = startX;
-        for (let charIdx = 0; charIdx < word.text.length; charIdx++) {
-          let char = word.text[charIdx];
-          if (useOutline) {
-            ctx.strokeText(char, charX, startY + i * lineHeight);
-          }
-          ctx.fillText(char, charX, startY + i * lineHeight);
-          charX += ctx.measureText(char).width + letterSpacing;
-          
-          // Add italic correction if transitioning from italic to non-italic
-          const isLastCharInWord = charIdx === word.text.length - 1;
-          const nextWord = line[wordIdx + 1];
-          if (word.isItalic && isLastCharInWord && nextWord && !nextWord.isItalic) {
-            charX += italicCorrection;
-          }
-        }
-
-        startX += word.width + letterSpacing * word.text.length;
-        
-        // Add correction to startX as well for proper alignment
-        const nextWord = line[wordIdx + 1];
-        if (word.isItalic && nextWord && !nextWord.isItalic) {
-          startX += italicCorrection;
-        }
-      }
-    }
-
-    const textEndY = startY + (lines.length * lineHeight);
-    return {
-      startY: startY - lineHeight / 2,  // Account for middle baseline
-      endY: textEndY + lineHeight / 2,
-      lineHeight: lineHeight,
-      numLines: lines.length
-    };
-  }
+  
 
   // START OF CODE THAT SHOULD BE CONSTANT REGARDLESS OF JATOS / CORDOVA
   const phasename='oMSTCont';
@@ -522,8 +421,13 @@ jatos.onLoad(async function() {
   const isTablet = device[1];
   const smallScreen = device[2];
   console.log("smallScreen " + smallScreen);
-  const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
-  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .70;
+  const canvasWidth = isMobile ? stars_12 ? window.innerWidth * 1 : window.innerWidth * .9 
+                      : isTablet ? stars_12 ? window.innerWidth * 1 : window.innerWidth * .9
+                      : window.innerWidth * .9;
+  const canvasHeight = isMobile ? window.innerHeight * 0.65 
+                      : smallScreen ? window.innerHeight * 0.75 
+                      : isTablet ? window.innerHeight * 0.8 
+                      : window.innerHeight * .70;
   const fontScale = isMobile ? 1.5 : 1.0;
   const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
   document.body.classList.add(isMobile ? 'mobile' : 'desktop');
@@ -689,6 +593,7 @@ jatos.onLoad(async function() {
     return img;
   });
 
+  // ------------- Trials -------------
 
   var instr1_trial = {
     type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
@@ -708,23 +613,23 @@ jatos.onLoad(async function() {
 
       if (isMobile) {
         if (['kr', 'nl', 'ru'].includes(lang)) {
-          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, 64, device, classicGraphics);
         } else if (['cn', 'es'].includes(lang)) {
-          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 84);
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, 84, device, classicGraphics);
         } else {
-          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 96);
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, 96, device, classicGraphics );
         }
       } else if (isTablet) {
         if (['kr', 'nl', 'ru'].includes(lang)) {
-          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.1, isMobile, 64);
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.1, 64, device, classicGraphics);
         } else {
-          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.1, isMobile, 64);
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.1, 64, device, classicGraphics);
         }
       } else {
         if (['kr', 'nl', 'ru'].includes(lang)) {
-          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, 64, device, classicGraphics);
         } else {
-          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, isMobile, 64);
+          drawHTMLText(ctx, stimHTML, canvasWidth / 2, height * 0.2, 64, device, classicGraphics);
         }
       }
 
@@ -746,7 +651,8 @@ jatos.onLoad(async function() {
                     <input type="image" src="img/assets/blank_green.png"
                           class="image-btn" style="mix-blend-mode: multiply;">
                     <svg class="image-btn-text" viewBox="0 0 266 160">
-                      <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+                      <text class="text-stroke" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+                      <text class="text-fill" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
                     </svg>
                   </div>`,
     margin_horizontal: isMobile ? '20px' : '40px',
@@ -756,16 +662,11 @@ jatos.onLoad(async function() {
 
     // After button HTML is rendered, attach proper event listeners
     on_load: function() {
-      if (!classicGraphics) {
-        setupButtonListeners();
-      }
-      
+      setupButtonListeners();
     },
 
     on_finish: function() {
-      if (!classicGraphics) {
-        cleanupButtonListeners();
-      }
+      cleanupButtonListeners();
     }
   };
   
@@ -794,7 +695,8 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_${isMobile ? ['red','blue','green'][i] : ['red','green','blue'][i]}.png"
                   class="image-btn" style="${isMobile ? 'mix-blend-mode: multiply;' : ''}">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">${txt}</text>
+              <text class="text-stroke" x="50%" y="50%">${txt}</text>
+              <text class="text-fill" x="50%" y="50%">${txt}</text>
             </svg>
           </div>
         `),
@@ -809,12 +711,14 @@ jatos.onLoad(async function() {
           const height = c.height;
           const stimImg = new Image();
           const stimPath = jsPsych.timelineVariable('stimulus');
-          const totalStars = 6;
+          const totalStars = stars_12 ? 12 : 6;
           const maxFill = 10; // star1–star10
-          const starSize = isMobile ? Math.min(width, height) * 0.15 :
-                          isTablet ? Math.min(width, height) * 0.12 :
+          const starSize = isMobile ? stars_12 ?  Math.min(width, height) * 0.12 : Math.min(width, height) * 0.15 :
+                          isTablet && stars_12 ? Math.min(width, height) * 0.055 : 
+                          isTablet ?  Math.min(width, height) * 0.12 :
                           Math.min(width, height) * 0.15;
           const spacing = isMobile ?  starSize * 0.15 :
+                          isTablet &&  stars_12 ? starSize * 0.1 :
                           isTablet ? starSize * 0.2 :
                           starSize * 0.25;
           const framePadding = 20;
@@ -844,39 +748,96 @@ jatos.onLoad(async function() {
               promptFontSize = 42;
             }
 
-            const textStartY = isMobile ? height * 0.2 : isTablet ? height * 0.08 : smallScreen ? height * 0.08 : height * 0.08;
+            const textStartY = isMobile ? (classicGraphics ? height * 0.1 : stars_12 ? height * 0.05 : height * 0.2) : isTablet ? height * 0.08 : smallScreen ? height * 0.08 : height * 0.08;
             textBounds = drawHTMLText(
               ctx, 
               prompts[resp_mode][choicekey]['trial_prompt'], 
               canvasWidth / 2, 
               textStartY, 
-              isMobile, 
-              promptFontSize
+              promptFontSize,
+              device,
+              classicGraphics
             );
 
+            
+            return textBounds;
+          }
+
+          stimImg.onload = function() {
+            const textBounds = drawScene();
+            
+            // *** CALCULATE AVAILABLE SPACE ***
+            const topMargin = isTablet ? 30 : 15; // Space below text (reduced for desktop/laptop)
+            const bottomMargin = 30; // Space above buttons
+            const imageTopY = textBounds.endY + topMargin;
+            const availableHeight = height - imageTopY - bottomMargin;
+            const progress = num_correct;
+            
+            // For tablet: leave space for stars on left and brain on right
+            const leftReserved = isTablet && !classicGraphics ? starSize + 60 : 0;
+            const rightReserved = isTablet && !classicGraphics ? (brain.width * brainScale) + 60 : 0;
+            const availableWidth = isTablet && !classicGraphics ? width - leftReserved - rightReserved : isMobile ? width * 0.7 : width * 0.8; // Increased from 0.8 to 0.85
+
+            // *** SCALE IMAGE TO FIT AVAILABLE SPACE ***
+            const imgAspectRatio = stimImg.width / stimImg.height;
+            let scaledWidth, scaledHeight;
+
+            // Try fitting by height first
+            scaledHeight = availableHeight - (2 * framePadding);
+
+            scaledWidth = scaledHeight * imgAspectRatio;
+            //console.log("scaled height", scaledHeight);
+            //console.log("scaled width", scaledWidth);
+
+            // If too wide, fit by width instead
+            if (scaledWidth > availableWidth - (2 * framePadding)) {
+              scaledWidth = availableWidth - (2 * framePadding);
+              scaledHeight = scaledWidth / imgAspectRatio;
+            }
+
+            // *** POSITION IMAGE CENTERED IN AVAILABLE SPACE ***
+            const x = isTablet && !classicGraphics ? leftReserved + (availableWidth - scaledWidth) / 2 : (width - scaledWidth) / 2;
+            const y = imageTopY + (availableHeight - scaledHeight - 2 * framePadding) / 2;
+            console.log("Image position x:", x, "y:", y);
+            console.log("canvas height: ", canvasHeight)
+            // Draw frame and image
+            ctx.fillStyle = "#ffffff";
+            ctx.strokeStyle = "#5d2514";
+            ctx.lineWidth = 15;
+            if (!classicGraphics) {roundRect(ctx, x - framePadding, y - framePadding, scaledWidth + 2*framePadding, scaledHeight + 2*framePadding, radius);}
+            ctx.fill();
+            ctx.stroke();
+            ctx.drawImage(stimImg, x, y, scaledWidth, scaledHeight);
+
+            // Store for setTimeout clear
+            stimImg._renderInfo = { x, y, scaledWidth, scaledHeight };
+
             // Draw stars and brain
-            const step = Math.floor((progress % (maxFill*2) + 1) / 2) || 0;
-            const fullStars = Math.floor((progress/2) / maxFill);
+            const step = Math.floor((progress % (maxFill*(stars_12 ? 1 : 2)) + (stars_12 ? 0 : 1)) / (stars_12 ? 1 : 2)) || 0;
+            const fullStars = Math.floor((progress/(stars_12 ? 1 : 2)) / maxFill);
             const fillLevel = step;
             const currentLevel = Math.min(fillLevel, 10);
 
-            if (!isMobile && !classicGraphics){
+            if (!isMobile && !classicGraphics && !(isTablet && stars_12)){
+              console.log("Drawing stars and brain for desktop");
               const leftX = isTablet ? 20 : smallScreen ? 10 : 40;
-              const leftStartY = isTablet ? textBounds.endY + 60 : height * 0.25;
-
+              const leftStartY = isTablet ? textBounds.endY + 25 : height * 0.25;
+              
+              // draw full stars
               for (let i = 0; i < fullStars; i++) {
                 const star = starImgs[10];
-                const posY = isTablet ? leftStartY + i * (starSize + spacing) : leftStartY + (i%2) * (starSize + spacing);
+                const posY = isTablet ? leftStartY + i * (starSize + spacing) : leftStartY + (i%(stars_12 ? 3 : 2)) * (starSize + spacing);
                 star.onload = function() {
                   if (isTablet) ctx.drawImage(star, leftX, posY, starSize, starSize);
-                  else ctx.drawImage(star, leftX + (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
+                  else ctx.drawImage(star, leftX + (Math.floor(i/(stars_12 ? 3 : 2)) * (starSize + spacing)), posY, starSize, starSize);
                 };
                 if (star.complete) {
                   if (isTablet) ctx.drawImage(star, leftX, posY, starSize, starSize);
-                  else ctx.drawImage(star, leftX + (Math.floor(i/2) * (starSize + spacing)), posY, starSize, starSize);
+                  else ctx.drawImage(star, leftX + (Math.floor(i/(stars_12 ? 3 : 2)) * (starSize + spacing)), posY, starSize, starSize);
                 }
               }
 
+              // draw current star
               const currentStar = starImgs[currentLevel];
               const activeStarScale = 1.75;
               const activeStarSize = starSize * activeStarScale;
@@ -892,7 +853,7 @@ jatos.onLoad(async function() {
               currentStar.onload = function() { ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize); };
               if (currentStar.complete) ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize);
             
-            } else if (isMobile && !classicGraphics){
+            } else if (isMobile && !classicGraphics && !stars_12){
               const leftX = 0;
               const leftStartY = 20;
               const currentStar = starImgs[currentLevel];
@@ -907,56 +868,55 @@ jatos.onLoad(async function() {
                   if (currentStar.complete) ctx.drawImage(currentStar, posX, leftStartY, starSize, starSize);
                 }
               }
-            } 
-            return textBounds;
-          }
+            } else if ((isMobile || isTablet) && stars_12 && !classicGraphics){
+              const leftX = isTablet ? canvasWidth * 0.03 :  canvasWidth *0.02;           // X position for left column
+              const rightX = isTablet ? starSize + canvasWidth *0.15 : canvasWidth - starSize - canvasWidth *0.02;         // X position for right column (adjust as needed)
+              const startY = y - (starSize / 2) - framePadding;          // Top Y position
+              const currentStar = starImgs[currentLevel];
+              const starsPerColumn = isTablet ? 12 : 6;
 
-          stimImg.onload = function() {
-            const textBounds = drawScene();
-            
-            // *** CALCULATE AVAILABLE SPACE ***
-            const topMargin = isTablet ? 30 : 15; // Space below text (reduced for desktop/laptop)
-            const bottomMargin = 30; // Space above buttons
-            const imageTopY = textBounds.endY + topMargin;
-            const availableHeight = height - imageTopY - bottomMargin;
-            
-            // For tablet: leave space for stars on left and brain on right
-            const leftReserved = isTablet ? starSize + 60 : 0;
-            const rightReserved = isTablet ? (brain.width * brainScale) + 60 : 0;
-            const availableWidth = isTablet ? width - leftReserved - rightReserved : width * 0.8; // Increased from 0.8 to 0.85
+              for (let i = 0; i < fullStars + 1 && i < totalStars; i++) {
+                const star = starImgs[10];
+                
+                // Determine which column (0 = left, 1 = right, etc.)
+                const column = Math.floor(i / starsPerColumn);
+                
+                // Determine position within the column (0-5)
+                const rowInColumn = i % starsPerColumn;
+                
+                // Set X position based on column
+                const posX = column === 0 ? leftX : rightX;
+                
+                // Set Y position based on row in column (vertical spacing)
+                const posY = startY + rowInColumn * (starSize + spacing);
+                
+                if (i < fullStars) {
+                  star.onload = function() { ctx.drawImage(star, posX, posY, starSize, starSize); };
+                  if (star.complete) ctx.drawImage(star, posX, posY, starSize, starSize);
+                } else if (isMobile){
+                  currentStar.onload = function() { ctx.drawImage(currentStar, posX, posY, starSize, starSize); };
+                  if (currentStar.complete) ctx.drawImage(currentStar, posX, posY, starSize, starSize);
+                }
+              }
 
-            // *** SCALE IMAGE TO FIT AVAILABLE SPACE ***
-            const imgAspectRatio = stimImg.width / stimImg.height;
-            let scaledWidth, scaledHeight;
+              // Draw brain and active star on tablet
+              if (isTablet) {
+                const currentStar = starImgs[currentLevel];
+                const activeStarScale = 3;
+                const activeStarSize = starSize * activeStarScale;
+                const brainW = brain.width * brainScale;
+                const brainH = brain.height * brainScale;
+                const brainX = width - brainW - (isTablet ? 20 : 60);
+                const brainY = isTablet ? textBounds.endY + 2*activeStarSize : height * 0.55;
+                
+                const starX = brainX + brainW / 2 - activeStarSize / 2;
+                const starY = brainY - activeStarSize * 1.2;
 
-            // Try fitting by height first
-            scaledHeight = availableHeight - (2 * framePadding);
-
-            scaledWidth = scaledHeight * imgAspectRatio;
-            console.log("scaled height", scaledHeight);
-            console.log("scaled width", scaledWidth);
-
-            // If too wide, fit by width instead
-            if (scaledWidth > availableWidth - (2 * framePadding)) {
-              scaledWidth = availableWidth - (2 * framePadding);
-              scaledHeight = scaledWidth / imgAspectRatio;
+                ctx.drawImage(brain, brainX, brainY, brainW, brainH);
+                currentStar.onload = function() { ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize); };
+                if (currentStar.complete) ctx.drawImage(currentStar, starX, starY, activeStarSize, activeStarSize);
+              }
             }
-
-            // *** POSITION IMAGE CENTERED IN AVAILABLE SPACE ***
-            const x = isTablet ? leftReserved + (availableWidth - scaledWidth) / 2 : (width - scaledWidth) / 2;
-            const y = imageTopY + (availableHeight - scaledHeight - 2 * framePadding) / 2;
-
-            // Draw frame and image
-            ctx.fillStyle = "#ffffff";
-            ctx.strokeStyle = "#5d2514";
-            ctx.lineWidth = 15;
-            if (!classicGraphics) {roundRect(ctx, x - framePadding, y - framePadding, scaledWidth + 2*framePadding, scaledHeight + 2*framePadding, radius);}
-            ctx.fill();
-            ctx.stroke();
-            ctx.drawImage(stimImg, x, y, scaledWidth, scaledHeight);
-
-            // Store for setTimeout clear
-            stimImg._renderInfo = { x, y, scaledWidth, scaledHeight };
           };
           stimImg.src = stimPath;
 
@@ -982,15 +942,10 @@ jatos.onLoad(async function() {
         },
 
         on_load: function() {
-          if (!classicGraphics) {
-            setupButtonListeners();
-          }
-          
+          setupButtonListeners();
         },
 
         on_finish: function(data) {
-          console.log('Trial ending, canvas still exists?', document.querySelector('canvas'));
-          
           let resp = null;
           if (resp_mode == 'button') {
             if (data.response == 0) { resp = 'o'; }
@@ -1004,15 +959,11 @@ jatos.onLoad(async function() {
           data.correct = resp == data.correct_response;
           if(data.correct) {
             num_correct += 1;
-          } else {
-            num_correct += 1;
-          }
+          } 
           
           data.resp = resp;
-          if (!classicGraphics){
-            cleanupButtonListeners();
-          }
-          
+
+          cleanupButtonListeners();
         },
       }
     ],

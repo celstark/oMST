@@ -6,6 +6,21 @@
 
 -->
 <head>
+  <script>
+  console.log('Script running');
+  const value = localStorage.getItem('classicGraphics');
+  console.log('classicGraphics value:', value);
+  console.log('Type:', typeof value);
+  // This runs IMMEDIATELY when parsed, before body exists
+  const classicGraphics = localStorage.getItem('classicGraphics') === '1';
+  
+  // Set background on HTML element (which already exists)
+  if (classicGraphics) {
+    document.documentElement.style.backgroundColor = '#ffffff'; // white
+  } else {
+    document.documentElement.style.backgroundColor = '#f5f5dc'; // cream
+  }
+</script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
   <script type="text/javascript" src="jatos.js"></script>
   <script src="js/jquery-3.1.1.min.js"></script>
@@ -48,23 +63,25 @@
   />
 <style>
   .mobile .image-btn-text text{
-    stroke-width: 14;
     font-size: 2.5em;
+  }
+  .mobile .image-btn-text .text-stroke {
+    stroke-width: 14;
   }
 
   .image-btn-text.kr text,
   .image-btn-text.ru text{
     font-size: 2em;
-    stroke-width: 10;
   }
 
   .image-btn-text.nl  text{
     font-size: 2em;
-    stroke-width: 10;
   }
   
   .mobile .image-btn-text.kr text {
     font-size: 2em;
+  }
+  .mobile .image-btn-text.kr .text-stroke {
     stroke-width: 12;
   }
 
@@ -72,20 +89,23 @@
     font-size: 2em;
     stroke-width: 12;
   }
+  .mobile .image-btn-text.nl .text-stroke {
+    stroke-width: 12;
+  }
 
   .mobile .image-btn-text.ru text {
     font-size: 2.0em;
+  }
+  .mobile .image-btn-text.ru .text-stroke {
     stroke-width: 12;
   }
   
   .tablet .image-btn-text.kr text {
     font-size: 2.0em;
-    stroke-width: 10;
   }
 
   .tablet .image-btn-text.ru text {
     font-size: 2.0em;
-    stroke-width: 10;
   }
 
   .prompt_text {
@@ -221,14 +241,14 @@ jatos.onLoad(async function () {
 
 
   var classicGraphics = 0;
-  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
-    classicGraphics = jatos.studySessionData['classic_graphics'];
+  if (typeof jatos.studySessionData['plain_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['plain_graphics'];
   }
-  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['plain_graphics']
   }
-  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['plain_graphics']
   }
 
   console.log("classic graphics: " + classicGraphics);
@@ -298,7 +318,8 @@ jatos.onLoad(async function () {
       <input type="image" src="img/assets/blank_green.png"
             class="image-btn">
       <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-        <text x="50%" y="50%">${prompts['buttons']['agree']}</text>
+        <text class="text-stroke" x="50%" y="50%">${prompts['buttons']['agree']}</text>
+        <text class="text-fill" x="50%" y="50%">${prompts['buttons']['agree']}</text>
       </svg>
     </div>
 
@@ -306,7 +327,8 @@ jatos.onLoad(async function () {
       <input type="image" src="img/assets/blank_red.png"
             class="image-btn">
       <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-        <text x="50%" y="50%">${prompts['buttons']['cancel']}</text>
+        <text class="text-stroke" x="50%" y="50%">${prompts['buttons']['cancel']}</text>
+        <text class="text-fill" x="50%" y="50%">${prompts['buttons']['cancel']}</text>
       </svg>
     </div>
   `;
@@ -317,16 +339,14 @@ jatos.onLoad(async function () {
   // ---------------------------------------------------------------------
 
   // Attach listeners to BOTH wrappers
-  if (!classicGraphics){
-    const wrappers = document.querySelectorAll('.image-btn-wrapper');
-    wrappers.forEach(wrapper => {
-      wrapper.addEventListener('mouseenter', handlePress, true);
-      wrapper.addEventListener('mouseleave', handleRelease, true);
-      wrapper.addEventListener('touchstart', handlePress, { passive: true });
-      wrapper.addEventListener('touchend', handleRelease);
-    });
-    document.addEventListener('mouseup', handleRelease);
-  }
+  const wrappers = document.querySelectorAll('.image-btn-wrapper');
+  wrappers.forEach(wrapper => {
+    wrapper.addEventListener('mouseenter', handlePress, true);
+    wrapper.addEventListener('mouseleave', handleRelease, true);
+    wrapper.addEventListener('touchstart', handlePress, { passive: true });
+    wrapper.addEventListener('touchend', handleRelease);
+  });
+  document.addEventListener('mouseup', handleRelease);
 
   // ---------------------------------------------------------------------
   // Click actions

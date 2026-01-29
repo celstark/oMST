@@ -32,6 +32,21 @@ Revised: November 20, 2019 (CELS) for Cordova
  -->
 
 <head>
+  <script>
+    console.log('Script running');
+    const value = localStorage.getItem('classicGraphics');
+    console.log('classicGraphics value:', value);
+    console.log('Type:', typeof value);
+    // This runs IMMEDIATELY when parsed, before body exists
+    const classicGraphics = localStorage.getItem('classicGraphics') === '1';
+    
+    // Set background on HTML element (which already exists)
+    if (classicGraphics) {
+      document.documentElement.style.backgroundColor = '#ffffff'; // white
+    } else {
+      document.documentElement.style.backgroundColor = '#f5f5dc'; // cream
+    }
+  </script>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: 'unsafe-inline' 'unsafe-eval' 
     https://fonts.gstatic.com http://www.stark-labs.com/exp/jsPsych/mobile_cMST/append_log.php http://www.stark-labs.com/exp/jsPsych/mobile_cMST/write_data_file.php; 
     script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net;
@@ -77,29 +92,38 @@ Revised: November 20, 2019 (CELS) for Cordova
   }
 
   .mobile .image-btn-text text{
-    stroke-width: 12;
     font-size: 1.5em;
+  }
+  .mobile .image-btn-text .text-stroke {
+    stroke-width: 12;
   }
 
   .image-btn-text.kr text,
   .image-btn-text.ru text{
     font-size: 0.9em;
+  }
+  .image-btn-text.kr .text-stroke,
+  .image-btn-text.ru .text-stroke {
     stroke-width: 8;
   }
 
   .image-btn-text.nl  text{
     font-size: 0.9em;
-    stroke-width: 10;
   }
   
   .mobile .image-btn-text.kr text,
   .mobile .image-btn-text.nl text{
     font-size: 0.8em;
+  }
+  .mobile .image-btn-text.kr .text-stroke,
+  .mobile .image-btn-text.nl .text-stroke {
     stroke-width: 8;
   }
 
   .mobile .image-btn-text.ru text{
     font-size: 1.2em;
+  }
+  .mobile .image-btn-text.ru .text-stroke {
     stroke-width: 12;
   }
     
@@ -109,17 +133,20 @@ Revised: November 20, 2019 (CELS) for Cordova
   
   .tablet .image-btn-text.kr text {
     font-size: 1em;
+  }
+  .tablet .image-btn-text.kr .text-stroke {
     stroke-width: 8;
   }
  
   .tablet .image-btn-text.nl text {
     font-size: .9em;
+  }
+  .tablet .image-btn-text.nl .text-stroke {
     stroke-width: 8;
   }
 
   .tablet .image-btn-text.ru text{
     font-size: 1.2em;
-    stroke-width: 10;
   }
 
   .jspsych-content {
@@ -216,14 +243,14 @@ jatos.onLoad(async function() {
   }
 
   var classicGraphics = 0;
-  if (typeof jatos.studySessionData['classic_graphics'] !== 'undefined') {
-    classicGraphics = jatos.studySessionData['classic_graphics'];
+  if (typeof jatos.studySessionData['plain_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['plain_graphics'];
   }
-  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.studyJsonInput['classic_graphics']
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['plain_graphics']
   }
-  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['classic_graphics'] !== 'undefined' ) { 
-    classicGraphics=jatos.batchJsonInput['classic_graphics']
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['plain_graphics']
   }
 
   // load honeycomb version of lang file
@@ -264,7 +291,9 @@ jatos.onLoad(async function() {
       if (0) { jsPsych.data.displayData(); }
       else {
         var order=jatos.studySessionData["order"];
+        console.log('Order from session data: ' + order);
         jatos.studySessionData["taskindex"] += 1;
+        console.log('Current task index: ' + jatos.studySessionData["taskindex"]);
         if (typeof order === 'undefined') {
           // We don't have an 'order' setup, so assume it's 1-N
           console.log('faking an order')
@@ -295,6 +324,9 @@ jatos.onLoad(async function() {
       }
     }
   });
+
+  // ------------- Definitions -------------
+
   const device = getDeviceType();
   console.log("have device " + device);
   const isMobile = device[0];
@@ -313,6 +345,12 @@ jatos.onLoad(async function() {
     task: phasename,
     subject: sid,
   });
+
+  var order=jatos.studySessionData["order"];
+  console.log('Order from session data: ' + order);
+  console.log('Current task index: ' + jatos.studySessionData["taskindex"]);
+
+  // ------------- Helpers -------------
 
   function fitTrialToScreen() {
     const container = document.querySelector('.jspsych-content');
@@ -524,7 +562,8 @@ jatos.onLoad(async function() {
                 data-choice="${i}"
                 data-correct="${i === buttonAnswer}">
           <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-            <text x="50%" y="50%">${txt}</text>
+            <text class="text-stroke" x="50%" y="50%">${txt}</text>
+            <text class="text-fill" x="50%" y="50%">${txt}</text>
           </svg>
         </div>
       `),
@@ -666,9 +705,7 @@ jatos.onLoad(async function() {
           configurable: true
         });
 
-        if (!classicGraphics){
-          setupButtonListeners();
-        }
+        setupButtonListeners();
       },
 
       on_finish: function(data) {
@@ -678,9 +715,7 @@ jatos.onLoad(async function() {
           delete displayElement.innerHTML;
         }
 
-        if (!classicGraphics){
           cleanupButtonListeners();
-        }
       },
     };
   }
@@ -750,26 +785,25 @@ jatos.onLoad(async function() {
           <input type="image" src="img/assets/blank_green.png"
                 class="image-btn">
           <svg class="image-btn-text" viewBox="0 0 266 160">
-            <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+            <text class="text-stroke" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+            <text class="text-fill" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
           </svg>
         </div>`,
       on_load: function() {
         requestAnimationFrame(() => {
           fitSideBySideToScreen(isMobile, isTablet, smallScreen);
         });
-        
-        if (!classicGraphics){
-          setupButtonListeners();
-        }
+
+        setupButtonListeners();
       },
 
       on_finish: function() {
-        if (!classicGraphics){
-          cleanupButtonListeners();
-        }
+        cleanupButtonListeners();
       },
     };
   }
+
+// ------------- Trials -------------
 
 var intro = {
   type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
@@ -787,7 +821,8 @@ var intro = {
       <input type="image" src="img/assets/blank_green.png"
             class="image-btn">
       <svg class="image-btn-text" viewBox="0 0 266 160">
-        <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+        <text class="text-stroke" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+        <text class="text-fill" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
       </svg>
     </div>`,
   on_load: function() {
@@ -795,15 +830,11 @@ var intro = {
       fitIntroOutroToScreen(isMobile, isTablet, smallScreen);
     });
 
-    if (!classicGraphics){
-      setupButtonListeners();
-    }
+    setupButtonListeners();
   },
 
   on_finish: function() {
-    if (!classicGraphics){
-      cleanupButtonListeners();
-    }
+    cleanupButtonListeners();
   },
   prompt: `<p class="prompt_text">${prompts[resp_mode]['prompt0']}</p>`,
   stimulus: `<p class="prompt_text intro ${lang}">` + prompts['txt0'] + '</p>',
@@ -991,7 +1022,8 @@ var outtro = {
       <input type="image" src="img/assets/blank_green.png"
             class="image-btn">
       <svg class="image-btn-text" viewBox="0 0 266 160">
-        <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+        <text class="text-stroke" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+        <text class="text-fill" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
       </svg>
     </div>`,
   on_load: function() {
@@ -1000,6 +1032,7 @@ var outtro = {
     requestAnimationFrame(() => {
       fitIntroOutroToScreen(isMobile, isTablet, smallScreen);
     });
+
     setupButtonListeners();
   },
 

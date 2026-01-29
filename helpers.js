@@ -95,7 +95,6 @@ function forceReleaseAll(e) {
 }
 
 function setupButtonListeners() {
-    console.log('🎬 Setting up button listeners');
     
     // Touch events
     document.addEventListener('touchstart', handlePress, { passive: true });
@@ -109,25 +108,20 @@ function setupButtonListeners() {
     
     // Navigation cleanup
     window.addEventListener('pagehide', (e) => {
-        console.log('📄 PAGE HIDE event');
         forceReleaseAll(e);
     });
     
     window.addEventListener('beforeunload', (e) => {
-        console.log('🚪 BEFORE UNLOAD event');
         forceReleaseAll(e);
     });
     
     document.addEventListener('visibilitychange', () => {
-        console.log(`👁️ VISIBILITY CHANGE: ${document.hidden ? 'HIDDEN' : 'VISIBLE'}`);
         if (document.hidden) forceReleaseAll();
     });
     
-    console.log('✅ Button listeners setup complete');
 }
 
 function cleanupButtonListeners() {
-    console.log('🧹 Cleaning up button listeners');
     
     document.removeEventListener('mouseover', handlePress, true);
     document.removeEventListener('mouseleave', handleRelease, true);
@@ -139,7 +133,6 @@ function cleanupButtonListeners() {
     window.removeEventListener('beforeunload', forceReleaseAll);
     
     forceReleaseAll();
-    console.log('✅ Cleanup complete');
 }
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -161,6 +154,7 @@ function fitTextToContainer(element, maxHeight, minSize = 12, maxSize = 48) {
         const computedFont = window.getComputedStyle(element).fontFamily;
         const fontName = computedFont.split(',')[0].replace(/['"]/g, '').trim();
         console.log(fontName);
+        // make sure font is loaded
         if (!document.fonts.check(`12px "${fontName}"`)) {
             console.log(`Waiting for font ${fontName} to load...`);
             // Schedule retry after fonts load
@@ -259,6 +253,7 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
     const totalHeight = window.visualViewport ? 
         window.visualViewport.height : window.innerHeight;
 
+    // grab 3 sections
     const stimulusContainer = document.querySelector('.intro') || document.querySelector('#jspsych-html-button-response-stimulus .prompt_text');
     const buttonContainer = document.querySelector('#jspsych-html-button-response-btngroup') || document.querySelector('.jspsych-btn');
     const promptContainer = document.querySelector('.jspsych-content > p.prompt_text:not(.intro)');
@@ -293,35 +288,35 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
         stimulusContainer.style.maxWidth = isMobile ? '90%' : isTablet ? '90%' : '70%';
         
         requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            let minFontSize, maxFontSize;
-            if (isMobile) {
-                minFontSize = 32;
-                maxFontSize = 96;
-            } else if (isTablet) {
-                minFontSize = 36;
-                maxFontSize = 96;
-            } else if (smallScreen) {
-                minFontSize = 24;
-                maxFontSize = 56;
-            } else {
-                minFontSize = 32;
-                maxFontSize = 88;
-            }
-            
-            const finalSize = fitTextToContainer(
-                stimulusContainer, 
-                stimulusAllocation - 40, 
-                minFontSize, 
-                maxFontSize
-            );
-            
-            console.log('Stimulus fitted to:', finalSize);
-            
-            // Now apply final styling
-            stimulusContainer.style.height = stimulusAllocation + 'px';
-            stimulusContainer.style.overflow = 'hidden';
-        });
+            requestAnimationFrame(() => {
+                let minFontSize, maxFontSize;
+                if (isMobile) {
+                    minFontSize = 32;
+                    maxFontSize = 96;
+                } else if (isTablet) {
+                    minFontSize = 36;
+                    maxFontSize = 96;
+                } else if (smallScreen) {
+                    minFontSize = 24;
+                    maxFontSize = 56;
+                } else {
+                    minFontSize = 32;
+                    maxFontSize = 88;
+                }
+                
+                const finalSize = fitTextToContainer(
+                    stimulusContainer, 
+                    stimulusAllocation - 40, 
+                    minFontSize, 
+                    maxFontSize
+                );
+                
+                console.log('Stimulus fitted to:', finalSize);
+                
+                // Now apply final styling
+                stimulusContainer.style.height = stimulusAllocation + 'px';
+                stimulusContainer.style.overflow = 'hidden';
+            });
         });
     }
 
@@ -335,35 +330,61 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
         promptContainer.style.padding = '10px 20px';
         
         requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            let minFontSize, maxFontSize;
-            if (isMobile) {
-                minFontSize = 24;
-                maxFontSize = 48;
-            } else if (isTablet) {
-                minFontSize = 28;
-                maxFontSize = 56;
-            } else if (smallScreen) {
-                minFontSize = 28;
-                maxFontSize = 56;
-            } else {
-                minFontSize = 32;
-                maxFontSize = 64;
-            }
-            
-            fitTextToContainer(promptContainer, promptAllocation, minFontSize, maxFontSize);
-            container.classList.add('ready');
-            promptContainer.style.height = promptAllocation + 'px';
-            promptContainer.style.overflow = 'hidden';
-        });
+            requestAnimationFrame(() => {
+                let minFontSize, maxFontSize;
+                if (isMobile) {
+                    minFontSize = 24;
+                    maxFontSize = 48;
+                } else if (isTablet) {
+                    minFontSize = 28;
+                    maxFontSize = 56;
+                } else if (smallScreen) {
+                    minFontSize = 20;
+                    maxFontSize = 56;
+                } else {
+                    minFontSize = 32;
+                    maxFontSize = 64;
+                }
+                
+                fitTextToContainer(promptContainer, promptAllocation, minFontSize, maxFontSize);
+                container.classList.add('ready');
+                promptContainer.style.height = promptAllocation + 'px';
+                promptContainer.style.overflow = 'hidden';
+            });
         });
     }
 }
 
-function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen) {
+function getVisibleHeight() {
+    // Create a temporary fixed element that fills the viewport
+    const measureDiv = document.createElement('div');
+    measureDiv.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        visibility: hidden;
+        z-index: -9999;
+    `;
+    
+    document.body.appendChild(measureDiv);
+    const visibleHeight = measureDiv.clientHeight;
+    document.body.removeChild(measureDiv);
+    
+    return visibleHeight;
+}
+
+function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen, stimText=false, pairwise=false) {
     const totalWidth = window.visualViewport ? 
         window.visualViewport.width : window.innerWidth;
-
+    const totalHeight = window.offsetHeight ? 
+        window.offsetHeight : window.innerHeight;
+    console.log(Math.min(totalHeight, window.screen.availHeight))
+    console.log('Avail Height:', getVisibleHeight());
     // Define horizontal space allocation for each device type
     let widthPercent;
     if (isMobile) {
@@ -371,9 +392,9 @@ function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen) {
     } else if (isTablet) {
         widthPercent = 0.80; // 80% of screen width
     } else if (smallScreen) {
-        widthPercent = 0.50; // 70% of screen width
+        widthPercent = totalHeight < 700 && pairwise ? 0.40 : 0.50; // Shorter screens need smaller images
     } else { // desktop
-        widthPercent = 0.40; // 60% of screen width
+        widthPercent = 0.40; // 40% of screen width
     }
 
     // Calculate canvas width
@@ -382,7 +403,7 @@ function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen) {
     // Calculate canvas height (2:1 ratio - width:height)
     // Since we have 2 square images side by side, the canvas is 2x wider than tall
     // So height = width / 2
-    const canvasHeight = canvasWidth / 1.8;
+    const canvasHeight = stimText ? canvasWidth / 1.8 : canvasWidth / 1.8;
 
     console.log('Canvas size calculated:', {
         device: isMobile ? 'mobile' : isTablet ? 'tablet' : smallScreen ? 'laptop' : 'desktop',
@@ -395,15 +416,15 @@ function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen) {
     return [Math.floor(canvasHeight), Math.floor(canvasWidth)];
 }
 
-function fitSideBySideToScreen(isMobile, isTablet, smallScreen) {
+function fitSideBySideToScreen(isMobile, isTablet, smallScreen, pairwise=false) {
     const container = document.querySelector('.jspsych-content');
     if (!container) return;
 
     const totalHeight = window.offsetHeight ? 
         window.offsetHeight : window.innerHeight;
 
-    // Find the actual elements (using ID selectors, not class!)
-    const canvasStimulusContainer = document.querySelector('#jspsych-canvas-button-response-stimulus');
+    // grab 3 sections
+    const canvasStimulusContainer = pairwise ? document.querySelector('#jspsych-canvas-stimulus') : document.querySelector('#jspsych-canvas-button-response-stimulus');
     const buttonContainer = document.querySelector('#jspsych-canvas-button-response-btngroup');
     const promptContainer = document.querySelector('.prompt_text');
 
@@ -413,11 +434,12 @@ function fitSideBySideToScreen(isMobile, isTablet, smallScreen) {
     }
 
     console.log('Fitting side-by-side prompt text');
+    console.log("starting prompt height", promptContainer.offsetHeight)
 
     // Measure actual heights
     const canvasHeight = canvasStimulusContainer.offsetHeight;
     const buttonHeight = buttonContainer.offsetHeight;
-    const margin = isMobile ? 40 : 60;
+    const margin = isMobile ? 40 : pairwise && smallScreen ? 120 : 60;
 
     // Calculate remaining space for prompt
     const promptHeight = totalHeight - canvasHeight - buttonHeight - margin;
@@ -452,16 +474,102 @@ function fitSideBySideToScreen(isMobile, isTablet, smallScreen) {
             minFontSize = 40;
             maxFontSize = 80;
             } else if (smallScreen) {
-            minFontSize = 32;
+            minFontSize = 24;
             maxFontSize = 64;
             } else { // desktop
             minFontSize = 32;
-            maxFontSize = 64;
+            maxFontSize = 96;
             }
         fitTextToContainer(promptContainer, promptHeight * 0.85, minFontSize, maxFontSize);
         container.classList.add('ready');
         }
     }
+}
+
+function fitSideBySideTrialToScreen(isMobile, isTablet, smallScreen, pairwise=false) {
+    const container = document.querySelector('.jspsych-content');
+    if (!container) return;
+
+    const totalHeight = window.innerHeight;
+
+    // Find the elements in the new structure
+    const stimulusTextContainer = document.querySelector('.stimulus_div'); // Top stimulus text
+    const canvasElement = document.querySelector('.jspsych-content canvas');
+    const buttonContainer = document.querySelector('#jspsych-canvas-button-response-btngroup') || 
+                           document.querySelector('#jspsych-canvas-keyboard-response-btngroup');
+    const promptContainer = document.querySelector('.prompt') || 
+                           document.querySelector('.jspsych-canvas-keyboard-response-prompt'); // Bottom prompt
+
+    if (!canvasElement || !buttonContainer) {
+        console.warn('Side-by-side elements not found');
+        return;
+    }
+
+    console.log('Fitting side-by-side layout');
+
+    // Measure actual heights
+    const stimulusTextHeight = stimulusTextContainer ? stimulusTextContainer.offsetHeight : 0;
+    const canvasHeight = canvasElement.offsetHeight;
+    const buttonHeight = buttonContainer.offsetHeight;
+    const promptHeight = promptContainer ? promptContainer.offsetHeight : 0;
+    const margin = isMobile ? 40 : pairwise && smallScreen ? 120 : 60;
+
+    console.log('Current space allocation:', {
+        totalHeight,
+        stimulusTextHeight,
+        canvasHeight,
+        buttonHeight,
+        promptHeight,
+        margin,
+        totalUsed: stimulusTextHeight + canvasHeight + buttonHeight + promptHeight + margin
+    });
+
+    // Calculate remaining space for stimulus text
+    const availableHeight = totalHeight - canvasHeight - buttonHeight - (promptHeight || 0) - margin;
+    let targetStimulusHeight = Math.max(availableHeight, 40);
+    targetStimulusHeight = Math.min(targetStimulusHeight, totalHeight * 0.30); // Cap at 30% of screen height
+    console.log('Target stimulus text height:', targetStimulusHeight);
+
+    // Style and fit stimulus text container
+    if (stimulusTextContainer && availableHeight > 20) {
+        stimulusTextContainer.style.height = targetStimulusHeight + 'px';
+        stimulusTextContainer.style.overflow = 'hidden';
+        stimulusTextContainer.style.boxSizing = 'border-box';
+        stimulusTextContainer.style.margin = '10px auto';
+        stimulusTextContainer.style.textAlign = 'center';
+        stimulusTextContainer.style.display = 'flex';
+        stimulusTextContainer.style.alignItems = 'center';
+        stimulusTextContainer.style.justifyContent = 'center';
+        stimulusTextContainer.style.padding = '10px 20px';
+        
+        // Fit text to available space
+        if (typeof fitTextToContainer === 'function') {
+            let minFontSize, maxFontSize;
+            if (isMobile) {
+                minFontSize = 36;
+                maxFontSize = 96;
+            } else if (isTablet) {
+                minFontSize = 40;
+                maxFontSize = 80;
+            } else if (smallScreen) {
+                minFontSize = 24;
+                maxFontSize = 64;
+            } else { // desktop
+                minFontSize = 32;
+                maxFontSize = 96;
+            }
+            fitTextToContainer(stimulusTextContainer, targetStimulusHeight * 0.95, minFontSize, maxFontSize);
+        }
+    }
+
+    // Also handle bottom prompt if it exists
+    if (promptContainer) {
+        promptContainer.style.boxSizing = 'border-box';
+        promptContainer.style.textAlign = 'center';
+        promptContainer.style.padding = '5px 20px';
+    }
+
+    container.classList.add('ready');
 }
 
 function getDeviceType() {
@@ -552,3 +660,143 @@ function getDeviceType() {
   console.log("desktop");
   return desktop;
 }
+
+function drawHTMLText(ctx, html, x, y, fontSize, device, classicGraphics=false) {    
+    const isMobile = device[0];
+    const isTablet = device[1];
+    const smallScreen = device[2];
+    const parts = html.split(/(<[^>]+>)/).filter(p => p.trim() !== '');
+    let fontStyle = '';
+    const letterSpacing = fontSize * 0.08 // change multiplier to change kerning
+    const italicCorrection = classicGraphics ? fontSize * 0.08 : fontSize * 0.12; // Extra spacing after italic-to-roman transition
+    const maxWidth = 1.5 * x;
+    
+    // Classic vs Modern styling
+    const fontFamily = classicGraphics ? `"Open Sans", "Arial", sans-serif` : `"Comic Relief", sans-serif`;
+    const useOutline = !classicGraphics;
+    
+    ctx.textBaseline = 'middle';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    // Split into words, keeping HTML tags
+    let words = [];
+    for (let part of parts) {
+      if (part.startsWith('<')) {
+        words.push(part);
+      } else {
+        part.split(' ').forEach((word, i, arr) => {
+          words.push(word + (i < arr.length - 1 ? ' ' : ''));
+        });
+      }
+    }
+
+    let lines = [];
+    let currentLine = [];
+    let currentLineWidth = 0;
+    for (let word of words) {
+      if (word === '<i>') { fontStyle = 'italic '; continue; }
+      if (word === '</i>') { fontStyle = ''; continue; }
+      if (word === '<b>') { fontStyle = 'bold '; continue; }
+      if (word === '</b>') { fontStyle = ''; continue; }
+
+      ctx.font = `${fontStyle}bold ${fontSize}px ${fontFamily}`;
+      const wordWidth = ctx.measureText(word).width;
+
+      const wordObj = { text: word, font: ctx.font, width: wordWidth, isItalic: fontStyle.includes('italic') };
+      if (currentLineWidth + wordWidth > maxWidth) {
+        if (currentLine[0]){
+          if (currentLine[currentLine.length-1].text == '') {
+            currentLine.pop();
+          }
+        }
+        // Trim trailing space
+        if (currentLine.length && currentLine[currentLine.length - 1].text.endsWith(' ')) {
+          currentLine[currentLine.length - 1].text =
+            currentLine[currentLine.length - 1].text.trimEnd();
+          currentLine[currentLine.length - 1].width =
+            ctx.measureText(currentLine[currentLine.length - 1].text).width;
+        }
+
+        lines.push(currentLine);
+       
+        // Start new line
+        const trimmedWord = word.trimStart();
+        currentLine = trimmedWord ? [{ text: trimmedWord, font: ctx.font, width: ctx.measureText(trimmedWord).width, isItalic: fontStyle.includes('italic') }] : [];
+        currentLineWidth = trimmedWord ? ctx.measureText(trimmedWord).width : 0;
+        
+      } else {
+        currentLine.push(wordObj);
+        
+        currentLineWidth += wordWidth;
+      }
+      
+    }
+    if (currentLine.length) lines.push(currentLine);
+
+    // Draw each line with kerning
+    const lineHeight = fontSize * 1.2;
+    const startY = y;
+
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
+      const lineCharCount = line.reduce((sum, w) => sum + w.text.length, 0);
+      const lineWidth = line.reduce((sum, w) => sum + w.width, 0) + letterSpacing * lineCharCount;
+      let startX = x - lineWidth / 2;
+
+      for (let wordIdx = 0; wordIdx < line.length; wordIdx++) {
+        let word = line[wordIdx];
+        ctx.font = word.font;
+
+        // Determine word color
+        let fillColor = classicGraphics ? 'black' : '#fff8d6';
+        
+        if (!classicGraphics) {
+          if (word.text.includes('Old') || word.text.includes('Viejo') || word.text.includes('旧') || word.text.includes('이전') || word.text.includes('Oud') || word.text.includes('Старое')) fillColor = '#f9b8d0';
+          else if (word.text.includes('Similar') || word.text.includes('相近') || word.text.includes('비슷한') || word.text.includes('Gelijkaardig') || word.text.includes('Похожее')) fillColor = '#d3f5a6';
+          else if (word.text.includes('New') || word.text.includes('Nuevo') || word.text.includes('新') || word.text.includes('새로운') || word.text.includes('Nieuw') || word.text.includes('Новое')) fillColor = '#b4d8ff';
+        }
+
+        ctx.fillStyle = fillColor;
+        
+        if (useOutline) {
+          ctx.lineWidth = isMobile ? 15 : smallScreen ? 8 : 12;
+          ctx.strokeStyle = '#5d2b12';
+        }
+
+        // Draw word character by character with spacing
+        let charX = startX;
+        for (let charIdx = 0; charIdx < word.text.length; charIdx++) {
+          let char = word.text[charIdx];
+          if (useOutline) {
+            ctx.strokeText(char, charX, startY + i * lineHeight);
+          }
+          ctx.fillText(char, charX, startY + i * lineHeight);
+          charX += ctx.measureText(char).width + letterSpacing;
+          
+          // Add italic correction if transitioning from italic to non-italic
+          const isLastCharInWord = charIdx === word.text.length - 1;
+          const nextWord = line[wordIdx + 1];
+          if (word.isItalic && isLastCharInWord && nextWord && !nextWord.isItalic) {
+            charX += italicCorrection;
+          }
+        }
+
+        startX += word.width + letterSpacing * word.text.length;
+        
+        // Add correction to startX as well for proper alignment
+        const nextWord = line[wordIdx + 1];
+        if (word.isItalic && nextWord && !nextWord.isItalic) {
+          startX += italicCorrection;
+        }
+      }
+    }
+
+    const textEndY = startY + (lines.length * lineHeight);
+    return {
+      startY: startY - lineHeight / 2,  // Account for middle baseline
+      endY: textEndY + lineHeight / 2,
+      lineHeight: lineHeight,
+      numLines: lines.length
+    };
+  }
