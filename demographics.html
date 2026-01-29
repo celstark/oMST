@@ -12,6 +12,21 @@
 
 -->
 <head>
+  <script>
+  console.log('Script running');
+  const value = localStorage.getItem('classicGraphics');
+  console.log('classicGraphics value:', value);
+  console.log('Type:', typeof value);
+  // This runs IMMEDIATELY when parsed, before body exists
+  const classicGraphics = localStorage.getItem('classicGraphics') === '1';
+  
+  // Set background on HTML element (which already exists)
+  if (classicGraphics) {
+    document.documentElement.style.backgroundColor = '#ffffff'; // white
+  } else {
+    document.documentElement.style.backgroundColor = '#f5f5dc'; // cream
+  }
+</script>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
     https://fonts.gstatic.com http://www.stark-labs.com/exp/jsPsych/mobile_cMST/append_log.php http://www.stark-labs.com/exp/jsPsych/mobile_cMST/write_data_file.php; 
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; media-src *; 
@@ -21,22 +36,174 @@
   <script type="text/javascript" src="js/index.js"></script>
   <script src="js/jspsych_731/dist/jspsych.js"></script>
   <script src="js/jspsych_731/dist/plugin-survey-html-form.js"></script>
+  <script src="js/jspsych_731/dist/plugin-preload.js"></script>
   <script src="js/jquery-3.1.1.min.js"></script>
   <script src="js/jspsych_731/dist/plugin-browser-check.js"></script>
+  <script src="helpers.js"></script>
   <link rel="stylesheet" href="css/jspsych.css"></link>
+  <link
+    rel="preload"
+    href="img/assets/blank_green.png"
+    as="image"
+  />
+  <link
+    rel="preload"
+    href="img/assets/blank_green_pressed.png"
+    as="image"
+  />  
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Bold.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
   <style>
-    .jspsych-display-element {
-      font-size: 200%;
-    }
-    .jspsych-btn {
-      font-size: 125%;
-    }
+  .image-btn-text text {
+    font-size: 1.2em;
+  }
+
+  .mobile .image-btn-text text{
+    font-size: 1.2em;
+  }
+
+  .prompt_text {
+    font-size: 1.2em;
+  }
+
+  .mobile  .prompt_text {
+    font-size: 1em;
+  }
+
+  #jspsych-html-button-response-stimulus {
+    font-family: 'Comic Relief', sans-serif;
+    font-size: 1.5em;
+    color: #5d2b12;
+    line-height: 1.2;
+  }
+
+  .no-default-btn .jspsych-btn {
+    display: none !important;
+  }
+
+  input[type="radio"] {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: #fff8d6;
+    width: 22px;
+    height: 22px;
+    border: 3px solid #5d2b12;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+  }
+
+  .classic input[type="radio"] {
+    background-color: white;
+    border-color: black;
+  }
+
+  input[type="radio"]:checked::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: #5d2b12;
+    border-radius: 50%;
+  }
+
+  .classic input[type="radio"]:checked::after {
+    background: black;
+  }
+
+  .mobile input[type="radio"] {
+    width: 30px;
+    height: 30px;
+    border: 4px solid #5d2b12;
+  }
+
+  .classic.mobile input[type="radio"] {
+    border-color: black;
+  }
+
+  .mobile input[type="radio"]:checked::after {
+    width: 17px;
+    height: 17px;
+  }
+
+  .jspsych-display-element input[type="text"] {
+    height: 24px;
+    width: 240px;
+    font-size: 22px;
+    color: #5d2b12;
+    font-family: 'Comic Relief', sans-serif;
+    border: 2px solid #5d2b12;
+    border-radius: 4px;
+    vertical-align: middle;
+    line-height: 1.2;
+  }
+  
+  .classic.jspsych-display-element input[type="text"] {
+    font-family: 'Open Sans', 'Arial', sans-serif;
+    color: black;
+    border: 2px solid black;
+  }
+
+  .jspsych-display-element input[type="text"]:focus {
+    border: 2px solid #5d2b12;
+    border-color: #5d2b12;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  .classic.jspsych-display-element input[type="text"]:focus {
+    border-color: black;
+  }
+
+  .jspsych-display-element input[type="text"]:focus-visible {
+    border: 2px solid #5d2b12;
+    border-color: #5d2b12;
+  }
+
+  .classic.jspsych-display-element input[type="text"]:focus-visible {
+    border-color: black;
+  }
+
+  .mobile.jspsych-display-element input[type="text"] {
+    height: 48px;
+    font-size: 44px;
+  }
+
+  .jspsych-content {
+    align-items: stretch;
+  }
+
+  .jspsych-content-wrapper {
+    background-color: #fff8d6;
+  }
+
+  .classic .jspsych-content-wrapper {
+    background-color: white;
+  }
+
   </style>
 </head>
 <body>
 
 </body>
 <script>
+
 function getID() {
   // Try to get a reasonable ID code for this person
   // URL > studySession > workerID
@@ -64,6 +231,22 @@ function waitFor(conditionFunction) {
 jatos.onLoad(async function() {
   var sid=getID();
   //console.log('In demog, sid= ' + sid);
+  var classicGraphics = 0;
+  if (typeof jatos.studySessionData['plain_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['plain_graphics'];
+    console.log("classic graphics 1*: " + classicGraphics)
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['plain_graphics']
+    console.log("classic graphics 2*: " + classicGraphics)
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['plain_graphics']
+    console.log("classic graphics 3*: " + classicGraphics)
+  }
+
+  console.log("classic graphics*: " + classicGraphics)
+
   var lang='en';
   if (typeof jatos.studySessionData['lang'] !== 'undefined') {
     lang=jatos.studySessionData['lang'];
@@ -74,6 +257,23 @@ jatos.onLoad(async function() {
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
     lang=jatos.batchJsonInput['lang']
   }
+
+  // get device information
+  const device = getDeviceType();
+  console.log("have device " + device);
+  const isMobile = device[0];
+  const isTablet = device[1];
+  const smallScreen = device[2];
+  console.log("smallScreen " + smallScreen);
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
+  const fontScale = isMobile ? 1.5 : 1.0;
+  const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
+  document.body.classList.add(isMobile ? 'mobile' : 'desktop');
+  if (smallScreen) {document.body.classList.add('smallScreen');}
+  if (isTablet) {document.body.classList.add('tablet');}
+  if (classicGraphics) {document.body.classList.add('classic');}
+
   // load honeycomb version of lang file
   console.log('loading json lang')
   var langfile='lang/omst_'+lang+'.json';
@@ -131,29 +331,87 @@ jatos.onLoad(async function() {
 
   var demogform = {
     type: jsPsychSurveyHtmlForm,
-    preamble: prompts['preamble'],
-    html:'<div style="text-align: left; font-size: 16px; line-height: 110%"> <p>' +
-      '<p><b>' + prompts['age'] + '</b> <input name="age" type="text" required /></p>' +
-      '<p><b>' + prompts['gender']['prompt'] + ' </b>'+
-      '<br><input type="radio" id="male" name="gender" value="male" style="margin-left: 50px" required > <label for="male">'+prompts['gender']['m']+'</label> '+
-      '<br><input type="radio" id="female" name="gender" value="female" style="margin-left: 50px"  > <label for="female">'+prompts['gender']['f']+'</label> '+
-      '<p><b>'+ prompts['ethnicity']['prompt'] +' </b>' +
-      '<br><input type="radio" id="hispanic" name="ethnicity" value="hispanic" style="margin-left: 50px" required> <label for="hispanic">'+prompts['ethnicity']['h']+'</label>' +
-      '<br><input type="radio" id="nonhispanic" name="ethnicity" value="nonhispanic" style="margin-left: 50px"> <label for="nonhispanic">'+prompts['ethnicity']['nh']+'</label>' +
-      '<p><b>' + prompts['race']['prompt'] + '</b>' + 
-      '<br><input type="radio" id="nativeamerican" name="race" value="nativeamerican" style="margin-left: 50px" required> <label for="nativeamerican">'+prompts['race']['ai']+'</label>' +
-      '<br><input type="radio" id="asian" name="race" value="asian" style="margin-left: 50px"> <label for="asian">'+prompts['race']['a']+'</label> ' +
-      '<br><input type="radio" id="black" name="race" value="black" style="margin-left: 50px"> <label for="black">'+prompts['race']['b']+'</label> ' +
-      '<br><input type="radio" id="nativehawaiian" name="race" value="nativehawaiian" style="margin-left: 50px"> <label for="nativehawaiian">'+prompts['race']['nh']+'</label> ' +
-      '<br><input type="radio" id="white" name="race" value="white" style="margin-left: 50px"> <label for="white">'+prompts['race']['w']+'</label> ' +
-      '<br><input type="radio" id="more" name="race" value="more" style="margin-left: 50px"> <label for="more">'+prompts['race']['m']+'</label> ' +
-      '<p> <b>'+prompts['handedness']['prompt']+' </b> ' +
-      '<br><input type="radio" id="left" name="handedness" value="left" style="margin-left: 50px" required > <label for="left">'+prompts['handedness']['l']+' </label> ' +
-      '<br><input type="radio" id="right" name="handedness" value="right" style="margin-left: 50px"  > <label for="right"> '+prompts['handedness']['r']+' </label> ' +
-      '<br><input type="radio" id="ambi" name="handedness" value="ambi" style="margin-left: 50px"  > <label for="ambi"> '+prompts['handedness']['a']+' </label> ' +
-      '</div>'
+    preamble: `<p class="prompt_text ${lang}">${prompts['preamble']}</p>`,
+    css_classes: ['no-default-btn'],
+  html: function() {
+      const fontSize = isMobile ? '48px' : '24px';
+      const height = isMobile ? '48px' : '24px';
+
+      return `
+        <div style="text-align: left; font-size: ${fontSize}; line-height: 110%">
+          <p class="prompt_text ${lang}"><b>${prompts['age']}</b> 
+            <input class="age_input" name="age" type="text" required />
+          </p>
+
+          <p class="prompt_text ${lang}"><b>${prompts['gender']['prompt']}</b><br>
+            <input type="radio" id="male" name="gender" value="male" style="margin-left: 50px" required>
+            <label for="male">${prompts['gender']['m']}</label><br>
+            <input type="radio" id="female" name="gender" value="female" style="margin-left: 50px">
+            <label for="female">${prompts['gender']['f']}</label>
+          </p>
+
+          <p class="prompt_text ${lang}"><b>${prompts['ethnicity']['prompt']}</b><br>
+            <input type="radio" id="hispanic" name="ethnicity" value="hispanic" style="margin-left: 50px" required>
+            <label for="hispanic">${prompts['ethnicity']['h']}</label><br>
+            <input type="radio" id="nonhispanic" name="ethnicity" value="nonhispanic" style="margin-left: 50px">
+            <label for="nonhispanic">${prompts['ethnicity']['nh']}</label>
+          </p>
+
+          <p class="prompt_text ${lang}"><b>${prompts['race']['prompt']}</b><br>
+            <input type="radio" id="nativeamerican" name="race" value="nativeamerican" style="margin-left: 50px" required>
+            <label for="nativeamerican">${prompts['race']['ai']}</label><br>
+            <input type="radio" id="asian" name="race" value="asian" style="margin-left: 50px">
+            <label for="asian">${prompts['race']['a']}</label><br>
+            <input type="radio" id="black" name="race" value="black" style="margin-left: 50px">
+            <label for="black">${prompts['race']['b']}</label><br>
+            <input type="radio" id="nativehawaiian" name="race" value="nativehawaiian" style="margin-left: 50px">
+            <label for="nativehawaiian">${prompts['race']['nh']}</label><br>
+            <input type="radio" id="white" name="race" value="white" style="margin-left: 50px">
+            <label for="white">${prompts['race']['w']}</label><br>
+            <input type="radio" id="more" name="race" value="more" style="margin-left: 50px">
+            <label for="more">${prompts['race']['m']}</label>
+          </p>
+
+          <p class="prompt_text ${lang}"><b>${prompts['handedness']['prompt']}</b><br>
+            <input type="radio" id="left" name="handedness" value="left" style="margin-left: 50px" required>
+            <label for="left">${prompts['handedness']['l']}</label><br>
+            <input type="radio" id="right" name="handedness" value="right" style="margin-left: 50px">
+            <label for="right">${prompts['handedness']['r']}</label><br>
+            <input type="radio" id="ambi" name="handedness" value="ambi" style="margin-left: 50px">
+            <label for="ambi">${prompts['handedness']['a']}</label>
+          </p>
+        </div>
+
+        <div class="image-btn-wrapper">
+          <input type="image" src="img/assets/blank_${classicGraphics ? "button" : "green"}.png"
+                class="image-btn" id="id_continue_btn">
+          <svg class="image-btn-text" viewBox="0 0 266 160">
+            <text class="text-stroke" x="50%" y="50%">Continue</text>
+            <text class="text-fill" x="50%" y="50%">Continue</text>
+          </svg>
+        </div>
+      `;
+    },
+    on_load: function() {
+      // grab the form element
+      const form = document.querySelector('form');
+      // grab the custom button input
+      const btn = form.querySelector('.image-btn-wrapper input');
+
+      btn.addEventListener('click', e => {
+        e.preventDefault();  // prevent weird image input default
+        form.requestSubmit(); // properly submit the form
+      });
+
+      setupButtonListeners();
+    },
+
+    on_finish: function(data) {
+      cleanupButtonListeners();
+      console.log(data.response);
+    }
   }
-  
+
   var timeline = [browserinfo, demogform];
   jsPsych.run(timeline);
 

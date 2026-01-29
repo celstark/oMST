@@ -11,22 +11,70 @@ body {
   text-align: 'left';
 }
 
-#buttons {
-  text-align: center;
-  display: none;
+.image-btn-wrapper {
+  display: inline-block;
+  position: relative;
+  margin: 0.5em;
 }
 
-button {
-  color: #555;
-  font-size: 16px;
+.image-btn {
+  width: 15vw;
+  height: auto;
+  border: none;
+  display: block;
+  /* Remove tap highlight */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  
+  /* Remove touch delay */
+  touch-action: manipulation;
+  
+  /* Prevent text selection */
+  -webkit-user-select: none;
+  user-select: none;
+  
+  /* Prevent callout menu on long press */
+  -webkit-touch-callout: none;
+}
+
+.smallScreen .image-btn {
+  width: 20vw !important;
+}
+
+.mobile .image-btn {
+  width: 35vw;
+}
+
+.tablet .image-btn {
+  width: 25vw;
+}
+
+.image-btn-wrapper.pressed .image-btn-text{
+  transform: translate(-50%, -40%) !important;
+}
+
+.image-btn-text {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  width: 100%;
+  height: auto;
+}
+
+.image-btn-text text {
+  font-family: 'Comic Relief', sans-serif;
+  font-size: 2.0em;
+  fill: #fff8d6;       /* inner text color */
+  stroke: #5d2b12;     /* outline color */
+  stroke-width: 10;     /* outline thickness */
   font-weight: bold;
-  background-color: #ccc;
-  border: solid 4px #ddd;
-  border-radius: 4px;
-  padding: 0.5em 2em;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  paint-order: stroke fill;
+  stroke-linejoin: round;
+  stroke-linecap: round;
 }
 
-button:hover {
-  color: #333;
-  background-color: #999;
-}

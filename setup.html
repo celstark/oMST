@@ -16,28 +16,157 @@
 -->
 <head>
     <script src="js/jquery-3.1.1.min.js"></script>
+    <script src="js/jspsych_731/dist/jspsych.js"></script>
+    <script src="js/jspsych_731/dist/plugin-preload.js"></script>
+    <script src="js/jspsych_731/dist/plugin-html-button-response.js"></script>
+    <script src="js/jspsych_731/dist/plugin-html-keyboard-response.js"></script>
+    <script src="js/jspsych_731/dist/plugin-fullscreen.js"></script>
     <script src="jatos.js"></script>
+    <script src="helpers.js"></script>
   <link rel="stylesheet" href="css/pure-release-0.6.0/pure-min.css">
   <link rel="stylesheet" href="css/jspsych.css"></link>
+  <link
+    rel="preload"
+    href="img/assets/blank_green.png"
+    as="image"
+  />
+  <link
+    rel="preload"
+    href="img/assets/blank_green_pressed.png"
+    as="image"
+  />
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Bold.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
   <style>
-    .jspsych-display-element {
-      font-size: 200%;
+    body {
+      margin:0;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
     }
-    .jspsych-btn {
-      font-size: 125%;
+    
+    .image-btn-text text {
+      font-size: 1.2em;
+    }
+
+    .mobile .image-btn-text text{
+      font-size: 1.2em;
+      letter-spacing: 0.12em;
+    }
+
+    .image-btn-text.kr text,
+    .image-btn-text.ru text{
+      font-size: 0.9em;
+    }
+    .image-btn-text.kr .text-stroke,
+    .image-btn-text.ru .text-stroke {
+      stroke-width: 8;
+    }
+
+    .image-btn-text.nl  text{
+      font-size: 0.8em;
+    }
+    .image-btn-text.nl .text-stroke {
+      stroke-width: 8;
+    }
+    
+    .mobile .image-btn-text.kr text {
+      font-size: 0.9em;
+    }
+    .mobile .image-btn-text.kr .text-stroke {
+      stroke-width: 9;
+    }
+
+    .mobile .image-btn-text.nl text {
+      font-size: 0.8em;
+    }
+    .mobile .image-btn-text.nl .text-stroke {
+      stroke-width: 8;
+    }
+
+    .mobile .image-btn-text.ru text {
+      font-size: 1.0em;
+    }
+    
+    .tablet .image-btn-text text {
+      font-size: 1.3em;
+    }
+
+    .tablet .image-btn-text.kr text {
+      font-size: 1em;
+    }
+    .tablet .image-btn-text.kr .text-stroke {
+      stroke-width: 8;
+    }
+
+    .tablet .image-btn-text.ru text {
+      font-size: 1.0em;
+    }
+
+    .prompt_text {
+      font-size: 2.6em;
+    }
+
+    .mobile  .prompt_text {
+      font-size: 2em;
+    }
+
+    .mobile .prompt_text.nl {
+      font-size: 1.8em;
+    }
+
+    .mobile .prompt_text.ru {
+      font-size: 1.6em;
+    }
+
+    .tablet .prompt_text{
+      font-size: 1.2em;
+    }
+
+    .smallScreen .prompt_text {
+      font-size: 2em;
+    }
+
+    .tablet .prompt_text.intro {
+      font-size: 2em;
+    }
+
+    .mobile .prompt_text.es.intro,
+    .mobile .prompt_text.nl.intro {
+      font-size: 1.8em;
+    }
+
+    .mobile .prompt_text.ru.intro {
+      font-size: 1.8em;
+    }
+
+    .smallScreen .prompt_text.ru.intro {
+      font-size: 0.9em;
     }
   </style>
 </head>
 
-<body>
-  <p style="text-align: center; font-size: 200%; vertical-align: middle;">
-    Welcome to the experiment!  
-    <br><br><strong> Do not hit your browser's back button or the experiment will terminate</strong>
-    <br><br>
-	<button id="continueButton"  class="jspsych-btn" style="justify-content: center" disabled>Continue</button>
+<body style="text-align: center;">
+
 </body>
 
 <script type="text/javascript">
+
 function getID() {
   // Try to get a reasonable ID code for this person.  You can use the URL with a "sid" parameter or
   // specify one in the jatos studySessionData. If not, it'll use the JATOS workerId.
@@ -54,7 +183,8 @@ function getID() {
   }
   return sid
 }
-jatos.onLoad(function () {
+
+jatos.onLoad(async function () {
   // Useful for debugging.  There are a number of options for keeping track of your subject's ID code.
   // JATOS will create their own, but you may have one come in via a URL parameter if you're using
   // something like SONA or Qualtrics.  It might not be "sid" -- it's just what I use.
@@ -64,6 +194,9 @@ jatos.onLoad(function () {
   // completed and we use this to divvy up the actual counterbalance condition
   // It's a simple, but effective enough scheme for this.  Here, we'll use it
   // to just determine which stimulus set gets used.
+
+
+
   if (!jatos.batchSession.defined("/nruns")) { // If we don't have this field yet, make it
     jatos.batchSession.set("nruns", 0);
   }
@@ -79,11 +212,13 @@ jatos.onLoad(function () {
     console.log('condition forced via JSON component to ' + cond);
   }
 
-  var order=[5,6]; // Default order skips consent and demographics and does study/test -- will add "end" later
+  var order=[]; // Default order skips consent and demographics and does study/test -- will add "end" later
   var include_consent=0;
   var include_demographics=0;
   var include_idcode=0;
   var include_pcon=0;
+  var include_pairwise=0;
+  var include_omst=1;
 
   // Useful little tags for the experiment and condition that will go into your log files
   var exptag='oMST'
@@ -146,8 +281,14 @@ jatos.onLoad(function () {
   if (typeof jatos.studyJsonInput['include_icon'] !== 'undefined') {
     include_pcon=jatos.studyJsonInput['include_icon'];
   }
+  if (typeof jatos.studyJsonInput['include_pairwise'] !== 'undefined') {
+    include_pairwise=jatos.studyJsonInput['include_pairwise'];
+  }
+  if (typeof jatos.studyJsonInput['include_omst'] !== 'undefined') {
+    include_omst=jatos.studyJsonInput['include_omst'];
+  }
   if (jatos.studyJsonInput) { console.log('jatos.studyJsonInput: ', jatos.studyJsonInput)}
-  console.log(include_consent,include_demographics,include_idcode,include_pcon,order)
+  console.log(include_consent,include_demographics,include_idcode,include_pcon,include_pairwise,order);
   console.log(jatos.studyJsonInput);
   //console.log(jatos.batchProperties.title);
   // Now, let any batch-level bits override those
@@ -177,19 +318,30 @@ jatos.onLoad(function () {
   if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_icon'] !== 'undefined' ) { 
     include_pcon=jatos.batchJsonInput['include_icon'];
   }
-  console.log(include_consent,include_demographics,include_pcon,order)
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_pairwise'] !== 'undefined' ) { 
+    include_pairwise=jatos.batchJsonInput['include_pairwise'];
+  }
+    if (jatos.batchJsonInput && typeof jatos.batchJsonInput['include_omst'] !== 'undefined' ) { 
+    include_omst=jatos.batchJsonInput['include_omst'];
+  }
+  console.log(include_consent,include_demographics,include_idcode,include_pcon,include_pairwise,order)
   
   if (typeof jatos.urlQueryParameters.set_mst !== 'undefined') {
     jatos.studySessionData['set_omst'] = jatos.urlQueryParameters.set_omst;
   }
-
+  if (include_omst) { 
+    order.unshift(6); 
+    order.unshift(5); 
+  }
   if (include_pcon) { order.unshift(8); }
+  if (include_pairwise) { order.unshift(9); }
   if (include_demographics) { order.unshift(4); }
   if (include_consent) {order.unshift(3); }
   if (include_idcode) {order.unshift(2); }
 
   //if (include_pcon) {order.push(6); }
   order.push(7); // Add the "end", which is #7 currently
+  console.log('Final order: ' + order);
 
   if (jatos.studySessionData['set_omst'] == -1) { // randomize the set and subset
     jatos.studySessionData['set_omst'] = Math.floor(Math.random() * 6) + 1;
@@ -217,17 +369,134 @@ jatos.onLoad(function () {
     date: d.toString()
   });
 
-  $('#continueButton').prop('disabled', false);
+  var classicGraphics = 0;
+  if (typeof jatos.studySessionData['plain_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['plain_graphics'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['plain_graphics']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['plain_graphics']
+  }
+
+    // Save for next page load
+  localStorage.setItem('classicGraphics', classicGraphics);
+  
+  // Apply it now
+  if (classicGraphics === 1) {
+    document.body.style.backgroundColor = '#ffffff';
+  } else {
+    document.body.style.backgroundColor = '#fff9e0';
+  }
+
+  const device = getDeviceType();
+  console.log("have device " + device);
+  const isMobile = device[0];
+  const isTablet = device[1];
+  const smallScreen = device[2];
+  console.log("smallScreen " + smallScreen);
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
+  const fontScale = isMobile ? 1.5 : 1.0;
+  const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
+  document.body.classList.add(isMobile ? 'mobile' : 'desktop');
+  if (smallScreen) {document.body.classList.add('smallScreen');}
+  if (isTablet) {document.body.classList.add('tablet');}
+  if (classicGraphics) {document.body.classList.add('classic');}
+
+  var setup = {
+    type: jsPsychHtmlButtonResponse,
+    choices: ["Continue"],
+    button_html: classicGraphics ? 
+      `<div class="image-btn-wrapper">
+        <input type="image" src="img/assets/blank_button.png"
+              class="image-btn" id="continueButton">
+        <svg class="image-btn-text" viewBox="0 0 266 160">
+          <text x="50%" y="50%">Continue</text>
+        </svg>
+      </div>`
+    :
+      `<div class="image-btn-wrapper">
+        <input type="image" src="img/assets/blank_green.png"
+              class="image-btn" id="continueButton">
+        <svg class="image-btn-text" viewBox="0 0 266 160">
+          <text class="text-stroke" x="50%" y="50%">Continue</text>
+          <text class="text-fill" x="50%" y="50%">Continue</text>
+        </svg>
+      </div>`,
+    stimulus: 
+    `<p class="prompt_text intro" style="text-align:center;">
+      Welcome to the experiment!  
+      <br><br><strong>Do not hit your browser's back button or the experiment will terminate</strong>
+    </p>`,
+    on_load: function() {
+      setupButtonListeners();
+    },
+
+    on_finish: function() { 
+      cleanupButtonListeners();
+      
+      var nruns = jatos.batchSession.get("nruns");
+      jatos.batchSession.set("nruns", nruns+1);
+      var order = jatos.studySessionData["order"];
+      var d = new Date();
+      jatos.studySessionData['datecode'] = d.toLocaleDateString();
+      
+      console.log('Starting component at position ' + order[jatos.studySessionData["taskindex"]]);
+      jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]);
+
+      console.log('=== VERIFYING CACHE BEFORE NAVIGATION ===');
+      const testImages = [
+        "img/assets/blank_green.png",
+        "img/assets/blank_green_pressed.png",
+        "img/assets/blank_red.png",
+        "img/assets/blank_red_pressed.png"
+      ];
+      
+      testImages.forEach(src => {
+        const img = document.createElement('img');
+        img.src = src;
+        console.log(`Cache test: ${src} - complete: ${img.complete}`);
+      });
+      
+      // Wait a moment to ensure cache commits before navigating
+      setTimeout(() => {
+        var nruns = jatos.batchSession.get("nruns");
+        jatos.batchSession.set("nruns", nruns+1);
+        var order = jatos.studySessionData["order"];
+        var d = new Date();
+        jatos.studySessionData['datecode'] = d.toLocaleDateString();
+        jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]);
+      }, 100); // Small delay to ensure cache commits
+    },
+  }
+
+  var timeline = [setup];
+  var jsPsych = initJsPsych({
+    on_finish: function() {
+      // Optional: what to do when experiment finishes
+    }
+  });
+  jsPsych.run(timeline);
 });
 
-$('#continueButton').click(function () {
-  var nruns = jatos.batchSession.get("nruns");
-  jatos.batchSession.set("nruns", nruns+1);
-  var order=jatos.studySessionData["order"];
-  var d = new Date();
-  jatos.studySessionData['datecode']=d.toLocaleDateString();
-  jatos.startComponentByPos(order[0],jatos.studySessionData);
+// Add event listeners once DOM is ready
+document.addEventListener("DOMContentLoaded", () => {
+  const wrapper = document.querySelector('.image-btn-wrapper');
+
+  // Mouse hover
+  wrapper.addEventListener('mouseenter', handlePress, true);
+  wrapper.addEventListener('mouseleave', handleRelease, true);
+
+  // Touch
+  wrapper.addEventListener('touchstart', handlePress, { passive: true });
+  wrapper.addEventListener('touchend', handleRelease);
+
+  // Fallback for mouseup anywhere
+  document.addEventListener('mouseup', handleRelease);
 });
+
 
 
 </script>

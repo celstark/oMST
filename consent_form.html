@@ -6,14 +6,184 @@
 
 -->
 <head>
-  <link rel="stylesheet" href="css/consent_form.css" />
+  <script>
+  console.log('Script running');
+  const value = localStorage.getItem('classicGraphics');
+  console.log('classicGraphics value:', value);
+  console.log('Type:', typeof value);
+  // This runs IMMEDIATELY when parsed, before body exists
+  const classicGraphics = localStorage.getItem('classicGraphics') === '1';
+  
+  // Set background on HTML element (which already exists)
+  if (classicGraphics) {
+    document.documentElement.style.backgroundColor = '#ffffff'; // white
+  } else {
+    document.documentElement.style.backgroundColor = '#f5f5dc'; // cream
+  }
+</script>
+  <link rel="stylesheet" href="css/jspsych.css"></link>
   <script type="text/javascript" src="jatos.js"></script>
   <script src="js/jquery-3.1.1.min.js"></script>
+  <script src="helpers.js"></script>
   <meta charset="UTF-8" />
   <title>Consent Form</title>
+  <link
+    rel="preload"
+    href="img/assets/blank_green.png"
+    as="image"
+  />
+  <link
+    rel="preload"
+    href="img/assets/blank_green_pressed.png"
+    as="image"
+  />
+    <link
+    rel="preload"
+    href="img/assets/blank_red.png"
+    as="image"
+  />
+  <link
+    rel="preload"
+    href="img/assets/blank_red_pressed.png"
+    as="image"
+  />
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Bold.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+<style>
+  .mobile .image-btn-text text{
+    font-size: 2.5em;
+  }
+  .mobile .image-btn-text .text-stroke {
+    stroke-width: 14;
+  }
+
+  .image-btn-text.kr text,
+  .image-btn-text.ru text{
+    font-size: 2em;
+  }
+
+  .image-btn-text.nl  text{
+    font-size: 2em;
+  }
+  
+  .mobile .image-btn-text.kr text {
+    font-size: 2em;
+  }
+  .mobile .image-btn-text.kr .text-stroke {
+    stroke-width: 12;
+  }
+
+  .mobile .image-btn-text.nl text {
+    font-size: 2em;
+    stroke-width: 12;
+  }
+  .mobile .image-btn-text.nl .text-stroke {
+    stroke-width: 12;
+  }
+
+  .mobile .image-btn-text.ru text {
+    font-size: 2.0em;
+  }
+  .mobile .image-btn-text.ru .text-stroke {
+    stroke-width: 12;
+  }
+  
+  .tablet .image-btn-text.kr text {
+    font-size: 2.0em;
+  }
+
+  .tablet .image-btn-text.ru text {
+    font-size: 2.0em;
+  }
+
+  .prompt_text {
+    font-size: 2em;
+  }
+
+  .mobile  .prompt_text {
+    font-size: 3em;
+  }
+
+  .mobile .prompt_text.nl {
+    font-size: 1.8em;
+  }
+
+  .mobile .prompt_text.ru {
+    font-size: 1.6em;
+  }
+
+  .tablet .prompt_text{
+    font-size: 1.2em;
+  }
+
+  .smallScreen .prompt_text {
+    font-size: 2.6em;
+  }
+
+  .tablet .prompt_text.intro {
+    font-size: 2.6em;
+  }
+
+  .mobile .prompt_text.es.intro,
+  .mobile .prompt_text.nl.intro {
+    font-size: 1.8em;
+  }
+
+  .mobile .prompt_text.ru.intro {
+    font-size: 1.8em;
+  }
+
+  .smallScreen .prompt_text.ru.intro {
+    font-size: 0.9em;
+  }
+
+  .mobile  .prompt_text {
+    font-size: 2em;
+  }
+
+  .mobile  .prompt_text.ru,
+  .mobile  .prompt_text.nl,
+  .mobile  .prompt_text.es {
+    font-size: 1.8em;
+  }
+
+  .smallScreen  .prompt_text {
+    font-size: 1.3em;
+  }
+
+  .smallScreen  .prompt_text.ru,
+  .smallScreen  .prompt_text.nl {
+    font-size: 1em;
+  }
+
+  #jspsych-html-button-response-stimulus {
+    font-family: 'Comic Relief', sans-serif;
+    font-size: 1.5em;
+    color: #5d2b12;
+    line-height: 1.2;
+  }
+
+  .mobile #consenttext {
+    font-size: 2em;
+  }
+
+  .tablet #consenttext {
+    font-size: 1.8em;
+  }
+</style>
 </head>
-
-
 <body>
 
 <script type="text/javascript">
@@ -39,110 +209,185 @@ function waitFor(conditionFunction) {
   }
   return new Promise(poll)
 }
+
+
 jatos.onLoad(async function () {
   var sid = getID();
   console.log('In consent, sid= ' + sid);
 
   let date = new Date();
   let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate()) +
-    "-" + date.getHours() + "-" + date.getMinutes();
-  console.log(dcode);
+              "-" + date.getHours() + "-" + date.getMinutes();
 
-  if (!jatos.batchSession.defined("/" + sid)) {  // Make sure to create this as an array
-    console.log('no record yet, adding one at ' + "/" + sid);
+  // Batch session tracking
+  if (!jatos.batchSession.defined("/" + sid)) {
     jatos.batchSession.add("/" + sid, ["ConsentLoad_" + dcode]);
-
-  }
-  else { // Append to array
-    console.log('have the record, appending to ' + "/" + sid)
+  } else {
     jatos.batchSession.add("/" + sid + "/-", "ConsentLoad_" + dcode);
   }
 
+  // Determine language
   var lang='en';
-  if (typeof jatos.studySessionData['lang'] !== 'undefined') {
-    lang=jatos.studySessionData['lang'];
-  }
-  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined' ) { 
-    lang=jatos.studyJsonInput['lang']
-  }
-  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined' ) { 
-    lang=jatos.batchJsonInput['lang']
-  }
-  // load honeycomb version of lang file
-  console.log('loading json lang')
+  if (typeof jatos.studySessionData['lang'] !== 'undefined') lang=jatos.studySessionData['lang'];
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['lang'] !== 'undefined') lang=jatos.studyJsonInput['lang'];
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['lang'] !== 'undefined') lang=jatos.batchJsonInput['lang'];
+
+  // Load language JSON
   var langfile='lang/omst_'+lang+'.json';
   var json_prompts=null;
-  $.getJSON(langfile,function( data ) {
-    json_prompts=data;
-    console.debug(langfile + ' loaded...ish');
-  });
+  $.getJSON(langfile,function(data) { json_prompts=data; });
   await waitFor(_ => json_prompts !== null);
-  console.log(json_prompts['task']['name'])
-  let prompts=json_prompts['consent']; // Load in this phase's section
+  let prompts=json_prompts['consent'];
 
-  // Basic HTML for test
-  p=document.createElement("p");
-  p.innerHTML='<div id="consenttext"><h1>' + prompts['title'] + '</h1>' +
-    prompts['study']['uni'] + 
-    prompts['study']['sis'] +  
-    prompts['study']['num'] +  
-    '<br>' + prompts['researcher']['title'] + 
-    prompts['researcher']['name'] + 
-    prompts['researcher']['dept'] + 
-    prompts['researcher']['tele'] + prompts['researcher']['email'] +
-    '<ul>' + prompts['text'] + prompts['prompt'] + '</ul>' +
-    '</div><div id="buttons">' +
-    '<button id="agreeButton">' + prompts['buttons']['agree'] + '</button>' +
-    '<button id="cancelButton">' + prompts['buttons']['cancel'] + '</button></div>';
-  
-  document.body.appendChild(p)
-  $("#buttons").show();
 
-  $('#agreeButton').click(function () {
-    var sid = getID();
+  var classicGraphics = 0;
+  if (typeof jatos.studySessionData['plain_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['plain_graphics'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['plain_graphics']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['plain_graphics']
+  }
+
+  console.log("classic graphics: " + classicGraphics);
+
+  const device = getDeviceType();
+  console.log("have device " + device);
+  const isMobile = device[0];
+  const isTablet = device[1];
+  const smallScreen = device[2];
+  console.log("smallScreen " + smallScreen);
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
+  const fontScale = isMobile ? 1.5 : 1.0;
+  const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
+  document.body.classList.add(isMobile ? 'mobile' : 'desktop');
+  if (smallScreen) {document.body.classList.add('smallScreen');}
+  if (isTablet) {document.body.classList.add('tablet');}
+  if (classicGraphics) {document.body.classList.add('classic');}
+
+  // Build consent text HTML (keep original formatting)
+  let container = document.createElement("div");
+  container.innerHTML = `
+    <div id="consenttext">
+      <h1>${prompts['title']}</h1>
+      ${prompts['study']['uni']}
+      ${prompts['study']['sis']}
+      ${prompts['study']['num']}
+      <br>
+      ${prompts['researcher']['title']}
+      ${prompts['researcher']['name']}
+      ${prompts['researcher']['dept']}
+      ${prompts['researcher']['tele']}
+      ${prompts['researcher']['email']}
+      <ul>${prompts['text']}${prompts['prompt']}</ul>
+    </div>
+  `;
+  document.body.appendChild(container);
+
+  // Build buttons as image buttons
+  var buttonsDiv = document.createElement('div');
+  buttonsDiv.id = 'buttons';
+  buttonsDiv.style.display = 'flex';
+  buttonsDiv.style.justifyContent = 'center';
+  buttonsDiv.style.gap = '40px';
+  buttonsDiv.style.marginTop = '20px';
+  buttonsDiv.innerHTML = classicGraphics ?
+  `
+    <div class="image-btn-wrapper" id="agreeButtonWrapper">
+      <input type="image" src="img/assets/blank_button.png"
+            class="image-btn">
+      <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+        <text x="50%" y="50%">${prompts['buttons']['agree']}</text>
+      </svg>
+    </div>
+
+    <div class="image-btn-wrapper" id="cancelButtonWrapper">
+      <input type="image" src="img/assets/blank_button.png"
+            class="image-btn">
+      <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+        <text x="50%" y="50%">${prompts['buttons']['cancel']}</text>
+      </svg>
+    </div>
+  `
+  :
+  `
+    <div class="image-btn-wrapper" id="agreeButtonWrapper">
+      <input type="image" src="img/assets/blank_green.png"
+            class="image-btn">
+      <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+        <text class="text-stroke" x="50%" y="50%">${prompts['buttons']['agree']}</text>
+        <text class="text-fill" x="50%" y="50%">${prompts['buttons']['agree']}</text>
+      </svg>
+    </div>
+
+    <div class="image-btn-wrapper" id="cancelButtonWrapper">
+      <input type="image" src="img/assets/blank_red.png"
+            class="image-btn">
+      <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
+        <text class="text-stroke" x="50%" y="50%">${prompts['buttons']['cancel']}</text>
+        <text class="text-fill" x="50%" y="50%">${prompts['buttons']['cancel']}</text>
+      </svg>
+    </div>
+  `;
+  document.body.appendChild(buttonsDiv);
+
+  // ---------------------------------------------------------------------
+  // Press / Release logic (works for both buttons)
+  // ---------------------------------------------------------------------
+
+  // Attach listeners to BOTH wrappers
+  const wrappers = document.querySelectorAll('.image-btn-wrapper');
+  wrappers.forEach(wrapper => {
+    wrapper.addEventListener('mouseenter', handlePress, true);
+    wrapper.addEventListener('mouseleave', handleRelease, true);
+    wrapper.addEventListener('touchstart', handlePress, { passive: true });
+    wrapper.addEventListener('touchend', handleRelease);
+  });
+  document.addEventListener('mouseup', handleRelease);
+
+  // ---------------------------------------------------------------------
+  // Click actions
+  // ---------------------------------------------------------------------
+  document.getElementById('agreeButtonWrapper').addEventListener('click', function() {
+    // (your agree logic unchanged)
     let date = new Date();
-    let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate()) +
-      "-" + date.getHours() + "-" + date.getMinutes();
+    let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() +
+                "-" + date.getHours() + "-" + date.getMinutes();
     jatos.batchSession.add("/" + sid + "/-", "ConsentAgreed_" + dcode);
     var expdata = "Consent given, ID=" + sid + " URL ID=" + jatos.urlQueryParameters.sid;
-    //if (typeof jatos.studySessionData["taskindex"] !== 'undefined') { jatos.studySessionData["taskindex"] += 1; }
-    //jatos.submitResultData(result, jatos.startNextComponent);
+
     var order=jatos.studySessionData["order"];
     jatos.studySessionData["taskindex"] += 1;
-    if (typeof order === 'undefined') {
-      // We don't have an 'order' setup, so assume it's 1-N  (e.g., we didn't use the setup.html in this exp)
-      console.log('faking an order')
-      order=Array(jatos.componentList.length).fill().map((e,i)=>i+1);
-      jatos.studySessionData["taskindex"]=jatos.componentPos;
-    }
-    //jatos.submitResultData(result, jatos.startNextComponent);
-    if (typeof order === 'undefined' || order.length == jatos.studySessionData["taskindex"]) {         // we're done?
-      // Check if this came from SONA - should have URL.sid and .sona
-      if (typeof jatos.urlQueryParameters.sid === 'undefined' || typeof jatos.urlQueryParameters.sona === 'undefined' ||
-        typeof jatos.studyJsonInput['experiment_id'] === 'undefined' || typeof jatos.studyJsonInput['credit_token'] === 'undefined') {  // not SONA - just finish
+
+    if (!order || order.length == jatos.studySessionData["taskindex"]) {
+      if (!jatos.urlQueryParameters.sid ||
+          !jatos.urlQueryParameters.sona ||
+          !jatos.studyJsonInput['experiment_id'] ||
+          !jatos.studyJsonInput['credit_token']) {
         jatos.submitResultData(expdata,jatos.endStudy);
-      }
-      else { // SONA - give credit
+      } else {
         var redirect='https://uci.sona-systems.com/webstudy_credit.aspx?experiment_id='+jatos.studyJsonInput['experiment_id']+
-        '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
+                    '&credit_token='+jatos.studyJsonInput['credit_token']+'&survey_code='+jatos.urlQueryParameters.sid;
         jatos.endStudyAndRedirect(redirect,expdata);
       }
-    }
-    else { // submit data and start the next  
-      jatos.submitResultData(expdata, () => { jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]]) });
+    } else {
+      jatos.submitResultData(expdata, () =>
+        jatos.startComponentByPos(order[jatos.studySessionData["taskindex"]])
+      );
     }
   });
 
-  $('#cancelButton').click(function () {
-    var sid = getID();
+  document.getElementById('cancelButtonWrapper').addEventListener('click', function() {
     let date = new Date();
-    let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + (date.getDate()) +
-      "-" + date.getHours() + "-" + date.getMinutes();
+    let dcode = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() +
+                "-" + date.getHours() + "-" + date.getMinutes();
     jatos.batchSession.add("/" + sid + "/-", "ConsentNOTAgreed_" + dcode);
     jatos.abortStudy("Consent not given.");
   });
 });
-
 
 
 

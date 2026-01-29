@@ -9,6 +9,21 @@
 
 -->
 <head>
+  <script>
+  console.log('Script running');
+  const value = localStorage.getItem('classicGraphics');
+  console.log('classicGraphics value:', value);
+  console.log('Type:', typeof value);
+  // This runs IMMEDIATELY when parsed, before body exists
+  const classicGraphics = localStorage.getItem('classicGraphics') === '1';
+  
+  // Set background on HTML element (which already exists)
+  if (classicGraphics) {
+    document.documentElement.style.backgroundColor = '#ffffff'; // white
+  } else {
+    document.documentElement.style.backgroundColor = '#f5f5dc'; // cream
+  }
+</script>
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap:  'unsafe-inline' 'unsafe-eval' 
     https://fonts.gstatic.com http://www.stark-labs.com/exp/jsPsych/mobile_cMST/append_log.php http://www.stark-labs.com/exp/jsPsych/mobile_cMST/write_data_file.php; 
   style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/css; media-src *; 
@@ -18,13 +33,214 @@
   <script type="text/javascript" src="js/index.js"></script>
   <script src="js/jspsych_731/dist/jspsych.js"></script>
   <script src="js/jspsych_731/dist/plugin-survey-html-form.js"></script>
-  <link rel="stylesheet" href="js/jspsych_731/dist/jspsych.css"></link>
+  <script src="helpers.js"></script>
+  <link rel="stylesheet" href="css/jspsych.css"></link>
+  <link
+    rel="preload"
+    href="img/assets/blank_green.png"
+    as="image"
+  />
+  <link
+    rel="preload"
+    href="img/assets/blank_green_pressed.png"
+    as="image"
+  />
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Regular.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
+  <link
+    rel="preload"
+    href="css/fonts/ComicRelief-Bold.woff2"
+    as="font"
+    type="font/woff2"
+    crossorigin
+  />
   <style>
-    .jspsych-display-element {
-      font-size: 200%;
+    body {
+      margin:0;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      text-align:center;
     }
-    .jspsych-btn {
-      font-size: 125%;
+
+    .image-btn-text text {
+      font-size: 1.2em;
+    }
+
+    .mobile .image-btn-text text{
+      font-size: 1.2em;
+    }
+
+    .image-btn-text.kr text,
+    .image-btn-text.ru text{
+      font-size: 0.9em;
+    }
+    .image-btn-text.kr .text-stroke,
+    .image-btn-text.ru .text-stroke {
+      stroke-width: 8;
+    }
+
+    .image-btn-text.nl  text{
+      font-size: 0.8em;
+    }
+    .image-btn-text.nl .text-stroke {
+      stroke-width: 8;
+    }
+    
+    .mobile .image-btn-text.kr text {
+      font-size: 0.9em;
+    }
+    .mobile .image-btn-text.kr .text-stroke {
+      stroke-width: 9;
+    }
+
+    .mobile .image-btn-text.nl text {
+      font-size: 0.8em;
+    }
+    .mobile .image-btn-text.nl .text-stroke {
+      stroke-width: 8;
+    }
+
+    .mobile .image-btn-text.ru text {
+      font-size: 1.0em;
+    }
+    
+    .tablet .image-btn-text text {
+      font-size: 1.3em;
+    }
+
+    .tablet .image-btn-text.kr text {
+      font-size: 1em;
+    }
+    .tablet .image-btn-text.kr .text-stroke {
+      stroke-width: 8;
+    }
+
+    .tablet .image-btn-text.ru text {
+      font-size: 1.0em;
+    }
+
+    .prompt_text {
+      font-size: 2.6em;
+    }
+
+    .mobile  .prompt_text {
+      font-size: 3em;
+    }
+
+    .mobile .prompt_text.nl {
+      font-size: 1.8em;
+    }
+
+    .mobile .prompt_text.ru {
+      font-size: 1.6em;
+    }
+
+    .tablet .prompt_text{
+      font-size: 1.2em;
+    }
+
+    .smallScreen .prompt_text {
+      font-size: 2.6em;
+    }
+
+    .tablet .prompt_text.intro {
+      font-size: 2.6em;
+    }
+
+    .mobile .prompt_text.es.intro,
+    .mobile .prompt_text.nl.intro {
+      font-size: 1.8em;
+    }
+
+    .mobile .prompt_text.ru.intro {
+      font-size: 1.8em;
+    }
+
+    .smallScreen .prompt_text.ru.intro {
+      font-size: 0.9em;
+    }
+
+    #jspsych-html-button-response-stimulus {
+      font-family: 'Comic Relief', sans-serif;
+      font-size: 1.5em;
+      color: #5d2b12;
+      line-height: 1.2;
+    }
+    
+    .jspsych-categorize-image-buttons-stimulus {
+      width: 15em;
+      height: auto;
+    }
+
+    .mobile .jspsych-categorize-image-buttons-stimulus {
+      width: 25em;
+      height: auto;
+    }
+
+    .smallScreen .jspsych-categorize-image-buttons-stimulus {
+      width: 10em;
+      height: auto;
+    }
+
+    .idcode_text {
+      font-size: 1.5em !important;
+    }
+
+    .idcode {
+      height: 1.3em !important;
+      font-size: 1.3em !important;
+      color: #5d2b12;
+      width: 10em !important;
+      padding: 0 0.3em !important;
+      border: 2px solid #5d2b12 !important;
+      border-radius: 4px !important;
+    }
+
+    .idcode:focus {
+      border-color:#5d2b12;
+    }
+
+    .classic .idcode {
+      color: black;
+      border: 2px solid black !important;
+    }
+
+    .classic .idcode:focus {
+      border-color: black;
+    }
+
+    .mobile .idcode_text {
+      font-size: 1.5em !important;
+    }
+
+    .mobile .idcode {
+      height: 1.5em !important;
+      font-size: 1.5em !important;
+      width: 10em !important;
+      padding: 0 0.3em !important;
+      border: 2px solid #5d2b12 !important;
+      border-radius: 4px !important;
+    }
+
+    .smallScreen .idcode_text {
+      font-size: 1.5em !important;
+    }
+
+    .smallScreen .idcode {
+      height: 1.3em !important;
+      font-size: 1.3em !important;
+      width: 10em !important;
+      padding: 0 0.3em !important;
+      border: 2px solid #5d2b12 !important;
+      border-radius: 4px !important;
     }
   </style>
 </head>
@@ -34,6 +250,16 @@
 <script>
 
 jatos.onLoad(function() {
+  var classicGraphics = 0;
+  if (typeof jatos.studySessionData['plain_graphics'] !== 'undefined') {
+    classicGraphics = jatos.studySessionData['plain_graphics'];
+  }
+  if (jatos.studyJsonInput && typeof jatos.studyJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.studyJsonInput['plain_graphics']
+  }
+  if (jatos.batchJsonInput && typeof jatos.batchJsonInput['plain_graphics'] !== 'undefined' ) { 
+    classicGraphics=jatos.batchJsonInput['plain_graphics']
+  }
   var jsPsych = initJsPsych({
     on_finish: function() {
       var result = jsPsych.data.get().json();
@@ -65,7 +291,20 @@ jatos.onLoad(function() {
 
     }
   });
-
+  const device = getDeviceType();
+  console.log("have device " + device);
+  const isMobile = device[0];
+  const isTablet = device[1];
+  const smallScreen = device[2];
+  console.log("smallScreen " + smallScreen);
+  const canvasWidth = isMobile ? window.innerWidth * 0.9 : window.innerWidth * .9;
+  const canvasHeight = isMobile ? window.innerHeight * 0.7 : smallScreen ? window.innerHeight * 0.75 : isTablet ? window.innerHeight * 0.8 : window.innerHeight * .75;
+  const fontScale = isMobile ? 1.5 : 1.0;
+  const stimScale = isMobile ? 2 : smallScreen ? 0.85: isTablet ? 1.2 : 1.0;
+  document.body.classList.add(isMobile ? 'mobile' : 'desktop');
+  if (smallScreen) {document.body.classList.add('smallScreen');}
+  if (isTablet) {document.body.classList.add('tablet');}
+  if (classicGraphics) {document.body.classList.add('classic');}
   //var sid=getID()
   //console.log('In id, sid= ' + sid);
   let date = new Date(); 
@@ -78,19 +317,63 @@ jatos.onLoad(function() {
 
   var idform = {
     type: jsPsychSurveyHtmlForm,
-    preamble: 'Enter your ID code',
-    html: '<div style="text-align: left; font-size: 16px; line-height: 110%"> \
-    <p><b>ID: </b> <input name="idcode" type="text" required /></p> \
-    </div>',
-    on_finish: function(data) {
-      console.log(data.response)
-      var sid=data.response['idcode'];
-      console.log(sid);
-      jatos.studySessionData['sid']=sid;
-    }
+    preamble: function() {  
+      return `<p class="prompt_text">Enter your ID code</p>`;
+    },
+    html: `
+      <div style="display:flex; justify-content:center; align-items:center; font-size:32px; line-height:110%; gap:10px;">
+        <p class="prompt_text idcode_text" style="margin-bottom:20px;"><b>ID:</b></p>
+        <input class="idcode" name="idcode" type="text" required/>
+      </div>
+    `,
+    on_load: function() {
+      // hide default button
+      document.querySelector('.jspsych-btn').style.display = 'none';
 
-  }
-  
+      // insert your custom button
+      if (classicGraphics) {
+        document.querySelector('.jspsych-content').insertAdjacentHTML('beforeend', `
+          <div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_button.png"
+                  class="image-btn" id="id_continue_btn">
+            <svg class="image-btn-text" viewBox="0 0 266 160">
+              <text x="50%" y="50%">Continue</text>
+            </svg>
+          </div>
+        `);
+      } else {
+        document.querySelector('.jspsych-content').insertAdjacentHTML('beforeend', `
+          <div class="image-btn-wrapper">
+            <input type="image" src="img/assets/blank_green.png"
+                  class="image-btn" id="id_continue_btn">
+            <svg class="image-btn-text" viewBox="0 0 266 160">
+              <text class="text-stroke" x="50%" y="50%">Continue</text>
+              <text class="text-fill" x="50%" y="50%">Continue</text>
+            </svg>
+          </div>
+        `);
+      }
+      
+
+      const customBtn = document.getElementById('id_continue_btn');
+      customBtn.addEventListener('click', (e) => {
+        e.preventDefault(); // prevent default image-button form submit weirdness
+        document.querySelector('.jspsych-btn').click();
+      });
+
+      // press/release stuff
+      setupButtonListeners();
+    },
+
+    on_finish: function(data) {
+      // clean up listeners
+      cleanupButtonListeners(); 
+      console.log(data.response);
+      var sid = data.response['idcode'];
+      console.log(sid);
+      jatos.studySessionData['sid'] = sid;
+    }
+  };
 
   var timeline=[idform];
   jsPsych.run(timeline);
