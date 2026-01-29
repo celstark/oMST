@@ -92,29 +92,38 @@ Revised: November 20, 2019 (CELS) for Cordova
   }
 
   .mobile .image-btn-text text{
-    stroke-width: 12;
     font-size: 1.5em;
+  }
+  .mobile .image-btn-text .text-stroke {
+    stroke-width: 12;
   }
 
   .image-btn-text.kr text,
   .image-btn-text.ru text{
     font-size: 0.9em;
+  }
+  .image-btn-text.kr .text-stroke,
+  .image-btn-text.ru .text-stroke {
     stroke-width: 8;
   }
 
   .image-btn-text.nl  text{
     font-size: 0.9em;
-    stroke-width: 10;
   }
   
   .mobile .image-btn-text.kr text,
   .mobile .image-btn-text.nl text{
     font-size: 0.8em;
+  }
+  .mobile .image-btn-text.kr .text-stroke,
+  .mobile .image-btn-text.nl .text-stroke {
     stroke-width: 8;
   }
 
   .mobile .image-btn-text.ru text{
     font-size: 1.2em;
+  }
+  .mobile .image-btn-text.ru .text-stroke {
     stroke-width: 12;
   }
     
@@ -124,17 +133,20 @@ Revised: November 20, 2019 (CELS) for Cordova
   
   .tablet .image-btn-text.kr text {
     font-size: 1em;
+  }
+  .tablet .image-btn-text.kr .text-stroke {
     stroke-width: 8;
   }
  
   .tablet .image-btn-text.nl text {
     font-size: .9em;
+  }
+  .tablet .image-btn-text.nl .text-stroke {
     stroke-width: 8;
   }
 
   .tablet .image-btn-text.ru text{
     font-size: 1.2em;
-    stroke-width: 10;
   }
 
   .jspsych-content {
@@ -279,7 +291,9 @@ jatos.onLoad(async function() {
       if (0) { jsPsych.data.displayData(); }
       else {
         var order=jatos.studySessionData["order"];
+        console.log('Order from session data: ' + order);
         jatos.studySessionData["taskindex"] += 1;
+        console.log('Current task index: ' + jatos.studySessionData["taskindex"]);
         if (typeof order === 'undefined') {
           // We don't have an 'order' setup, so assume it's 1-N
           console.log('faking an order')
@@ -311,6 +325,7 @@ jatos.onLoad(async function() {
     }
   });
 
+  // ------------- Definitions -------------
 
   const device = getDeviceType();
   console.log("have device " + device);
@@ -330,6 +345,12 @@ jatos.onLoad(async function() {
     task: phasename,
     subject: sid,
   });
+
+  var order=jatos.studySessionData["order"];
+  console.log('Order from session data: ' + order);
+  console.log('Current task index: ' + jatos.studySessionData["taskindex"]);
+
+  // ------------- Helpers -------------
 
   function fitTrialToScreen() {
     const container = document.querySelector('.jspsych-content');
@@ -541,7 +562,8 @@ jatos.onLoad(async function() {
                 data-choice="${i}"
                 data-correct="${i === buttonAnswer}">
           <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-            <text x="50%" y="50%">${txt}</text>
+            <text class="text-stroke" x="50%" y="50%">${txt}</text>
+            <text class="text-fill" x="50%" y="50%">${txt}</text>
           </svg>
         </div>
       `),
@@ -763,7 +785,8 @@ jatos.onLoad(async function() {
           <input type="image" src="img/assets/blank_green.png"
                 class="image-btn">
           <svg class="image-btn-text" viewBox="0 0 266 160">
-            <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+            <text class="text-stroke" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+            <text class="text-fill" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
           </svg>
         </div>`,
       on_load: function() {
@@ -779,6 +802,8 @@ jatos.onLoad(async function() {
       },
     };
   }
+
+// ------------- Trials -------------
 
 var intro = {
   type: (resp_mode == 'button' ? jsPsychHtmlButtonResponse : jsPsychHtmlKeyboardResponse),
@@ -796,7 +821,8 @@ var intro = {
       <input type="image" src="img/assets/blank_green.png"
             class="image-btn">
       <svg class="image-btn-text" viewBox="0 0 266 160">
-        <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+        <text class="text-stroke" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+        <text class="text-fill" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
       </svg>
     </div>`,
   on_load: function() {
@@ -996,7 +1022,8 @@ var outtro = {
       <input type="image" src="img/assets/blank_green.png"
             class="image-btn">
       <svg class="image-btn-text" viewBox="0 0 266 160">
-        <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+        <text class="text-stroke" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+        <text class="text-fill" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
       </svg>
     </div>`,
   on_load: function() {

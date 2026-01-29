@@ -86,21 +86,27 @@
   }
 
   .mobile .image-btn-text text{
-    stroke-width: 12;
     font-size: 1.5em;
+  }
+  .mobile .image-btn-text .text-stroke {
+    stroke-width: 12;
   }
 
   .image-btn-text.kr text {
     font-size: 1.2em;
-    stroke-width: 10;
   }
+
   .image-btn-text.ru text{
     font-size: 0.9em;
+  }
+  .mobile .image-btn-text.ru .text-stroke {
     stroke-width: 8;
   }
 
   .image-btn-text.nl  text{
     font-size: 0.8em;
+  }
+  .mobile .image-btn-text.nl .text-stroke {
     stroke-width: 8;
   }
 
@@ -110,26 +116,30 @@
   
   .mobile .image-btn-text.kr text {
     font-size: 1.2em;
-    stroke-width: 12;
   }
 
   .mobile .image-btn-text.nl text {
     font-size: 0.8em;
+  }
+  .mobile .image-btn-text.nl .text-stroke {
     stroke-width: 8;
   }
 
   .mobile .image-btn-text.ru text {
     font-size: .8em;
+  }
+  .mobile .image-btn-text.ru .text-stroke {
     stroke-width: 8;
   }
   
   .tablet .image-btn-text.kr text {
     font-size: 1.2em;
-    stroke-width: 10;
   }
 
   .tablet .image-btn-text.ru text {
     font-size: 0.8em;
+  }
+  .tablet .image-btn-text.ru .text-stroke {
     stroke-width: 8;
   }
 
@@ -335,6 +345,9 @@ jatos.onLoad(async function() {
       }
     }
   });
+
+  // ------------- Definitions -------------
+
   const device = getDeviceType();
   console.log("have device " + device);
   const isMobile = device[0];
@@ -354,6 +367,8 @@ jatos.onLoad(async function() {
     subject: sid,
     randomize: randomize
 });
+
+  // ------------- Helpers -------------
 
   function makeSideBySideTrial(imgLeft, imgRight, promptText, buttonLabel) {
     return {
@@ -406,7 +421,7 @@ jatos.onLoad(async function() {
         imgL.src = imgLeft;
         imgR.src = imgRight;
       },
-      prompt: `<p class="prompt_text" style="margin: 0;">${promptText}</p>`,
+      prompt: `<p class="prompt_text" style="margin-bottom: 20;">${promptText}</p>`,
       button_html: classicGraphics ?
         `<div class="image-btn-wrapper">
           <input type="image" src="img/assets/blank_button.png"
@@ -420,7 +435,8 @@ jatos.onLoad(async function() {
           <input type="image" src="img/assets/blank_green.png"
                 class="image-btn">
           <svg class="image-btn-text" viewBox="0 0 266 160">
-            <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+            <text class="text-stroke" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+            <text class="text-fill" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
           </svg>
         </div>`,
       on_load: function() {
@@ -495,6 +511,8 @@ jatos.onLoad(async function() {
       console.log('Failed on ' + data.failed_images.length)
     }
   }
+
+  // ------------- Trials -------------
   
   // Instruction phase
   var instr1_trial = {
@@ -513,7 +531,8 @@ jatos.onLoad(async function() {
           <input type="image" src="img/assets/blank_green.png"
                 class="image-btn">
           <svg class="image-btn-text" viewBox="0 0 266 160">
-            <text x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+            <text class="text-stroke" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
+            <text class="text-fill" x="50%" y="50%">${prompts[resp_mode]['instr_choice']}</text>
           </svg>
         </div>`,
     on_load: function() {
@@ -569,8 +588,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
-            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -677,8 +696,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
-            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -726,7 +745,8 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_green.png"
                   class="image-btn">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">%choice%</text>
+              <text class="text-stroke" x="50%" y="50%">%choice%</text>
+              <text class="text-fill" x="50%" y="50%">%choice%</text>
             </svg>
           </div>`,
 
@@ -734,7 +754,8 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_blue.png"
                   class="image-btn">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">%choice%</text>
+              <text class="text-stroke" x="50%" y="50%">%choice%</text>
+              <text class="text-fill" x="50%" y="50%">%choice%</text>
             </svg>
           </div>`,
         ],
@@ -789,8 +810,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
-            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -898,8 +919,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
-            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -947,7 +968,8 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_green.png"
                   class="image-btn">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">%choice%</text>
+              <text class="text-stroke" x="50%" y="50%">%choice%</text>
+              <text class="text-fill" x="50%" y="50%">%choice%</text>
             </svg>
           </div>`,
 
@@ -955,7 +977,8 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_blue.png"
                   class="image-btn">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">%choice%</text>
+              <text class="text-stroke" x="50%" y="50%">%choice%</text>
+              <text class="text-fill" x="50%" y="50%">%choice%</text>
             </svg>
           </div>`,
         ],
@@ -1012,8 +1035,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
-            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -1160,8 +1183,8 @@ jatos.onLoad(async function() {
           }
 
           stimImg.onload = function() {
-            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? stimImg.width * 1.2 : stimImg.width * 1.2;
-            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? stimImg.height * 1.2 : stimImg.height * 1.2;
+            const imgWidth = isMobile ? stimImg.width * 1.5 : isTablet ? stimImg.width * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.width * 1.2;
+            const imgHeight = isMobile ? stimImg.height * 1.5 : isTablet ? stimImg.height * 1.2 : smallScreen ? canvasHeight * 0.8 : stimImg.height * 1.2;
             const x = (width - imgWidth) / 2;
             const y = (height - imgHeight) / 2 - (isMobile ? 0 : 0); // shift up slightly
 
@@ -1210,7 +1233,8 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_green.png"
                   class="image-btn">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">%choice%</text>
+              <text class="text-stroke" x="50%" y="50%">%choice%</text>
+              <text class="text-fill" x="50%" y="50%">%choice%</text>
             </svg>
           </div>`,
 
@@ -1218,7 +1242,8 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_blue.png"
                   class="image-btn">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">%choice%</text>
+              <text class="text-stroke" x="50%" y="50%">%choice%</text>
+              <text class="text-fill" x="50%" y="50%">%choice%</text>
             </svg>
           </div>`,
         ],

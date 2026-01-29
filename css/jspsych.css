@@ -51,6 +51,10 @@
    align-items: center;
  }
 
+ p {
+  margin-block-start: 0.25em;
+  margin-block-end: 0.25em;
+ }
 /* Form elements like input fields and buttons */
 
 .jspsych-canvas-button-response-button {
@@ -66,6 +70,7 @@
   display: inline-block;
   position: relative;
   margin: 0.5em;
+  margin-top: 20px !important;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   user-select: none;
@@ -135,16 +140,23 @@
 .image-btn-text text {
   font-family: 'Comic Relief', sans-serif;
   font-size: 2.6em;
-  fill: #fff8d6;       /* inner text color */
-  stroke: #5d2b12;     /* outline color */
-  stroke-width: 10;     /* outline thickness */
   font-weight: bold;
   letter-spacing: 0.08em;
   text-anchor: middle;
   dominant-baseline: middle;
-  paint-order: stroke fill;
+}
+
+.image-btn-text .text-stroke {
+  fill: none;
+  stroke: #5d2b12;
+  stroke-width: 10;
   stroke-linejoin: round;
   stroke-linecap: round;
+}
+
+.image-btn-text .text-fill {
+  fill: #fff8d6;
+  stroke: none;
 }
 
 .classic .image-btn-text text {
@@ -155,6 +167,16 @@
   stroke-width: unset;
   paint-order: unset;
   font-weight: normal;
+}
+
+.classic .image-btn-text .text-stroke {
+  fill: none;
+  stroke: none;
+}
+
+.classic .image-btn-text .text-fill {
+  fill: black;
+  stroke: none;
 }
 
 .mobile .image-btn-text text{

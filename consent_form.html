@@ -63,23 +63,25 @@
   />
 <style>
   .mobile .image-btn-text text{
-    stroke-width: 14;
     font-size: 2.5em;
+  }
+  .mobile .image-btn-text .text-stroke {
+    stroke-width: 14;
   }
 
   .image-btn-text.kr text,
   .image-btn-text.ru text{
     font-size: 2em;
-    stroke-width: 10;
   }
 
   .image-btn-text.nl  text{
     font-size: 2em;
-    stroke-width: 10;
   }
   
   .mobile .image-btn-text.kr text {
     font-size: 2em;
+  }
+  .mobile .image-btn-text.kr .text-stroke {
     stroke-width: 12;
   }
 
@@ -87,20 +89,23 @@
     font-size: 2em;
     stroke-width: 12;
   }
+  .mobile .image-btn-text.nl .text-stroke {
+    stroke-width: 12;
+  }
 
   .mobile .image-btn-text.ru text {
     font-size: 2.0em;
+  }
+  .mobile .image-btn-text.ru .text-stroke {
     stroke-width: 12;
   }
   
   .tablet .image-btn-text.kr text {
     font-size: 2.0em;
-    stroke-width: 10;
   }
 
   .tablet .image-btn-text.ru text {
     font-size: 2.0em;
-    stroke-width: 10;
   }
 
   .prompt_text {
@@ -313,7 +318,8 @@ jatos.onLoad(async function () {
       <input type="image" src="img/assets/blank_green.png"
             class="image-btn">
       <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-        <text x="50%" y="50%">${prompts['buttons']['agree']}</text>
+        <text class="text-stroke" x="50%" y="50%">${prompts['buttons']['agree']}</text>
+        <text class="text-fill" x="50%" y="50%">${prompts['buttons']['agree']}</text>
       </svg>
     </div>
 
@@ -321,7 +327,8 @@ jatos.onLoad(async function () {
       <input type="image" src="img/assets/blank_red.png"
             class="image-btn">
       <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-        <text x="50%" y="50%">${prompts['buttons']['cancel']}</text>
+        <text class="text-stroke" x="50%" y="50%">${prompts['buttons']['cancel']}</text>
+        <text class="text-fill" x="50%" y="50%">${prompts['buttons']['cancel']}</text>
       </svg>
     </div>
   `;

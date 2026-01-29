@@ -72,38 +72,44 @@
 
     .image-btn-text text {
       font-size: 1.2em;
-      stroke-width: 10;
     }
 
     .mobile .image-btn-text text{
-      stroke-width: 10;
       font-size: 1.2em;
     }
 
     .image-btn-text.kr text,
     .image-btn-text.ru text{
       font-size: 0.9em;
+    }
+    .image-btn-text.kr .text-stroke,
+    .image-btn-text.ru .text-stroke {
       stroke-width: 8;
     }
 
     .image-btn-text.nl  text{
       font-size: 0.8em;
+    }
+    .image-btn-text.nl .text-stroke {
       stroke-width: 8;
     }
     
     .mobile .image-btn-text.kr text {
       font-size: 0.9em;
+    }
+    .mobile .image-btn-text.kr .text-stroke {
       stroke-width: 9;
     }
 
     .mobile .image-btn-text.nl text {
       font-size: 0.8em;
+    }
+    .mobile .image-btn-text.nl .text-stroke {
       stroke-width: 8;
     }
 
     .mobile .image-btn-text.ru text {
       font-size: 1.0em;
-      stroke-width: 10;
     }
     
     .tablet .image-btn-text text {
@@ -112,12 +118,13 @@
 
     .tablet .image-btn-text.kr text {
       font-size: 1em;
+    }
+    .tablet .image-btn-text.kr .text-stroke {
       stroke-width: 8;
     }
 
     .tablet .image-btn-text.ru text {
       font-size: 1.0em;
-      stroke-width: 10;
     }
 
     .prompt_text {
@@ -315,7 +322,7 @@ jatos.onLoad(function() {
     },
     html: `
       <div style="display:flex; justify-content:center; align-items:center; font-size:32px; line-height:110%; gap:10px;">
-        <p class="prompt_text idcode_text" style="margin:0;"><b>ID:</b></p>
+        <p class="prompt_text idcode_text" style="margin-bottom:20px;"><b>ID:</b></p>
         <input class="idcode" name="idcode" type="text" required/>
       </div>
     `,
@@ -340,7 +347,8 @@ jatos.onLoad(function() {
             <input type="image" src="img/assets/blank_green.png"
                   class="image-btn" id="id_continue_btn">
             <svg class="image-btn-text" viewBox="0 0 266 160">
-              <text x="50%" y="50%">Continue</text>
+              <text class="text-stroke" x="50%" y="50%">Continue</text>
+              <text class="text-fill" x="50%" y="50%">Continue</text>
             </svg>
           </div>
         `);

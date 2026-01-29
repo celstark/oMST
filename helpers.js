@@ -339,7 +339,7 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
                     minFontSize = 28;
                     maxFontSize = 56;
                 } else if (smallScreen) {
-                    minFontSize = 28;
+                    minFontSize = 20;
                     maxFontSize = 56;
                 } else {
                     minFontSize = 32;
@@ -355,10 +355,36 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
     }
 }
 
-function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen, stimText=false) {
+function getVisibleHeight() {
+    // Create a temporary fixed element that fills the viewport
+    const measureDiv = document.createElement('div');
+    measureDiv.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        visibility: hidden;
+        z-index: -9999;
+    `;
+    
+    document.body.appendChild(measureDiv);
+    const visibleHeight = measureDiv.clientHeight;
+    document.body.removeChild(measureDiv);
+    
+    return visibleHeight;
+}
+
+function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen, stimText=false, pairwise=false) {
     const totalWidth = window.visualViewport ? 
         window.visualViewport.width : window.innerWidth;
-
+    const totalHeight = window.offsetHeight ? 
+        window.offsetHeight : window.innerHeight;
+    console.log(Math.min(totalHeight, window.screen.availHeight))
+    console.log('Avail Height:', getVisibleHeight());
     // Define horizontal space allocation for each device type
     let widthPercent;
     if (isMobile) {
@@ -366,9 +392,9 @@ function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen, stimText
     } else if (isTablet) {
         widthPercent = 0.80; // 80% of screen width
     } else if (smallScreen) {
-        widthPercent = 0.50; // 70% of screen width
+        widthPercent = totalHeight < 700 && pairwise ? 0.40 : 0.50; // Shorter screens need smaller images
     } else { // desktop
-        widthPercent = 0.40; // 60% of screen width
+        widthPercent = 0.40; // 40% of screen width
     }
 
     // Calculate canvas width
@@ -390,7 +416,7 @@ function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen, stimText
     return [Math.floor(canvasHeight), Math.floor(canvasWidth)];
 }
 
-function fitSideBySideToScreen(isMobile, isTablet, smallScreen) {
+function fitSideBySideToScreen(isMobile, isTablet, smallScreen, pairwise=false) {
     const container = document.querySelector('.jspsych-content');
     if (!container) return;
 
@@ -398,7 +424,7 @@ function fitSideBySideToScreen(isMobile, isTablet, smallScreen) {
         window.offsetHeight : window.innerHeight;
 
     // grab 3 sections
-    const canvasStimulusContainer = document.querySelector('#jspsych-canvas-button-response-stimulus');
+    const canvasStimulusContainer = pairwise ? document.querySelector('#jspsych-canvas-stimulus') : document.querySelector('#jspsych-canvas-button-response-stimulus');
     const buttonContainer = document.querySelector('#jspsych-canvas-button-response-btngroup');
     const promptContainer = document.querySelector('.prompt_text');
 
@@ -408,11 +434,12 @@ function fitSideBySideToScreen(isMobile, isTablet, smallScreen) {
     }
 
     console.log('Fitting side-by-side prompt text');
+    console.log("starting prompt height", promptContainer.offsetHeight)
 
     // Measure actual heights
     const canvasHeight = canvasStimulusContainer.offsetHeight;
     const buttonHeight = buttonContainer.offsetHeight;
-    const margin = isMobile ? 40 : 60;
+    const margin = isMobile ? 40 : pairwise && smallScreen ? 120 : 60;
 
     // Calculate remaining space for prompt
     const promptHeight = totalHeight - canvasHeight - buttonHeight - margin;
@@ -447,16 +474,102 @@ function fitSideBySideToScreen(isMobile, isTablet, smallScreen) {
             minFontSize = 40;
             maxFontSize = 80;
             } else if (smallScreen) {
-            minFontSize = 32;
+            minFontSize = 24;
             maxFontSize = 64;
             } else { // desktop
             minFontSize = 32;
-            maxFontSize = 64;
+            maxFontSize = 96;
             }
         fitTextToContainer(promptContainer, promptHeight * 0.85, minFontSize, maxFontSize);
         container.classList.add('ready');
         }
     }
+}
+
+function fitSideBySideTrialToScreen(isMobile, isTablet, smallScreen, pairwise=false) {
+    const container = document.querySelector('.jspsych-content');
+    if (!container) return;
+
+    const totalHeight = window.innerHeight;
+
+    // Find the elements in the new structure
+    const stimulusTextContainer = document.querySelector('.stimulus_div'); // Top stimulus text
+    const canvasElement = document.querySelector('.jspsych-content canvas');
+    const buttonContainer = document.querySelector('#jspsych-canvas-button-response-btngroup') || 
+                           document.querySelector('#jspsych-canvas-keyboard-response-btngroup');
+    const promptContainer = document.querySelector('.prompt') || 
+                           document.querySelector('.jspsych-canvas-keyboard-response-prompt'); // Bottom prompt
+
+    if (!canvasElement || !buttonContainer) {
+        console.warn('Side-by-side elements not found');
+        return;
+    }
+
+    console.log('Fitting side-by-side layout');
+
+    // Measure actual heights
+    const stimulusTextHeight = stimulusTextContainer ? stimulusTextContainer.offsetHeight : 0;
+    const canvasHeight = canvasElement.offsetHeight;
+    const buttonHeight = buttonContainer.offsetHeight;
+    const promptHeight = promptContainer ? promptContainer.offsetHeight : 0;
+    const margin = isMobile ? 40 : pairwise && smallScreen ? 120 : 60;
+
+    console.log('Current space allocation:', {
+        totalHeight,
+        stimulusTextHeight,
+        canvasHeight,
+        buttonHeight,
+        promptHeight,
+        margin,
+        totalUsed: stimulusTextHeight + canvasHeight + buttonHeight + promptHeight + margin
+    });
+
+    // Calculate remaining space for stimulus text
+    const availableHeight = totalHeight - canvasHeight - buttonHeight - (promptHeight || 0) - margin;
+    let targetStimulusHeight = Math.max(availableHeight, 40);
+    targetStimulusHeight = Math.min(targetStimulusHeight, totalHeight * 0.30); // Cap at 30% of screen height
+    console.log('Target stimulus text height:', targetStimulusHeight);
+
+    // Style and fit stimulus text container
+    if (stimulusTextContainer && availableHeight > 20) {
+        stimulusTextContainer.style.height = targetStimulusHeight + 'px';
+        stimulusTextContainer.style.overflow = 'hidden';
+        stimulusTextContainer.style.boxSizing = 'border-box';
+        stimulusTextContainer.style.margin = '10px auto';
+        stimulusTextContainer.style.textAlign = 'center';
+        stimulusTextContainer.style.display = 'flex';
+        stimulusTextContainer.style.alignItems = 'center';
+        stimulusTextContainer.style.justifyContent = 'center';
+        stimulusTextContainer.style.padding = '10px 20px';
+        
+        // Fit text to available space
+        if (typeof fitTextToContainer === 'function') {
+            let minFontSize, maxFontSize;
+            if (isMobile) {
+                minFontSize = 36;
+                maxFontSize = 96;
+            } else if (isTablet) {
+                minFontSize = 40;
+                maxFontSize = 80;
+            } else if (smallScreen) {
+                minFontSize = 24;
+                maxFontSize = 64;
+            } else { // desktop
+                minFontSize = 32;
+                maxFontSize = 96;
+            }
+            fitTextToContainer(stimulusTextContainer, targetStimulusHeight * 0.95, minFontSize, maxFontSize);
+        }
+    }
+
+    // Also handle bottom prompt if it exists
+    if (promptContainer) {
+        promptContainer.style.boxSizing = 'border-box';
+        promptContainer.style.textAlign = 'center';
+        promptContainer.style.padding = '5px 20px';
+    }
+
+    container.classList.add('ready');
 }
 
 function getDeviceType() {
@@ -548,7 +661,7 @@ function getDeviceType() {
   return desktop;
 }
 
-function drawHTMLText(ctx, html, x, y, fontSize, device) {    
+function drawHTMLText(ctx, html, x, y, fontSize, device, classicGraphics=false) {    
     const isMobile = device[0];
     const isTablet = device[1];
     const smallScreen = device[2];

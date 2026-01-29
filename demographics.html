@@ -68,11 +68,9 @@
   <style>
   .image-btn-text text {
     font-size: 1.2em;
-    stroke-width: 10;
   }
 
   .mobile .image-btn-text text{
-    stroke-width: 10;
     font-size: 1.2em;
   }
 
@@ -189,6 +187,14 @@
 
   .jspsych-content {
     align-items: stretch;
+  }
+
+  .jspsych-content-wrapper {
+    background-color: #fff8d6;
+  }
+
+  .classic .jspsych-content-wrapper {
+    background-color: white;
   }
 
   </style>
@@ -380,7 +386,8 @@ jatos.onLoad(async function() {
           <input type="image" src="img/assets/blank_${classicGraphics ? "button" : "green"}.png"
                 class="image-btn" id="id_continue_btn">
           <svg class="image-btn-text" viewBox="0 0 266 160">
-            <text x="50%" y="50%">Continue</text>
+            <text class="text-stroke" x="50%" y="50%">Continue</text>
+            <text class="text-fill" x="50%" y="50%">Continue</text>
           </svg>
         </div>
       `;

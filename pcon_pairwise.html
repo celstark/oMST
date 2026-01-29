@@ -73,7 +73,7 @@
   />
   <style>
     .image-btn-text text {
-      font-size: 1.5em;
+      font-size: 1.2em;
     }
     
     .image-btn-wrapper.pressed .image-btn-text{
@@ -81,21 +81,28 @@
     }
 
     .mobile .image-btn-text text{
-      stroke-width: 12;
       font-size: 1.5em;
+    }
+
+    .mobile .image-btn-text .text-stroke {
+      stroke-width: 12;
     }
 
     .image-btn-text.kr text {
       font-size: 1.2em;
-      stroke-width: 10;
     }
+
     .image-btn-text.ru text{
       font-size: 0.9em;
+    }
+    .image-btn-text.ru .text-stroke {
       stroke-width: 8;
     }
 
     .image-btn-text.nl  text{
       font-size: 0.8em;
+    }
+    .image-btn-text.nl .text-stroke {
       stroke-width: 8;
     }
 
@@ -105,31 +112,43 @@
     
     .mobile .image-btn-text.kr text {
       font-size: 1.2em;
+    }
+    .mobile .image-btn-text.kr .text-stroke {
       stroke-width: 12;
     }
 
+
     .mobile .image-btn-text.nl text {
       font-size: 0.8em;
+    }
+    .mobile .image-btn-text.nl .text-stroke {
       stroke-width: 8;
     }
 
     .mobile .image-btn-text.ru text {
       font-size: .8em;
+    }
+    .mobile .image-btn-text.ru .text-stroke {
       stroke-width: 8;
     }
     
     .tablet .image-btn-text.kr text {
       font-size: 1.2em;
-      stroke-width: 10;
     }
 
     .tablet .image-btn-text.ru text {
       font-size: 0.8em;
+    }
+    .tablet .image-btn-text.ru .text-stroke {
       stroke-width: 8;
     }
 
     .mobile .prompt_text {
       font-size: 1.2em;
+    }
+
+    .smallScreen .prompt_text {
+      font-size: 0.8em;
     }
 
     .smallScreen .jspsych-categorize-image-buttons-stimulus{
@@ -156,7 +175,7 @@
     .jspsych-content {
       height: 100svh;
       width: 100svw;
-      justify-content: center;
+      justify-content: space-around;
     }
 
     .dimtext {
@@ -290,6 +309,9 @@ jatos.onLoad(async function() {
   const preload_fnames = [];
     if (!classicGraphics){
     preload_fnames.push(
+      'img/pprac1a.jpg',
+      'img/pprac2a.jpg',
+      'img/pprac2b.jpg',
       "img/pcon001a.jpg",
       "img/pcon001b.jpg",
       "img/pcon002a.jpg",
@@ -330,10 +352,17 @@ jatos.onLoad(async function() {
       "img/pcon025b.jpg",
       "img/pcon027a.jpg",
       "img/assets/brain.png",
+      "img/assets/blank_green.png",
+      "img/assets/blank_green_pressed.png",
+      "img/assets/blank_red.png",
+      "img/assets/blank_red_pressed.png",
       ...Array.from({length: 11}, (_, i) => `img/assets/star${i}.png`)
     );
   } else {
     preload_fnames.push(
+      'img/pprac1a.jpg',
+      'img/pprac2a.jpg',
+      'img/pprac2b.jpg',
       "img/pcon001a.jpg",
       "img/pcon001b.jpg",
       "img/pcon002a.jpg",
@@ -419,6 +448,8 @@ jatos.onLoad(async function() {
     }
   });
 
+  // ------------- Definitions -------------
+
   const device = getDeviceType();
   console.log("have device " + device);
   const isMobile = device[0];
@@ -461,13 +492,15 @@ jatos.onLoad(async function() {
       trial_txt='<i>Same</i> or <i>Similar</i>' // LA changed different to similiar
   }
 
+  // ------------- Helpers -------------
+
   function makeSideBySideTrial(imgLeft, imgRight, stimulusText, promptText, buttonLabel) {
     
     
     return {
       type: (resp_mode == 'button' ? jsPsychCanvasButtonResponse : jsPsychCanvasKeyboardResponse),
       choices: [buttonLabel],
-      canvas_size: calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen, stimText=true),
+      canvas_size: calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen, stimText=true, pairwise=true),
       stimulus: function(c) {
         const ctx = c.getContext('2d');
         ctx.fillStyle = classicGraphics ? "white" : '#fff9e0';
@@ -484,6 +517,7 @@ jatos.onLoad(async function() {
         imgL.onload = imgR.onload = function() {
           // Calculate image size to fit within canvas
           // Two images side by side with a gap
+
           const availableWidth = (width - gap - framePadding * 4) / 2;
           const availableHeight = height - framePadding * 2;
           
@@ -516,7 +550,7 @@ jatos.onLoad(async function() {
         imgL.src = imgLeft;
         imgR.src = imgRight;
       },
-      prompt: promptText,
+      prompt: `<div class="prompt">${promptText}</div>`,
       button_html: classicGraphics ?
         `<div class="image-btn-wrapper" style="margin-top: 40px;">
           <input type="image" src="img/assets/blank_button.png"
@@ -530,7 +564,8 @@ jatos.onLoad(async function() {
           <input type="image" src="img/assets/blank_green.png"
                 class="image-btn">
           <svg class="image-btn-text" viewBox="0 0 266 160">
-            <text x="50%" y="50%">%choice%</text>
+            <text class="text-stroke" x="50%" y="50%">%choice%</text>
+            <text class="text-fill" x="50%" y="50%">%choice%</text>
           </svg>
         </div>`,
       on_load: function() {
@@ -538,14 +573,15 @@ jatos.onLoad(async function() {
         const canvasElement = document.querySelector('.jspsych-content canvas');
         if (canvasElement && stimulusText) {
           const stimulusDiv = document.createElement('div');
-          stimulusDiv.className = 'prompt_text';
+          stimulusDiv.className = 'prompt_text stimulus_div';
           stimulusDiv.style.textAlign = 'center';
+          stimulusDiv.style.padding = '0px 20px';
           stimulusDiv.innerHTML = `<p>${stimulusText}</p>`;
           canvasElement.parentNode.insertBefore(stimulusDiv, canvasElement);
         }
 
         requestAnimationFrame(() => {
-          fitSideBySideToScreen(isMobile, isTablet, smallScreen);
+          fitSideBySideTrialToScreen(isMobile, isTablet, smallScreen, pairwise=true);
         });
 
         setupButtonListeners();
@@ -580,7 +616,8 @@ jatos.onLoad(async function() {
             <input type="image" src="img/assets/blank_${isMobile ? ['red','green'][i] : ['red','green'][i]}.png"
                   class="image-btn" style="${isMobile ? 'mix-blend-mode: multiply;' : ''}">
             <svg class="image-btn-text ${lang}" viewBox="0 0 266 160">
-              <text x="50%" y="50%">${txt}</text>
+              <text class="text-stroke" x="50%" y="50%">${txt}</text>
+              <text class="text-fill" x="50%" y="50%">${txt}</text>
             </svg>
           </div>
         `),
@@ -746,7 +783,7 @@ jatos.onLoad(async function() {
             imgR._renderInfo = { x: img2X, y: img2Y, imgWidth, imgHeight };
             
           } else {
-            // TABLET/DESKTOP SIDE-BY-SIDE (original logic)
+            // TABLET/DESKTOP SIDE-BY-SIDE
             // For tablet: leave space for stars on left and brain on right
             const leftReserved = isTablet && !classicGraphics && score ? starSize + 60 : 0;
             const rightReserved = isTablet && !classicGraphics && score ? (brain.width * brainScale) + 60 : 0;
@@ -844,12 +881,10 @@ jatos.onLoad(async function() {
           data.correct = resp == data.cresp;
           data.resp = resp;
           console.log(data.resp, data.cresp, data.correct);
-          data.correct = resp == data.correct_response;
           
           if (data.correct) {
             num_correct += 1;
-          } else {
-            num_correct += 1;
+            console.log('num_correct: ' + num_correct); 
           }
           data.resp = resp;
         }
@@ -878,7 +913,7 @@ jatos.onLoad(async function() {
   }
   
   
-
+  // ------------- Trials -------------
   
   // Instruction phase
   var instr1_trial = {
@@ -897,7 +932,8 @@ jatos.onLoad(async function() {
           <input type="image" src="img/assets/blank_green.png"
                 class="image-btn">
           <svg class="image-btn-text" viewBox="0 0 266 160">
-            <text x="50%" y="50%">${instr_choice}</text>
+            <text class="text-stroke" x="50%" y="50%">${instr_choice}</text>
+            <text class="text-fill" x="50%" y="50%">${instr_choice}</text>
           </svg>
         </div>`,
     on_load: function() {
