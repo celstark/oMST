@@ -32,7 +32,10 @@ In JATOS, hit the _Properties_ button to see the _Study Properties_ and you shou
   "include_demographics": 0,
   "include_idcode": 0,
   "include_icon": 0,
+  "include_pairwise: 0,
   "lang": "en"
+  "plain_graphics": 0,
+  "stars_12": 1
 }
 ```
 Those "include" lines let you customize what phases are shown: a consent form, a demographics form, a "enter an ID code" form, and our "immediate memory control task" (a delayed match to sample type task).  The last one lets you set your language.  There are other things you can setup here, though.  Have a look in `setup.html` and you'll see things like a `selfpaced` option in there.  Anything you put in here will be the default for the study.
@@ -44,3 +47,16 @@ The code in here sets up a number of defaults.  Revise this to your heart's cont
 
 ### Language options
 We're using the standard 2-letter language codes here. Currently, translations exist for English (en), Spanish (es), Korean (kr), Russian (ru), and Dutch (nl).  Just set the "lang" parameter above to engage one of them.
+
+### oMST Neo Updates
+Added enhanced device detection to each page to allow for different sizes of phones and tablets
+Added new buttons as well as pressed versions when hovered/touched
+Added stars which increment on correct answers to cont_omst and pairwise_pcon
+Added a pairwise version of the pcon task
+Added several scaling functions to fit content to different screens
+Added file 'helpers.js' to contain useful helper functions accessible by all pages
+Added new varibles to the JATOS properties, include_pairwise, plain_graphics, stars_12. 
+include_pairwise takes 0 or 1 and functions the same as the other include_{} properties
+plain_graphics takes 0 or 1. If it is set to 0 the task will use the updated aspect and gameification elements, if set to 1 it will instead use assets more closely resembling default jspsych and not have any stars.
+stars_12 takes 0 or 1. If set to 0 cont_omst will have 6 stars, incrememting every other correct answer. If set to 1 cont_omst will have 12 stars incrementing on every correct answer.
+Various bug fixes
