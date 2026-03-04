@@ -51,12 +51,12 @@ We're using the standard 2-letter language codes here. Currently, translations e
 ### oMST Neo Updates
 Added enhanced device detection to each page to allow for different sizes of phones and tablets
 Added new buttons as well as pressed versions when hovered/touched
-Added stars which increment on correct answers to cont_omst and pairwise_pcon
+Added stars which increment on correct answers to `cont_omst` and `pairwise_pcon`
 Added a pairwise version of the pcon task
 Added several scaling functions to fit content to different screens
-Added file 'helpers.js' to contain useful helper functions accessible by all pages
-Added new varibles to the JATOS properties, include_pairwise, plain_graphics, stars_12. 
-include_pairwise takes 0 or 1 and functions the same as the other include_{} properties
-plain_graphics takes 0 or 1. If it is set to 0 the task will use the updated aspect and gameification elements, if set to 1 it will instead use assets more closely resembling default jspsych and not have any stars.
-stars_12 takes 0 or 1. If set to 0 cont_omst will have 6 stars, incrememting every other correct answer. If set to 1 cont_omst will have 12 stars incrementing on every correct answer.
+Added file `helpers.js` to contain useful helper functions accessible by all pages
+Added new varibles to the JATOS properties, `include_pairwise`, `plain_graphics`, `stars_12`. 
+`include_pairwise` takes 0 or 1 and functions the same as the other include_{} properties
+`plain_graphics` takes 0 or 1. If it is set to 0 the task will use the updated aspect and gameification elements, if set to 1 it will instead use assets more closely resembling default jspsych and not have any stars.
+`stars_12` takes 0 or 1. If set to 0 `cont_omst` will have 6 stars, incrememting every other correct answer. If set to 1 `cont_omst` will have 12 stars incrementing on every correct answer.
 Various bug fixes

@@ -2,8 +2,6 @@ let activeBtn = null;
 let lastTouchTime = 0;
 const hasHover = window.matchMedia('(hover: hover)').matches;
 
-//console.log('🖱️ Device hover capability:', hasHover);
-
 function handlePress(e) {
     // First try to find wrapper from the target
     let wrapper = e.target.closest('.image-btn-wrapper');
@@ -355,36 +353,12 @@ function fitIntroOutroToScreen(isMobile, isTablet, smallScreen) {
     }
 }
 
-function getVisibleHeight() {
-    // Create a temporary fixed element that fills the viewport
-    const measureDiv = document.createElement('div');
-    measureDiv.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        visibility: hidden;
-        z-index: -9999;
-    `;
-    
-    document.body.appendChild(measureDiv);
-    const visibleHeight = measureDiv.clientHeight;
-    document.body.removeChild(measureDiv);
-    
-    return visibleHeight;
-}
-
 function calculateSideBySideCanvasSize(isMobile, isTablet, smallScreen, stimText=false, pairwise=false) {
     const totalWidth = window.visualViewport ? 
         window.visualViewport.width : window.innerWidth;
     const totalHeight = window.offsetHeight ? 
         window.offsetHeight : window.innerHeight;
     console.log(Math.min(totalHeight, window.screen.availHeight))
-    console.log('Avail Height:', getVisibleHeight());
     // Define horizontal space allocation for each device type
     let widthPercent;
     if (isMobile) {
